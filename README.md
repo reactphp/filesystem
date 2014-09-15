@@ -54,3 +54,4 @@ $loop->addTimer(0.0001, function() use ($filesystem) {
 
 $loop->run();
 ```
+`The reason everything is wrapped in timeouts is that IO actions get started even before we start the loop.`
