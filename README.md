@@ -3,6 +3,10 @@ ReactFilesystem
 
 React WIP for EIO
 
+## Goal ##
+
+The goal of this repo is to become `React\Filesystem`, hence the naming and namespaces.
+
 ## Poc Demo ##
 
 Run with: clear && touch test_rm && time php test.php
