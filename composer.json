@@ -1,0 +1,17 @@
+{
+    "require": {
+        "react/event-loop": "0.4.*",
+        "ext-eio": "*",
+        "react/promise": "~2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "React\\Filesystem\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "React\\Tests\\Filesystem\\": "tests/"
+        }
+    }
+}
