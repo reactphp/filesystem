@@ -34,8 +34,8 @@ class EioFilesystem implements FilesystemInterface {
         return $this->callEio('eio_chmod', [$path, $mode]);
     }
 
-    public function chown($path, $uid, $guid) {
-        return $this->callEio('eio_chown', [$path, $uid, $guid]);
+    public function chown($path, $uid, $gid) {
+        return $this->callEio('eio_chown', [$path, $uid, $gid]);
     }
 
     public function ls($path, $flags = EIO_READDIR_DIRS_FIRST) {

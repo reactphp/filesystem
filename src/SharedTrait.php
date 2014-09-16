@@ -11,7 +11,7 @@ trait SharedTrait {
         return $this->filesystem->chmod($this->getPath(), $mode);
     }
 
-    public function chown($uid = -1, $guid = -1) {
-        return $this->filesystem->chown($this->getPath(), $uid, $guid);
+    public function chown($uid = -1, $gid = -1) {
+        return $this->filesystem->chown($this->getPath(), $uid, $gid);
     }
 }
