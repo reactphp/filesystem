@@ -4,6 +4,10 @@ namespace React\Filesystem;
 
 trait GenericNodeOperationTrait {
 
+    public function getFilesystem() {
+        return $this->filesystem;
+    }
+
     public function stat() {
         return $this->filesystem->stat($this->getPath());
     }
