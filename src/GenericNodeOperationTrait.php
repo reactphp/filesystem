@@ -2,7 +2,8 @@
 
 namespace React\Filesystem;
 
-trait SharedTrait {
+trait GenericNodeOperationTrait {
+
     public function stat() {
         return $this->filesystem->stat($this->getPath());
     }
