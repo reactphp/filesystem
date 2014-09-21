@@ -6,6 +6,8 @@ use React\Filesystem\FlagResolver;
 
 class EioOpenFlagResolver extends FlagResolver
 {
+    const DEFAULT_FLAG = EIO_O_NONBLOCK;
+
     protected $flagMapping = [
         '+' => EIO_O_RDWR,
         'a' => EIO_O_APPEND,
