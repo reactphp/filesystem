@@ -1,10 +1,10 @@
 <?php
 
-namespace React\Filesystem\Filesystem;
+namespace React\Filesystem\Eio;
 
 use React\Filesystem\FlagResolver;
 
-class EioOpenFlagResolver extends FlagResolver
+class OpenFlagResolver extends FlagResolver
 {
     const DEFAULT_FLAG = EIO_O_NONBLOCK;
 
