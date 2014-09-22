@@ -1,8 +1,8 @@
 <?php
 
-namespace React\Filesystem;
+namespace React\Filesystem\Node;
 
-trait GenericNodeOperationTrait
+trait GenericOperationTrait
 {
 
     public function getFilesystem()

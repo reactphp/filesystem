@@ -1,8 +1,8 @@
 <?php
 
-namespace React\Filesystem;
+namespace React\Filesystem\Node;
 
-interface GenericNodeOperationInterface
+interface GenericOperationInterface
 {
 
     public function getFilesystem();
