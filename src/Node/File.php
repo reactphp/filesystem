@@ -1,14 +1,14 @@
 <?php
 
-namespace React\Filesystem;
+namespace React\Filesystem\Node;
 
-use React\Filesystem\Filesystem\FilesystemInterface;
+use React\Filesystem\FilesystemInterface;
 use React\Promise\Deferred;
 
-class File
+class File implements FileInterface, GenericOperationInterface
 {
 
-    use GenericNodeOperationTrait;
+    use GenericOperationTrait;
 
     protected $open = false;
     protected $fileDescriptor;
@@ -42,11 +42,16 @@ class File
     {
         return $this->filesystem->stat($this->filename)->then(function ($result) {
             return [
-            'atime' => $result['atime'],
-            'ctime' => $result['ctime'],
-            'mtime' => $result['mtime'],
+                'atime' => $result['atime'],
+                'ctime' => $result['ctime'],
+                'mtime' => $result['mtime'],
             ];
         });
+    }
+
+    public function move($toFilename)
+    {
+        return $this->filesystem->move($this->filename, $toFilename);
     }
 
     public function create()
