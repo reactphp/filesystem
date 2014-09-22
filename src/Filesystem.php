@@ -2,7 +2,7 @@
 
 namespace React\Filesystem;
 
-use React\Filesystem\Filesystem\EioFilesystem;
+use React\Filesystem\Node;
 
 class Filesystem
 {
@@ -20,11 +20,11 @@ class Filesystem
 
     public function file($filename)
     {
-        return new File($filename, $this->filesystem);
+        return new Node\File($filename, $this->filesystem);
     }
 
     public function dir($path)
     {
-        return new Directory($path, $this->filesystem);
+        return new Node\Directory($path, $this->filesystem);
     }
 }
