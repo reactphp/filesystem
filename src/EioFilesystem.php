@@ -84,7 +84,6 @@ class EioFilesystem implements FilesystemInterface
 
     public function close($fd)
     {
-
         return $this->callEio('eio_close', [$fd]);
     }
 
