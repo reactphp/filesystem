@@ -19,4 +19,8 @@ class OpenFlagResolver extends FlagResolver
         't' => EIO_O_TRUNC,
         'w' => EIO_O_WRONLY,
     ];
+
+    public function defaultFlags() {
+        return static::DEFAULT_FLAG;
+    }
 }
