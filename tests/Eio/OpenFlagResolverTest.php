@@ -15,4 +15,9 @@ class OpenFlagResolverTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame(OpenFlagResolver::DEFAULT_FLAG, (new OpenFlagResolver())->defaultFlags());
     }
+
+    public function testFlagMapping()
+    {
+        $this->assertInternalType('array', (new OpenFlagResolver())->flagMapping());
+    }
 }

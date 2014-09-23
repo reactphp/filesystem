@@ -8,7 +8,7 @@ class OpenFlagResolver extends FlagResolver
 {
     const DEFAULT_FLAG = EIO_O_NONBLOCK;
 
-    protected $flagMapping = [
+    private $flagMapping = [
         '+' => EIO_O_RDWR,
         'a' => EIO_O_APPEND,
         'c' => EIO_O_CREAT,
@@ -22,5 +22,9 @@ class OpenFlagResolver extends FlagResolver
 
     public function defaultFlags() {
         return static::DEFAULT_FLAG;
+    }
+
+    public function flagMapping() {
+        return $this->flagMapping;
     }
 }
