@@ -5,14 +5,20 @@ namespace React\Filesystem;
 abstract class FlagResolver
 {
 
-    public function resolve($flagString)
+    public function resolve($flagString, $flags = null, $mapping = null)
     {
-        $flags = static::DEFAULT_FLAG;
+        if ($flags === null) {
+            $flags = $this->defaultFlags();
+        }
+
+        if ($mapping === null) {
+            $mapping = $this->flagMapping();
+        }
 
         $flagString = str_split($flagString);
         foreach ($flagString as $flag) {
-            if (isset($this->flagMapping[$flag])) {
-                $flags |= $this->flagMapping[$flag];
+            if (isset($mapping[$flag])) {
+                $flags |= $mapping[$flag];
             }
         }
 
