@@ -59,7 +59,7 @@ class File implements FileInterface, GenericOperationInterface
         $deferred = new Deferred();
 
         $this->stat()->then(null, function () use ($deferred) {
-            $deferred->reject(new EioException('File exists'));
+            $deferred->reject(new \Exception('File exists'));
         })->then(function () {
             return $this->filesystem->touch($this->filename);
         });
