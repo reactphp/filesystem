@@ -3,8 +3,9 @@
 namespace React\Filesystem\Eio;
 
 use React\Filesystem\FlagResolver;
+use React\Filesystem\FlagResolverInterface;
 
-class OpenFlagResolver extends FlagResolver
+class OpenFlagResolver extends FlagResolver implements FlagResolverInterface
 {
     const DEFAULT_FLAG = EIO_O_NONBLOCK;
 
@@ -20,11 +21,13 @@ class OpenFlagResolver extends FlagResolver
         'w' => EIO_O_WRONLY,
     ];
 
-    public function defaultFlags() {
+    public function defaultFlags()
+    {
         return static::DEFAULT_FLAG;
     }
 
-    public function flagMapping() {
+    public function flagMapping()
+    {
         return $this->flagMapping;
     }
 }

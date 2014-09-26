@@ -3,21 +3,26 @@
 namespace React\Tests\Filesystem\Eio;
 
 use React\Filesystem\Eio\OpenFlagResolver;
+use React\Tests\Filesystem\AbstractFlagResolverTest;
 
-class OpenFlagResolverTest extends \PHPUnit_Framework_TestCase
+class OpenFlagResolverTest extends AbstractFlagResolverTest
 {
-    public function testInheritance()
+    public function setUp()
     {
-        $this->assertInstanceOf('React\Filesystem\FlagResolver', new OpenFlagResolver());
+        parent::setUp();
+        $this->resolver = new OpenFlagResolver();
     }
+
+    public function tearDown()
+    {
+        unset($this->resolver);
+        parent::tearDown();
+    }
+
 
     public function testDefaultFlags()
     {
-        $this->assertSame(OpenFlagResolver::DEFAULT_FLAG, (new OpenFlagResolver())->defaultFlags());
+        $this->assertSame(OpenFlagResolver::DEFAULT_FLAG, $this->resolver->defaultFlags());
     }
 
-    public function testFlagMapping()
-    {
-        $this->assertInternalType('array', (new OpenFlagResolver())->flagMapping());
-    }
 }
