@@ -40,9 +40,9 @@ class PermissionFlagResolver extends FlagResolver implements FlagResolverInterfa
         return $this->flagMapping[$this->currentScope];
     }
 
-    public function resolve($flag)
+    public function resolve($flag, $flags = null, $mapping = null)
     {
-        $flags = 0;
+        $resultFlags = 0;
         $start = 0;
 
         foreach ([
@@ -53,15 +53,15 @@ class PermissionFlagResolver extends FlagResolver implements FlagResolverInterfa
             $this->currentScope = $scope;
             $start -= 3;
             $chunk = substr($flag, $start, 3);
-            $flags |= parent::resolve($chunk);
+            $resultFlags |= parent::resolve($chunk, $flags, $mapping);
         }
 
         if (strlen($flag) > 9) {
             $this->currentScope = 'special';
             $chunk = substr($flag, 0, (strlen($flag) - 9));
-            $flags |= parent::resolve($chunk);
+            $resultFlags |= parent::resolve($chunk, $flags, $mapping);
         }
 
-        return $flags;
+        return $resultFlags;
     }
 }
