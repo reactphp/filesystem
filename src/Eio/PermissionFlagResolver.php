@@ -27,7 +27,6 @@ class PermissionFlagResolver extends FlagResolver implements FlagResolverInterfa
             'x' => EIO_S_IXOTH,
             'r' => EIO_S_IROTH,
         ],
-        'special' => [],
     ];
 
     public function defaultFlags()
@@ -53,12 +52,6 @@ class PermissionFlagResolver extends FlagResolver implements FlagResolverInterfa
             $this->currentScope = $scope;
             $start -= 3;
             $chunk = substr($flag, $start, 3);
-            $resultFlags |= parent::resolve($chunk, $flags, $mapping);
-        }
-
-        if (strlen($flag) > 9) {
-            $this->currentScope = 'special';
-            $chunk = substr($flag, 0, (strlen($flag) - 9));
             $resultFlags |= parent::resolve($chunk, $flags, $mapping);
         }
 
