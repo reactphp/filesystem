@@ -16,7 +16,7 @@ interface FileInterface
 
     public function time();
 
-    public function move($toFilename);
+    public function rename($toFilename);
 
     public function size();
 }

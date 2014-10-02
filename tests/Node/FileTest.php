@@ -27,4 +27,25 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($promise, (new File($path, $filesystem))->remove());
     }
 
+    public function testRename()
+    {
+        $pathFrom = 'foo.bar';
+        $pathTo = 'bar.foo';
+        $filesystem = $this->getMock('React\Filesystem\EioFilesystem', [
+            'rename',
+        ], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+        $promise = $this->getMock('React\Promise\PromiseInterface');
+
+        $filesystem
+            ->expects($this->once())
+            ->method('rename')
+            ->with($pathFrom, $pathTo)
+            ->will($this->returnValue($promise))
+        ;
+
+        $this->assertSame($promise, (new File($pathFrom, $filesystem))->rename($pathTo));
+    }
+
 }

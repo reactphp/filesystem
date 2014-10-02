@@ -49,9 +49,9 @@ class File implements FileInterface, GenericOperationInterface
         });
     }
 
-    public function move($toFilename)
+    public function rename($toFilename)
     {
-        return $this->filesystem->move($this->filename, $toFilename);
+        return $this->filesystem->rename($this->filename, $toFilename);
     }
 
     public function create()

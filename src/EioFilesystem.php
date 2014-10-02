@@ -40,7 +40,7 @@ class EioFilesystem implements FilesystemInterface
         return $this->callEio('eio_unlink', [$filename]);
     }
 
-    public function move($fromFilename, $toFilename)
+    public function rename($fromFilename, $toFilename)
     {
         return $this->callEio('eio_rename', [$fromFilename, $toFilename]);
     }
