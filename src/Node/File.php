@@ -26,9 +26,7 @@ class File implements FileInterface, GenericOperationInterface
 
     public function exists()
     {
-        return $this->filesystem->stat($this->filename)->then(function ($result) {
-            return $result;
-        });
+        return $this->filesystem->stat($this->filename);
     }
 
     public function size()

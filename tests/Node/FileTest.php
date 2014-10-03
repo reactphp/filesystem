@@ -48,4 +48,24 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($promise, (new File($pathFrom, $filesystem))->rename($pathTo));
     }
 
+    public function testExists()
+    {
+        $path = 'foo.bar';
+        $filesystem = $this->getMock('React\Filesystem\EioFilesystem', [
+            'stat',
+        ], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+        $promise = $this->getMock('React\Promise\PromiseInterface');
+
+        $filesystem
+            ->expects($this->once())
+            ->method('stat')
+            ->with($path)
+            ->will($this->returnValue($promise))
+        ;
+
+        $this->assertInstanceOf('React\Promise\PromiseInterface', (new File($path, $filesystem))->exists());
+    }
+
 }
