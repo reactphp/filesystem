@@ -148,4 +148,24 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
         });
         $this->assertTrue($callbackRan);
     }
+
+    public function testCreate()
+    {
+        $path = 'foo.bar';
+        $filesystem = $this->getMock('React\Filesystem\EioFilesystem', [
+            'mkdir',
+        ], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+        $promise = $this->getMock('React\Promise\PromiseInterface');
+
+        $filesystem
+            ->expects($this->once())
+            ->method('mkdir')
+            ->with($path)
+            ->will($this->returnValue($promise))
+        ;
+
+        $this->assertSame($promise, (new Directory($path, $filesystem))->create());
+    }
 }
