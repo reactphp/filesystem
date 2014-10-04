@@ -168,4 +168,24 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($promise, (new Directory($path, $filesystem))->create());
     }
+
+    public function testRemove()
+    {
+        $path = 'foo.bar';
+        $filesystem = $this->getMock('React\Filesystem\EioFilesystem', [
+            'rmdir',
+        ], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+        $promise = $this->getMock('React\Promise\PromiseInterface');
+
+        $filesystem
+            ->expects($this->once())
+            ->method('rmdir')
+            ->with($path)
+            ->will($this->returnValue($promise))
+        ;
+
+        $this->assertSame($promise, (new Directory($path, $filesystem))->remove());
+    }
 }
