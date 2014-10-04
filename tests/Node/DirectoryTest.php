@@ -32,7 +32,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('React\Promise\PromiseInterface', $directory->ls());
     }
 
-    public function testLsSuccess()
+    public function testLsSuccessAndProcessLsContents()
     {
         $dents = [
             'dents' => [
@@ -95,7 +95,16 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
         ;
 
         $directory = new Directory($path, $filesystem);
-        $this->assertInstanceOf('React\Promise\PromiseInterface', $directory->ls());
+        $resultPromise = $directory->ls();
+        $this->assertInstanceOf('React\Promise\PromiseInterface', $resultPromise);
+        $callbackRan = false;
+        $resultPromise->then(function($list) use (&$callbackRan) {
+            $this->assertInternalType('array', $list);
+            $this->assertInstanceOf('React\Filesystem\Node\Directory', $list['bar']);
+            $this->assertInstanceOf('React\Filesystem\Node\File', $list['foo']);
+            $callbackRan = true;
+        });
+        $this->assertTrue($callbackRan);
     }
 
 }
