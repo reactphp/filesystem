@@ -44,7 +44,7 @@ class Directory implements DirectoryInterface, GenericOperationInterface
 
         $this->filesystem->ls($this->path)->then(function ($result) use ($deferred) {
             $this->filesystem->getLoop()->futureTick(function () use ($result, $deferred) {
-                $this->processLsContents($result, $deferred);
+                $deferred->resolve($this->processLsContents($result));
             });
         }, function ($error) use ($deferred) {
             $deferred->reject($error);
@@ -53,7 +53,7 @@ class Directory implements DirectoryInterface, GenericOperationInterface
         return $deferred->promise();
     }
 
-    protected function processLsContents($result, $deferred)
+    protected function processLsContents($result)
     {
         $list = [];
         foreach ($result['dents'] as $entry) {
@@ -62,7 +62,7 @@ class Directory implements DirectoryInterface, GenericOperationInterface
                 $list[$entry['name']] = new $this->typeClassMapping[$entry['type']]($path, $this->filesystem);
             }
         }
-        $deferred->resolve($list);
+        return $list;
     }
 
     public function create()
