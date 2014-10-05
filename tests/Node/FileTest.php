@@ -7,6 +7,14 @@ use React\Filesystem\Node\File;
 class FileTest extends \PHPUnit_Framework_TestCase
 {
 
+    public function testGetPath()
+    {
+        $path = 'foo.bar';
+        $this->assertSame($path, (new File($path, $this->getMock('React\Filesystem\EioFilesystem', [], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ])))->getPath());
+    }
+
     public function testRemove()
     {
         $path = 'foo.bar';

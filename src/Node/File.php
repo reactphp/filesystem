@@ -19,7 +19,7 @@ class File implements FileInterface, GenericOperationInterface
         $this->filesystem = $filesystem;
     }
 
-    protected function getPath()
+    public function getPath()
     {
         return $this->filename;
     }
