@@ -4,6 +4,7 @@ namespace React\Filesystem\Node;
 
 use React\Filesystem\FilesystemInterface;
 use React\Promise\Deferred;
+use React\Promise\FulfilledPromise;
 
 class Directory implements DirectoryInterface, GenericOperationInterface
 {
@@ -63,6 +64,55 @@ class Directory implements DirectoryInterface, GenericOperationInterface
             }
         }
         return $list;
+    }
+
+    public function size()
+    {
+        $deferred = new Deferred();
+
+        $this->ls()->then(function($result) use ($deferred) {
+            $this->filesystem->getLoop()->futureTick(function () use ($result, $deferred) {
+                $this->processSizeContents($result)->then(function($numbers) use ($deferred) {
+                    $deferred->resolve($numbers);
+                });
+            });
+        }, function ($error) use ($deferred) {
+            $deferred->reject($error);
+        });
+
+        return $deferred->promise();
+    }
+
+    protected function processSizeContents($nodes)
+    {
+        $deferred = new Deferred();
+        $numbers = [
+            'directories' => 0,
+            'files' => 0,
+            'size' => 0,
+        ];
+
+        $promises = [];
+        foreach ($nodes as $node) {
+            switch (true) {
+                case $node instanceof Directory:
+                    $numbers['directories']++;
+                    break;
+                case $node instanceof File:
+                    $numbers['files']++;
+                    $promises[] = $node->size()->then(function($size) use (&$numbers) {
+                        $numbers['size'] += $size;
+                        return new FulfilledPromise();
+                    });
+                    break;
+            }
+        }
+
+        \React\Promise\all($promises)->then(function() use ($deferred, &$numbers) {
+            $deferred->resolve($numbers);
+        });
+
+        return $deferred->promise();
     }
 
     public function create()
