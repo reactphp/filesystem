@@ -213,4 +213,47 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
         $directory = new Directory($path, $filesystem);
         $this->assertInstanceOf('React\Promise\PromiseInterface', $directory->size());
     }
+
+    public function testSizeFail()
+    {
+        $error = new \Exception('foor:bar');
+        $path = '/home/foo/bar';$filesystem = $this->getMock('React\Filesystem\EioFilesystem', [
+            'ls',
+            'getLoop',
+        ], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+
+        $lsPromise = $this->getMock('React\Promise\PromiseInterface', [
+            'then',
+        ]);
+
+        $filesystem
+            ->expects($this->once())
+            ->method('ls')
+            ->with($path)
+            ->will($this->returnValue($lsPromise))
+        ;
+
+        $lsPromise
+            ->expects($this->once())
+            ->method('then')
+            ->with($this->isType('callable'), $this->isType('callable'))
+            ->will($this->returnCallback(function($resolveCb, $rejectCb) use ($error) {
+                $rejectCb($error);
+            }))
+        ;
+
+        $directory = new Directory($path, $filesystem);
+        $resultPromise = $directory->size();
+        $this->assertInstanceOf('React\Promise\PromiseInterface', $resultPromise);
+        $callbackRan = false;
+        $resultPromise->then(null, function($passedError) use (&$callbackRan, $error) {
+            $this->assertInstanceOf('Exception', $passedError);
+            $this->assertSame($error, $passedError);
+            $callbackRan = true;
+        });
+        $this->assertTrue($callbackRan);
+    }
+
 }
