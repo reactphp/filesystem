@@ -3,6 +3,7 @@
 namespace React\Tests\Filesystem\Node;
 
 use React\Filesystem\Node\Directory;
+use React\Filesystem\Node\File;
 
 class DirectoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -187,5 +188,29 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
         ;
 
         $this->assertSame($promise, (new Directory($path, $filesystem))->remove());
+    }
+    public function testSize()
+    {
+        $path = '/home/foo/bar';
+        $loop = $this->getMock('React\EventLoop\StreamSelectLoop');
+
+        $filesystem = $this->getMock('React\Filesystem\EioFilesystem', [
+            'ls',
+        ], [
+            $loop,
+        ]);
+
+        $lsPromise = $this->getMock('React\Promise\PromiseInterface');
+
+
+        $filesystem
+            ->expects($this->once())
+            ->method('ls')
+            ->with($path)
+            ->will($this->returnValue($lsPromise))
+        ;
+
+        $directory = new Directory($path, $filesystem);
+        $this->assertInstanceOf('React\Promise\PromiseInterface', $directory->size());
     }
 }
