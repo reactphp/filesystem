@@ -66,13 +66,13 @@ class Directory implements DirectoryInterface, GenericOperationInterface
         return $list;
     }
 
-    public function size()
+    public function size($recursive = false)
     {
         $deferred = new Deferred();
 
-        $this->ls()->then(function($result) use ($deferred) {
-            $this->filesystem->getLoop()->futureTick(function () use ($result, $deferred) {
-                $this->processSizeContents($result)->then(function($numbers) use ($deferred) {
+        $this->ls()->then(function($result) use ($deferred, $recursive) {
+            $this->filesystem->getLoop()->futureTick(function () use ($result, $deferred, $recursive) {
+                $this->processSizeContents($result, $recursive)->then(function($numbers) use ($deferred) {
                     $deferred->resolve($numbers);
                 });
             });
@@ -83,7 +83,7 @@ class Directory implements DirectoryInterface, GenericOperationInterface
         return $deferred->promise();
     }
 
-    protected function processSizeContents($nodes)
+    protected function processSizeContents($nodes, $recursive)
     {
         $deferred = new Deferred();
         $numbers = [
@@ -97,6 +97,14 @@ class Directory implements DirectoryInterface, GenericOperationInterface
             switch (true) {
                 case $node instanceof Directory:
                     $numbers['directories']++;
+                    if ($recursive) {
+                        $promises[] = $node->size()->then(function($size) use (&$numbers) {
+                            $numbers['directories'] += $size['directories'];
+                            $numbers['files'] += $size['files'];
+                            $numbers['size'] += $size['size'];
+                            return new FulfilledPromise();
+                        });
+                    }
                     break;
                 case $node instanceof File:
                     $numbers['files']++;
@@ -158,5 +166,10 @@ class Directory implements DirectoryInterface, GenericOperationInterface
     public function removeRecursive()
     {
         return $this->getRecursiveInvoker()->execute('remove', []);
+    }
+
+    public function sizeRecursive()
+    {
+        return $this->size(true);
     }
 }
