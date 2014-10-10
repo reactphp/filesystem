@@ -1,7 +1,7 @@
 ReactFilesystem
 ===============
 
-React WIP for EIO
+React WIP for [EIO](http://php.net/eio)
 
 ## Goal ##
 
