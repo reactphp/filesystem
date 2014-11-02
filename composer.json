@@ -2,7 +2,8 @@
     "require": {
         "react/event-loop": "0.4.*",
         "ext-eio": "*",
-        "react/promise": "~2.0"
+        "react/promise": "~2.0",
+        "react/stream": "0.4.*"
     },
     "autoload": {
         "psr-4": {

@@ -2,6 +2,7 @@
 
 namespace React\Filesystem;
 
+use React\Filesystem\Eio\BufferedSink;
 use React\Filesystem\Node;
 
 class Filesystem
@@ -26,5 +27,12 @@ class Filesystem
     public function dir($path)
     {
         return new Node\Directory($path, $this->filesystem);
+    }
+
+    public function getContents($filename)
+    {
+        $this->open($filename)->then(function($stream) {
+            return BufferedSink::createPromise($stream);
+        });
     }
 }

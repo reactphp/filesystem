@@ -57,7 +57,7 @@ class EioFilesystem implements FilesystemInterface
 
     public function ls($path, $flags = EIO_READDIR_DIRS_FIRST)
     {
-        return $this->callEio('eio_readdir', [$path, $flags]);
+        return $this->callEio('eio_readdir', [$path, $flags], false);
     }
 
     public function mkdir($path, $mode = self::CREATION_MODE)
@@ -75,11 +75,14 @@ class EioFilesystem implements FilesystemInterface
 
     public function open($path, $flags, $mode = self::CREATION_MODE)
     {
+        $flags = $this->openFlagResolver->resolve($flags);
         return $this->callEio('eio_open', [
             $path,
-            $this->openFlagResolver->resolve($flags),
+            $flags,
             $this->permissionFlagResolver->resolve($mode),
-        ]);
+        ])->then(function($fileDescriptor) use ($path, $flags) {
+            return Eio\StreamFactory::create($path, $fileDescriptor, $flags, $this);
+        });
     }
 
     public function close($fd)
@@ -98,6 +101,15 @@ class EioFilesystem implements FilesystemInterface
         });
     }
 
+    public function read($fileDescriptor, $length, $offset)
+    {
+        return $this->callEio('eio_read', [
+            $fileDescriptor,
+            $length,
+            $offset,
+        ]);
+    }
+
     protected function callEio($function, $args, $errorResultCode = -1)
     {
         $this->register();
@@ -112,10 +124,12 @@ class EioFilesystem implements FilesystemInterface
             $deferred->resolve($result);
         };
 
-        if (!@call_user_func_array($function, $args)) {
-            throw new Eio\Exception($function . ' unknown error');
-            $deferred->reject(new Eio\Exception($function . ' unknown error'));
-        };
+        // Run this in a future tick to make sure all EIO calls are run within the loop
+        $this->loop->futureTick(function() use ($function, $args, $deferred) {
+            if (!@call_user_func_array($function, $args)) {
+                $deferred->reject(new Eio\Exception($function . ' unknown error: ' . var_export($args, true)));
+            };
+        });
 
         return $deferred->promise();
     }
@@ -147,6 +161,9 @@ class EioFilesystem implements FilesystemInterface
         while (eio_npending()) {
             eio_poll();
         }
-        $this->unregister();
+
+        if (eio_nreqs() == 0 && eio_npending() == 0 && eio_nready() == 0) {
+            $this->unregister();
+        }
     }
 }

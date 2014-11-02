@@ -67,13 +67,9 @@ class File implements FileInterface, GenericOperationInterface
 
     public function open($flags)
     {
-        $deferred = new Deferred();
-
-        return $this->filesystem->open($this->filename, $flags)->then(function ($fd) use ($deferred) {
+        return $this->filesystem->open($this->filename, $flags)->then(function ($stream) {
             $this->open = true;
-            $this->fileDescriptor = $fd;
-
-            return $deferred->promise();
+            return $stream;
         });
     }
 
@@ -83,7 +79,6 @@ class File implements FileInterface, GenericOperationInterface
 
         return $this->filesystem->close($this->fileDescriptor)->then(function () use ($deferred) {
             $this->open = false;
-            $this->fileDescriptor = null;
 
             return $deferred->promise();
         });
