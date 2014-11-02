@@ -125,11 +125,11 @@ class EioFilesystem implements FilesystemInterface
         };
 
         // Run this in a future tick to make sure all EIO calls are run within the loop
-        $this->loop->futureTick(function() use ($function, $args, $deferred) {
+        //$this->loop->futureTick(function() use ($function, $args, $deferred) {
             if (!@call_user_func_array($function, $args)) {
                 $deferred->reject(new Eio\Exception($function . ' unknown error: ' . var_export($args, true)));
             };
-        });
+        //});
 
         return $deferred->promise();
     }
