@@ -31,7 +31,7 @@ class Filesystem
 
     public function getContents($filename)
     {
-        $this->open($filename)->then(function($stream) {
+        return $this->file($filename)->open(EIO_O_RDONLY)->then(function($stream) {
             return BufferedSink::createPromise($stream);
         });
     }
