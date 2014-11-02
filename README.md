@@ -1,61 +1,49 @@
 ReactFilesystem
 ===============
 
-React WIP for [EIO](http://php.net/eio)
+React WIP for [EIO](http://php.net/eio), keep in mind that this can be very unstable at times and is not stable by a long shot.
 
 ## Goal ##
 
 The goal of this repo is to become `React\Filesystem`, hence the naming and namespaces.
 
-## Poc Demo ##
+## Examples ##
 
-Run with: clear && touch test_rm && time php test.php
+`Adding examples here over time.`
+
+## Reading files ##
 
 ```php
-<?php
-
-require 'vendor/autoload.php';
-
-$loop = \React\EventLoop\Factory::create();
-$filesystem = new \React\Filesystem\Filesystem($loop);
-$loop->addTimer(1, function() use ($filesystem) {
-    $filesystem->dir(__DIR__)->ls()->then(function ($a) {
-        var_export($a);
-    });
+$filesystem->getContents('test.txt')->then(function($contents) {
 });
-$loop->addTimer(0.0001, function() use ($filesystem) {
-    $file = $filesystem->file(__FILE__);
-    $file->exists()->then(function() use ($file) {
-        echo __FILE__ . ' exists', PHP_EOL;
-        $file->size()->then(function($size) use ($file) {
-            var_export($size);
-            echo PHP_EOL;
-            $file->time()->then(function($time) {
-                var_export($time);
-                echo PHP_EOL;
-            });
-        });
-    });
-    $rm = $filesystem->file('./test_rm');
-    $rm->exists()->then(function() use ($rm) {
-        $rm->stat()->then(function($result) use ($rm) {
-            var_export($result);
-            echo PHP_EOL;
-            $rm->chmod(0777)->then(function() use ($rm) {
-                $rm->stat()->then(function($result) use ($rm) {
-                    var_export($result);
-                    echo PHP_EOL;
-                    $rm->remove()->then(function() {
-                        echo 'test_rm removed', PHP_EOL;
-                    }, function() {
-                        echo 'test_rm note removed', PHP_EOL;
-                    });
-                });
-            });
-        });
-    });
-});
-
-$loop->run();
 ```
-`The reason everything is wrapped in timeouts is that IO actions get started even before we start the loop.`
+
+Which is a convenience method for:
+
+```php
+$filesystem->open('test.txt')->then(function($stream) {
+    return React\Stream\BufferedSink::createPromise($stream);
+})->then(function($contents) {
+});
+```
+
+Which in it's turn is a convenience method for:
+
+```php
+$filesystem->file('test.txt')->open(EIO_O_RDONLY)->then(function ($stream) use ($node) {
+    $buffer = '';
+    $deferred = new \React\Promise\Deferred();
+    $stream->on('data', function ($data) use (&$buffer) {
+        $buffer += $data;
+    });
+    $stream->on('end', function ($data) use ($stream, $deferred, &$buffer) {
+        $stream->close();
+        $deferred->resolve(&$buffer);
+    });
+    return $deferred->promise();
+});
+```
+
+## Writing files ##
+
+Not possible yet
