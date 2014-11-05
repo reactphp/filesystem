@@ -30,7 +30,7 @@ $filesystem->open('test.txt')->then(function($stream) {
 Which in it's turn is a convenience method for:
 
 ```php
-$filesystem->file('test.txt')->open(EIO_O_RDONLY)->then(function ($stream) use ($node) {
+$filesystem->file('test.txt')->open('r')->then(function ($stream) use ($node) {
     $buffer = '';
     $deferred = new \React\Promise\Deferred();
     $stream->on('data', function ($data) use (&$buffer) {
