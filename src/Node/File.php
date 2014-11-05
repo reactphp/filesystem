@@ -4,6 +4,7 @@ namespace React\Filesystem\Node;
 
 use React\Filesystem\FilesystemInterface;
 use React\Promise\Deferred;
+use React\Stream\BufferedSink;
 
 class File implements FileInterface, GenericOperationInterface
 {
@@ -81,6 +82,13 @@ class File implements FileInterface, GenericOperationInterface
             $this->open = false;
 
             return $deferred->promise();
+        });
+    }
+
+    public function getContents()
+    {
+        return $this->open('r')->then(function($stream) {
+            return BufferedSink::createPromise($stream);
         });
     }
 

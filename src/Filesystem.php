@@ -2,7 +2,6 @@
 
 namespace React\Filesystem;
 
-use React\Filesystem\Eio\BufferedSink;
 use React\Filesystem\Node;
 
 class Filesystem
@@ -13,10 +12,14 @@ class Filesystem
         return new static($loop);
     }
 
-    public function __construct($loop)
+    public function __construct($loop, FilesystemInterface $filesystem = null)
     {
         $this->loop = $loop;
-        $this->filesystem = new EioFilesystem($loop);
+
+        if ($filesystem === null) {
+            $filesystem = new EioFilesystem($loop);
+        }
+        $this->filesystem = $filesystem;
     }
 
     public function file($filename)
@@ -31,8 +34,6 @@ class Filesystem
 
     public function getContents($filename)
     {
-        return $this->file($filename)->open(EIO_O_RDONLY)->then(function($stream) {
-            return BufferedSink::createPromise($stream);
-        });
+        return $this->file($filename)->getContents();
     }
 }
