@@ -15,4 +15,6 @@ interface DirectoryInterface
     public function chownRecursive();
 
     public function removeRecursive();
+
+    public function lsRecursive();
 }
