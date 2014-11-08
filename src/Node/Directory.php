@@ -57,10 +57,12 @@ class Directory implements DirectoryInterface, GenericOperationInterface
     protected function processLsContents($result)
     {
         $list = [];
-        foreach ($result['dents'] as $entry) {
-            if (isset($this->typeClassMapping[$entry['type']])) {
-                $path = $this->path . DIRECTORY_SEPARATOR . $entry['name'];
-                $list[$entry['name']] = new $this->typeClassMapping[$entry['type']]($path, $this->filesystem);
+        if (isset($result['dents'])) {
+            foreach ($result['dents'] as $entry) {
+                if (isset($this->typeClassMapping[$entry['type']])) {
+                    $path = $this->path . DIRECTORY_SEPARATOR . $entry['name'];
+                    $list[$entry['name']] = new $this->typeClassMapping[$entry['type']]($path, $this->filesystem);
+                }
             }
         }
         return $list;
@@ -171,5 +173,36 @@ class Directory implements DirectoryInterface, GenericOperationInterface
     public function sizeRecursive()
     {
         return $this->size(true);
+    }
+
+    public function lsRecursive(\SplObjectStorage $list = null)
+    {
+        if ($list === null) {
+            $list = new \SplObjectStorage();
+        }
+        return $this->ls()->then(function ($nodes) use ($list) {
+            return $this->processLsRecursiveContents($nodes, $list);
+        });
+    }
+
+    protected function processLsRecursiveContents($nodes, $list)
+    {
+        $promises = [];
+        foreach ($nodes as $node) {
+            if ($node instanceof Directory || $node instanceof File) {
+                $list->attach($node);
+            }
+            if ($node instanceof Directory) {
+                $promises[] = $node->lsRecursive($list);
+            }
+        }
+
+        $deferred = new Deferred();
+
+        \React\Promise\all($promises)->then(function () use ($deferred, $list) {
+            $deferred->resolve($list);
+        });
+
+        return $deferred->promise();
     }
 }
