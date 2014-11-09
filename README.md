@@ -46,4 +46,14 @@ $filesystem->file('test.txt')->open('r')->then(function ($stream) use ($node) {
 
 ## Writing files ##
 
-Not possible yet
+Open a file for writing (`w` flag) and write `abcde` to `test.txt` and close it. Create it (`c` flag) when it doesn't exists and truncate it (`t` flag) when it does.
+
+```php
+$filesystem->file('test.txt')->open('cwt')->then(function ($stream) {
+    $stream->write('a');
+    $stream->write('b');
+    $stream->write('c');
+    $stream->write('d');
+    $stream->end('e');
+});
+```
