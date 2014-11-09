@@ -8,11 +8,11 @@ class StreamFactory
 {
     public static function create($path, $fileDescriptor, $flags, EioFilesystem $filesystem)
     {
-        if (($flags & EIO_O_RDONLY) == EIO_O_RDONLY) {
+        if ($flags == EIO_O_RDONLY) {
             return new ReadableStream($path, $fileDescriptor, $filesystem);
         }
 
-        if (($flags & EIO_O_WRONLY) == EIO_O_WRONLY) {
+        if ($flags & EIO_O_WRONLY) {
             return new WritableStream($path, $fileDescriptor, $filesystem);
         }
 
