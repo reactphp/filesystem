@@ -7,7 +7,7 @@ use React\Filesystem\FlagResolverInterface;
 
 class OpenFlagResolver extends FlagResolver implements FlagResolverInterface
 {
-    const DEFAULT_FLAG = EIO_O_NONBLOCK;
+    const DEFAULT_FLAG = null;
 
     private $flagMapping = [
         '+' => EIO_O_RDWR,
