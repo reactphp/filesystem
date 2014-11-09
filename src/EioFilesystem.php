@@ -110,6 +110,16 @@ class EioFilesystem implements FilesystemInterface
         ]);
     }
 
+    public function write($fileDescriptor, $data, $length, $offset)
+    {
+        return $this->callEio('eio_write', [
+            $fileDescriptor,
+            $data,
+            $length,
+            $offset,
+        ]);
+    }
+
     protected function callEio($function, $args, $errorResultCode = -1)
     {
         $this->register();
