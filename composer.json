@@ -1,9 +1,15 @@
 {
+    "name": "react/filesystem",
+    "description": "Asynchronous filesystem abstraction.",
+    "keywords": ["filesystem", "asynchronous"],
+    "license": "MIT",
     "require": {
-        "react/event-loop": "0.4.*",
+        "php": ">=5.4.0",
         "ext-eio": "*",
+        "react/event-loop": "0.4.*",
         "react/promise": "~2.0",
-        "react/stream": "0.4.*"
+        "react/stream": "0.4.*",
+        "evenement/evenement": "~2.0"
     },
     "autoload": {
         "psr-4": {
