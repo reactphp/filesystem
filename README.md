@@ -1,11 +1,7 @@
 ReactFilesystem
 ===============
 
-React WIP for [EIO](http://php.net/eio), keep in mind that this can be very unstable at times and is not stable by a long shot.
-
-## Goal ##
-
-The goal of this repo is to become `React\Filesystem`, hence the naming and namespaces.
+Filesystem WIP for [EIO](http://php.net/eio), keep in mind that this can be very unstable at times and is not stable by a long shot.
 
 ## Examples ##
 
