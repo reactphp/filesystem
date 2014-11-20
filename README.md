@@ -15,7 +15,7 @@ Table of Contents
 3. [License](#license)
 
 Introduction
---------
+------------
 
 Filesystem WIP for [EIO](http://php.net/eio), keep in mind that this can be very unstable at times and is not stable by a long shot!
 
