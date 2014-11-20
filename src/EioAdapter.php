@@ -6,7 +6,7 @@ use React\EventLoop\LoopInterface;
 use React\Promise\Deferred;
 use React\Filesystem\Eio;
 
-class EioFilesystem implements FilesystemInterface
+class EioAdapter implements AdapterInterface
 {
 
     const CREATION_MODE = 'rw-rw-rw-';

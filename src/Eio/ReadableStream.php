@@ -3,7 +3,7 @@
 namespace React\Filesystem\Eio;
 
 use Evenement\EventEmitter;
-use React\Filesystem\EioFilesystem;
+use React\Filesystem\EioAdapter;
 use React\Stream\ReadableStreamInterface;
 use React\Stream\Util;
 use React\Stream\WritableStreamInterface;
@@ -17,7 +17,7 @@ class ReadableStream extends EventEmitter implements ReadableStreamInterface
     protected $cursor;
     protected $chunkSize = 8192;
 
-    public function __construct($path, $fileDescriptor, EioFilesystem $filesystem)
+    public function __construct($path, $fileDescriptor, EioAdapter $filesystem)
     {
         $this->path = $path;
         $this->filesystem = $filesystem;

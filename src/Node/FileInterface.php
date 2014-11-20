@@ -2,11 +2,11 @@
 
 namespace React\Filesystem\Node;
 
-use React\Filesystem\FilesystemInterface;
+use React\Filesystem\AdapterInterface;
 
 interface FileInterface
 {
-    public function __construct($filename, FilesystemInterface $filesystem);
+    public function __construct($filename, AdapterInterface $filesystem);
 
     public function exists();
 

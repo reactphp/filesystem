@@ -4,7 +4,7 @@ namespace React\Filesystem;
 
 use React\EventLoop\LoopInterface;
 
-interface FilesystemInterface
+interface AdapterInterface
 {
     public function __construct(LoopInterface $loop);
 

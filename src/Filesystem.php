@@ -12,12 +12,12 @@ class Filesystem
         return new static($loop);
     }
 
-    public function __construct($loop, FilesystemInterface $filesystem = null)
+    public function __construct($loop, AdapterInterface $filesystem = null)
     {
         $this->loop = $loop;
 
         if ($filesystem === null) {
-            $filesystem = new EioFilesystem($loop);
+            $filesystem = new EioAdapter($loop);
         }
         $this->filesystem = $filesystem;
     }

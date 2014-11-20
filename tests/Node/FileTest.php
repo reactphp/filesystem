@@ -10,7 +10,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
     public function testGetPath()
     {
         $path = 'foo.bar';
-        $this->assertSame($path, (new File($path, $this->getMock('React\Filesystem\EioFilesystem', [], [
+        $this->assertSame($path, (new File($path, $this->getMock('React\Filesystem\EioAdapter', [], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ])))->getPath());
     }
@@ -18,7 +18,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
     public function testRemove()
     {
         $path = 'foo.bar';
-        $filesystem = $this->getMock('React\Filesystem\EioFilesystem', [
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
             'unlink',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
@@ -39,7 +39,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
     {
         $pathFrom = 'foo.bar';
         $pathTo = 'bar.foo';
-        $filesystem = $this->getMock('React\Filesystem\EioFilesystem', [
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
             'rename',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
@@ -59,7 +59,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
     public function testExists()
     {
         $path = 'foo.bar';
-        $filesystem = $this->getMock('React\Filesystem\EioFilesystem', [
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
             'stat',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),

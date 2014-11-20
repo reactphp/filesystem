@@ -13,7 +13,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
         $path = '/home/foo/bar';
         $loop = $this->getMock('React\EventLoop\StreamSelectLoop');
 
-        $filesystem = $this->getMock('React\Filesystem\EioFilesystem', [
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
             'ls',
         ], [
             $loop,
@@ -61,7 +61,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
             }))
         ;
 
-        $filesystem = $this->getMock('React\Filesystem\EioFilesystem', [
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
             'ls',
             'getLoop',
         ], [
@@ -111,7 +111,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
     public function testLsFail()
     {
         $error = new \Exception('foor:bar');
-        $path = '/home/foo/bar';$filesystem = $this->getMock('React\Filesystem\EioFilesystem', [
+        $path = '/home/foo/bar';$filesystem = $this->getMock('React\Filesystem\EioAdapter', [
             'ls',
             'getLoop',
         ], [
@@ -153,7 +153,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
     public function testCreate()
     {
         $path = 'foo.bar';
-        $filesystem = $this->getMock('React\Filesystem\EioFilesystem', [
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
             'mkdir',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
@@ -194,7 +194,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
         $path = '/home/foo/bar';
         $loop = $this->getMock('React\EventLoop\StreamSelectLoop');
 
-        $filesystem = $this->getMock('React\Filesystem\EioFilesystem', [
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
             'ls',
         ], [
             $loop,
@@ -217,7 +217,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
     public function testSizeFail()
     {
         $error = new \Exception('foor:bar');
-        $path = '/home/foo/bar';$filesystem = $this->getMock('React\Filesystem\EioFilesystem', [
+        $path = '/home/foo/bar';$filesystem = $this->getMock('React\Filesystem\EioAdapter', [
             'ls',
             'getLoop',
         ], [

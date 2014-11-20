@@ -2,7 +2,7 @@
 
 namespace React\Tests\Filesystem;
 
-use React\Filesystem\EioFilesystem;
+use React\Filesystem\EioAdapter;
 
 class EioFilesystemTest extends \PHPUnit_Framework_TestCase
 {
@@ -16,14 +16,14 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
             'React\Filesystem\FilesystemInterface',
-            new EioFilesystem($this->getMock('React\EventLoop\LoopInterface'))
+            new EioAdapter($this->getMock('React\EventLoop\LoopInterface'))
         );
     }
 
     public function testGetLoop()
     {
         $loop = $this->getMock('React\EventLoop\LoopInterface');
-        $filesystem = new EioFilesystem($loop);
+        $filesystem = new EioAdapter($loop);
         $this->assertSame($loop, $filesystem->getLoop());
     }
 }

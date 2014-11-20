@@ -2,7 +2,7 @@
 
 namespace React\Filesystem\Node;
 
-use React\Filesystem\FilesystemInterface;
+use React\Filesystem\AdapterInterface;
 use React\Promise\Deferred;
 use React\Stream\BufferedSink;
 
@@ -14,7 +14,7 @@ class File implements FileInterface, GenericOperationInterface
     protected $open = false;
     protected $fileDescriptor;
 
-    public function __construct($filename, FilesystemInterface $filesystem)
+    public function __construct($filename, AdapterInterface $filesystem)
     {
         $this->filename = $filename;
         $this->filesystem = $filesystem;

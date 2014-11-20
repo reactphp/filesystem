@@ -3,7 +3,7 @@
 namespace React\Filesystem\Eio;
 
 use Evenement\EventEmitter;
-use React\Filesystem\EioFilesystem;
+use React\Filesystem\EioAdapter;
 use React\Stream\WritableStreamInterface;
 
 class WritableStream extends EventEmitter implements WritableStreamInterface
@@ -14,7 +14,7 @@ class WritableStream extends EventEmitter implements WritableStreamInterface
     protected $cursor = 0;
     protected $closed = false;
 
-    public function __construct($path, $fileDescriptor, EioFilesystem $filesystem)
+    public function __construct($path, $fileDescriptor, EioAdapter $filesystem)
     {
         $this->path = $path;
         $this->filesystem = $filesystem;
