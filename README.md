@@ -1,13 +1,31 @@
 ReactFilesystem
 ===============
 
-Filesystem WIP for [EIO](http://php.net/eio), keep in mind that this can be very unstable at times and is not stable by a long shot.
+Evented filesystem access utilizing [EIO](http://php.net/eio).
 
-## Examples ##
+[![Build Status](https://secure.travis-ci.org/reactphp/filesystem.png?branch=master)](http://travis-ci.org/reactphp/filesystem)
+
+Table of Contents
+-----------------
+
+1. [Introduction](#introduction)
+2. [Examples](#examples)
+   * [Reading files](#reading-files)
+   * [Writing files](#writing-files)
+3. [License](#license)
+
+Introduction
+--------
+
+Filesystem WIP for [EIO](http://php.net/eio), keep in mind that this can be very unstable at times and is not stable by a long shot!
+
+Examples
+--------
 
 `Adding examples here over time.`
 
-## Reading files ##
+Reading files
+-------------
 
 ```php
 $filesystem->getContents('test.txt')->then(function($contents) {
@@ -40,7 +58,8 @@ $filesystem->file('test.txt')->open('r')->then(function ($stream) use ($node) {
 });
 ```
 
-## Writing files ##
+Writing files
+-------------
 
 Open a file for writing (`w` flag) and write `abcde` to `test.txt` and close it. Create it (`c` flag) when it doesn't exists and truncate it (`t` flag) when it does.
 
@@ -53,3 +72,8 @@ $filesystem->file('test.txt')->open('cwt')->then(function ($stream) {
     $stream->end('e');
 });
 ```
+
+License
+-------
+
+React/Promise is released under the [MIT](https://github.com/reactphp/filesystem/blob/master/LICENSE) license.
