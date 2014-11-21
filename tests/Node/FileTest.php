@@ -3,6 +3,7 @@
 namespace React\Tests\Filesystem\Node;
 
 use React\Filesystem\Node\File;
+use React\Promise\Deferred;
 
 class FileTest extends \PHPUnit_Framework_TestCase
 {
@@ -78,13 +79,15 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     public function testSize()
     {
+        $size = 1337;
         $path = __FILE__;
         $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
             'stat',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
-        $promise = $this->getMock('React\Promise\PromiseInterface', ['then']);
+        $deferred = new Deferred();
+        $promise = $deferred->promise();
 
         $filesystem
             ->expects($this->once())
@@ -93,25 +96,33 @@ class FileTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($promise))
         ;
 
-        $promise
-            ->expects($this->once())
-            ->method('then')
-            ->with($this->isType('callable'))
-            ->will($this->returnValue($this->getMock('React\Promise\PromiseInterface')))
-        ;
+        $timePromise = (new File($path, $filesystem))->size();
+        $this->assertInstanceOf('React\Promise\PromiseInterface', $timePromise);
 
-        $this->assertInstanceOf('React\Promise\PromiseInterface', (new File($path, $filesystem))->size());
+        $callbackFired = false;
+        $timePromise->then(function ($resultSize) use ($size, &$callbackFired) {
+            $this->assertSame($size, $resultSize);
+            $callbackFired = true;
+        });
+        $deferred->resolve($size);
+        $this->assertTrue($callbackFired);
     }
 
     public function testTime()
     {
+        $times = [
+            'atime' => 1,
+            'ctime' => 2,
+            'mtime' => 3,
+        ];
         $path = __FILE__;
         $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
             'stat',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
-        $promise = $this->getMock('React\Promise\PromiseInterface', ['then']);
+        $deferred = new Deferred();
+        $promise = $deferred->promise();
 
         $filesystem
             ->expects($this->once())
@@ -120,14 +131,15 @@ class FileTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($promise))
         ;
 
-        $promise
-            ->expects($this->once())
-            ->method('then')
-            ->with($this->isType('callable'))
-            ->will($this->returnValue($this->getMock('React\Promise\PromiseInterface')))
-        ;
+        $timePromise = (new File($path, $filesystem))->time();
+        $this->assertInstanceOf('React\Promise\PromiseInterface', $timePromise);
 
-
-        $this->assertInstanceOf('React\Promise\PromiseInterface', (new File($path, $filesystem))->time());
+        $callbackFired = false;
+        $timePromise->then(function ($time) use ($times, &$callbackFired) {
+            $this->assertSame($times, $time);
+            $callbackFired = true;
+        });
+        $deferred->resolve($times);
+        $this->assertTrue($callbackFired);
     }
 }
