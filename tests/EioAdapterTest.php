@@ -15,7 +15,7 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
     public function testInterface()
     {
         $this->assertInstanceOf(
-            'React\Filesystem\FilesystemInterface',
+            'React\Filesystem\AdapterInterface',
             new EioAdapter($this->getMock('React\EventLoop\LoopInterface'))
         );
     }

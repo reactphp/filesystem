@@ -173,7 +173,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
     public function testRemove()
     {
         $path = 'foo.bar';
-        $filesystem = $this->getMock('React\Filesystem\EioFilesystem', [
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
             'rmdir',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
