@@ -1,5 +1,5 @@
-ReactFilesystem
-===============
+Filesystem
+==========
 
 Evented filesystem access utilizing [EIO](http://php.net/eio).
 
