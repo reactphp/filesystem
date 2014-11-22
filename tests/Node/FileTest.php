@@ -96,15 +96,17 @@ class FileTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($promise))
         ;
 
-        $timePromise = (new File($path, $filesystem))->size();
-        $this->assertInstanceOf('React\Promise\PromiseInterface', $timePromise);
+        $sizePromise = (new File($path, $filesystem))->size();
+        $this->assertInstanceOf('React\Promise\PromiseInterface', $sizePromise);
 
         $callbackFired = false;
-        $timePromise->then(function ($resultSize) use ($size, &$callbackFired) {
+        $sizePromise->then(function ($resultSize) use ($size, &$callbackFired) {
             $this->assertSame($size, $resultSize);
             $callbackFired = true;
         });
-        $deferred->resolve($size);
+        $deferred->resolve([
+            'size' => $size,
+        ]);
         $this->assertTrue($callbackFired);
     }
 
