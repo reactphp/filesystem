@@ -55,15 +55,11 @@ class File implements FileInterface, GenericOperationInterface
 
     public function create()
     {
-        $deferred = new Deferred();
-
-        $this->stat()->then(null, function () use ($deferred) {
-            $deferred->reject(new \Exception('File exists'));
+        return $this->stat()->then(null, function () {
+            return new \Exception('File exists');
         })->then(function () {
             return $this->filesystem->touch($this->filename);
         });
-
-        return $deferred->promise();
     }
 
     public function open($flags)
