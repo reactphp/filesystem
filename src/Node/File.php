@@ -4,6 +4,7 @@ namespace React\Filesystem\Node;
 
 use React\Filesystem\AdapterInterface;
 use React\Promise\Deferred;
+use React\Promise\RejectedPromise;
 use React\Stream\BufferedSink;
 
 class File implements FileInterface, GenericOperationInterface
@@ -55,9 +56,9 @@ class File implements FileInterface, GenericOperationInterface
 
     public function create()
     {
-        return $this->stat()->then(null, function () {
-            return new \Exception('File exists');
-        })->then(function () {
+        return $this->stat()->then(function () {
+            return new RejectedPromise(new \Exception('File exists'));
+        }, function () {
             return $this->filesystem->touch($this->filename);
         });
     }
