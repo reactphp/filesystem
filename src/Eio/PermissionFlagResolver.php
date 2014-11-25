@@ -7,7 +7,7 @@ use React\Filesystem\FlagResolverInterface;
 
 class PermissionFlagResolver extends FlagResolver implements FlagResolverInterface
 {
-    const DEFAULT_FLAG = 0;
+    const DEFAULT_FLAG = null;
 
     private $currentScope;
 
