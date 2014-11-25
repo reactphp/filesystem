@@ -4,6 +4,8 @@ namespace React\Tests\Filesystem\Node;
 
 use React\Filesystem\Node\File;
 use React\Promise\Deferred;
+use React\Promise\FulfilledPromise;
+use React\Promise\RejectedPromise;
 
 class FileTest extends \PHPUnit_Framework_TestCase
 {
@@ -142,6 +144,65 @@ class FileTest extends \PHPUnit_Framework_TestCase
             $callbackFired = true;
         });
         $deferred->resolve($times);
+        $this->assertTrue($callbackFired);
+    }
+
+    public function testCreate()
+    {
+        $path = __FILE__;
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+            'stat',
+            'touch',
+        ], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+
+        $filesystem
+            ->expects($this->once())
+            ->method('stat')
+            ->with($path)
+            ->will($this->returnValue(new RejectedPromise()))
+        ;
+
+        $filesystem
+            ->expects($this->once())
+            ->method('touch')
+            ->with($path)
+            ->will($this->returnValue(new FulfilledPromise()))
+        ;
+
+        $callbackFired = false;
+        (new File($path, $filesystem))->create()->then(function () use (&$callbackFired) {
+            $callbackFired = true;
+        });
+
+        $this->assertTrue($callbackFired);
+    }
+
+    public function testCreateFail()
+    {
+        $path = __FILE__;
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+            'stat',
+            'touch',
+        ], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+
+        $filesystem
+            ->expects($this->once())
+            ->method('stat')
+            ->with($path)
+            ->will($this->returnValue(new FulfilledPromise()))
+        ;
+
+        $callbackFired = false;
+        (new File($path, $filesystem))->create()->then(null, function ($e) use (&$callbackFired) {
+            $this->assertInstanceOf('Exception', $e);
+            $this->assertSame('File exists', $e->getMessage());
+            $callbackFired = true;
+        });
+
         $this->assertTrue($callbackFired);
     }
 }
