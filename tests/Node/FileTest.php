@@ -233,4 +233,39 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($callbackFired);
     }
+
+    public function testGetContents()
+    {
+        $path = 'foo.bar';
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+            'open',
+        ], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+
+        $stream = $this->getMock('React\Stream\ReadableStreamInterface');
+
+        $openPromise = $this->getMock('React\Promise\PromiseInterface', [
+            'then',
+        ]);
+
+        $openPromise
+            ->expects($this->once())
+            ->method('then')
+            ->with($this->isType('callable'))
+            ->will($this->returnCallback(function($resolveCb) use ($stream) {
+                return new FulfilledPromise($resolveCb($stream));
+            }))
+        ;
+
+        $filesystem
+            ->expects($this->once())
+            ->method('open')
+            ->with($path, 'r')
+            ->will($this->returnValue($openPromise))
+        ;
+
+        $getContentsPromise = (new File($path, $filesystem))->getContents();
+        $this->assertInstanceOf('React\Promise\PromiseInterface', $getContentsPromise);
+    }
 }
