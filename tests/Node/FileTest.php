@@ -82,7 +82,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
     public function testSize()
     {
         $size = 1337;
-        $path = __FILE__;
+        $path = 'foo.bar';
         $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
             'stat',
         ], [
@@ -119,7 +119,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
             'ctime' => 2,
             'mtime' => 3,
         ];
-        $path = __FILE__;
+        $path = 'foo.bar';
         $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
             'stat',
         ], [
@@ -149,7 +149,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     public function testCreate()
     {
-        $path = __FILE__;
+        $path = 'foo.bar';
         $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
             'stat',
             'touch',
@@ -181,7 +181,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     public function testCreateFail()
     {
-        $path = __FILE__;
+        $path = 'foo.bar';
         $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
             'stat',
             'touch',
@@ -208,7 +208,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     public function testOpen()
     {
-        $path = __FILE__;
+        $path = 'foo.bar';
         $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
             'open',
         ], [
