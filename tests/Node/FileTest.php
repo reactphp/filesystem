@@ -205,4 +205,32 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($callbackFired);
     }
+
+    public function testOpen()
+    {
+        $path = __FILE__;
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+            'open',
+        ], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+
+        $stream = new \stdClass();
+        $flags = 'abc';
+
+        $filesystem
+            ->expects($this->once())
+            ->method('open')
+            ->with($path, $flags)
+            ->will($this->returnValue(new FulfilledPromise($stream)))
+        ;
+
+        $callbackFired = false;
+        (new File($path, $filesystem))->open($flags)->then(function ($passStream) use (&$callbackFired, $stream) {
+            $this->assertSame($stream, $passStream);
+            $callbackFired = true;
+        });
+
+        $this->assertTrue($callbackFired);
+    }
 }
