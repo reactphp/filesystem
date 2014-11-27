@@ -8,6 +8,8 @@ use React\Stream\WritableStreamInterface;
 
 class WritableStream extends EventEmitter implements WritableStreamInterface
 {
+    use GenericStreamTrait;
+
     protected $path;
     protected $filesystem;
     protected $fileDescriptor;

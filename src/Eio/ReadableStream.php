@@ -10,6 +10,8 @@ use React\Stream\WritableStreamInterface;
 
 class ReadableStream extends EventEmitter implements ReadableStreamInterface
 {
+    use GenericStreamTrait;
+
     protected $path;
     protected $size;
     protected $filesystem;
