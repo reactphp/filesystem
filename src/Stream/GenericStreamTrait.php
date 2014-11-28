@@ -1,6 +1,6 @@
 <?php
 
-namespace React\Filesystem\Eio;
+namespace React\Filesystem\Stream;
 
 trait GenericStreamTrait
 {

@@ -4,9 +4,11 @@ namespace React\Filesystem\Eio;
 
 use Evenement\EventEmitter;
 use React\Filesystem\EioAdapter;
-use React\Stream\WritableStreamInterface;
+use React\Filesystem\Stream\GenericStreamInterface;
+use React\Filesystem\Stream\GenericStreamTrait;
+use React\Filesystem\Stream\WritableStreamInterface;
 
-class WritableStream extends EventEmitter implements WritableStreamInterface
+class WritableStream extends EventEmitter implements GenericStreamInterface, WritableStreamInterface
 {
     use GenericStreamTrait;
 

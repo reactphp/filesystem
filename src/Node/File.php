@@ -3,7 +3,7 @@
 namespace React\Filesystem\Node;
 
 use React\Filesystem\AdapterInterface;
-use React\Promise\Deferred;
+use React\Promise\FulfilledPromise;
 use React\Promise\RejectedPromise;
 use React\Stream\BufferedSink;
 
@@ -65,20 +65,27 @@ class File implements FileInterface, GenericOperationInterface
 
     public function open($flags)
     {
+        if ($this->open === true) {
+            return new RejectedPromise();
+        }
+
         return $this->filesystem->open($this->filename, $flags)->then(function ($stream) {
             $this->open = true;
+            $this->fileDescriptor = $stream->getFiledescriptor();
             return $stream;
         });
     }
 
     public function close()
     {
-        $deferred = new Deferred();
+        if ($this->open === false) {
+            return new RejectedPromise();
+        }
 
-        return $this->filesystem->close($this->fileDescriptor)->then(function () use ($deferred) {
+        return $this->filesystem->close($this->fileDescriptor)->then(function () {
             $this->open = false;
-
-            return $deferred->promise();
+            $this->fileDescriptor = null;
+            return new FulfilledPromise();
         });
     }
 

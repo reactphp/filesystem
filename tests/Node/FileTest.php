@@ -215,7 +215,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
-        $stream = new \stdClass();
+        $stream = $this->getMock('React\Filesystem\Stream\GenericStreamInterface', [], ['foo:bar']);
         $flags = 'abc';
 
         $filesystem
@@ -234,7 +234,8 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($callbackFired);
     }
 
-    public function testGetContents()
+
+    public function testOpenTwice()
     {
         $path = 'foo.bar';
         $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
@@ -243,7 +244,43 @@ class FileTest extends \PHPUnit_Framework_TestCase
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
-        $stream = $this->getMock('React\Stream\ReadableStreamInterface');
+        $stream = $this->getMock('React\Filesystem\Stream\GenericStreamInterface', [], ['foo:bar']);
+        $flags = 'abc';
+
+        $filesystem
+            ->expects($this->once())
+            ->method('open')
+            ->with($path, $flags)
+            ->will($this->returnValue(new FulfilledPromise($stream)))
+        ;
+
+        $file = new File($path, $filesystem);
+        $file->open($flags);
+        $this->assertInstanceOf('React\Promise\RejectedPromise', $file->open($flags));
+    }
+
+    public function testGetContents()
+    {
+        $path = 'foo.bar';
+        $fd = '0123456789abcdef';
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+            'open',
+        ], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+
+        $stream = $this->getMock('React\Filesystem\Stream\GenericStreamInterface', [
+            'getFiledescriptor',
+        ], [
+            'foo:bar',
+        ]);
+
+        $stream
+            ->expects($this->once())
+            ->method('getFiledescriptor')
+            ->with()
+            ->will($this->returnValue($fd))
+        ;
 
         $openPromise = $this->getMock('React\Promise\PromiseInterface', [
             'then',
@@ -267,5 +304,83 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
         $getContentsPromise = (new File($path, $filesystem))->getContents();
         $this->assertInstanceOf('React\Promise\PromiseInterface', $getContentsPromise);
+    }
+
+    public function testClose()
+    {
+        $path = 'foo.bar';
+        $fd = '0123456789abcdef';
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+            'close',
+            'open',
+        ], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+
+        $stream = $this->getMock('React\Filesystem\Stream\GenericStreamInterface', [
+            'getFiledescriptor',
+        ], [
+            'foo:bar',
+        ]);
+
+        $stream
+            ->expects($this->once())
+            ->method('getFiledescriptor')
+            ->with()
+            ->will($this->returnValue($fd))
+        ;
+
+        $openPromise = $this->getMock('React\Promise\PromiseInterface', [
+            'then',
+        ]);
+
+        $openPromise
+            ->expects($this->once())
+            ->method('then')
+            ->with($this->isType('callable'))
+            ->will($this->returnCallback(function($resolveCb) use ($stream) {
+                return new FulfilledPromise($resolveCb($stream));
+            }))
+        ;
+
+        $filesystem
+            ->expects($this->once())
+            ->method('open')
+            ->with($path, 'r')
+            ->will($this->returnValue($openPromise))
+        ;
+
+        $closePromise = $this->getMock('React\Promise\PromiseInterface', [
+            'then',
+        ]);
+
+        $closePromise
+            ->expects($this->once())
+            ->method('then')
+            ->with($this->isType('callable'))
+            ->will($this->returnCallback(function($resolveCb) use ($stream) {
+                return \React\Promise\resolve($resolveCb($stream));
+            }))
+        ;
+
+        $filesystem
+            ->expects($this->once())
+            ->method('close')
+            ->with($fd)
+            ->will($this->returnValue($closePromise))
+        ;
+
+        $file = new File($path, $filesystem);
+        $file->open('r');
+        $file->close();
+    }
+
+    public function testCloseNeverOpened()
+    {
+        $path = 'foo.bar';
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+        $this->assertInstanceOf('React\Promise\RejectedPromise', (new File($path, $filesystem))->close());
     }
 }

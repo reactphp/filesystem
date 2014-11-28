@@ -2,7 +2,10 @@
 
 namespace React\Filesystem\Eio;
 
-class Stream
+use React\Filesystem\Stream\GenericStreamInterface;
+use React\Filesystem\Stream\GenericStreamTrait;
+
+class Stream implements GenericStreamInterface
 {
     use GenericStreamTrait;
 }
