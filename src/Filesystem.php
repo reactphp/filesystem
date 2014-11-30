@@ -6,19 +6,15 @@ use React\Filesystem\Node;
 
 class Filesystem
 {
+    protected $filesystem;
 
     public static function create($loop)
     {
-        return new static($loop);
+        return new static(new EioAdapter($loop));
     }
 
-    public function __construct($loop, AdapterInterface $filesystem = null)
+    public function __construct(AdapterInterface $filesystem)
     {
-        $this->loop = $loop;
-
-        if ($filesystem === null) {
-            $filesystem = new EioAdapter($loop);
-        }
         $this->filesystem = $filesystem;
     }
 
