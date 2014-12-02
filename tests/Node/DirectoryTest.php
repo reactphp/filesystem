@@ -256,4 +256,84 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($callbackRan);
     }
 
+    public function testChmodRecursive()
+    {
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+
+        $recursiveInvoker = $this->getMock('React\Filesystem\RecursiveInvoker', [
+            'execute',
+        ], [
+            $this->getMock('React\Filesystem\Node\DirectoryInterface', [], [
+                'foo/bar/',
+                $filesystem,
+            ]),
+        ]);
+
+        $promise = $this->getMock('React\Promise\PromiseInterface');
+
+        $recursiveInvoker
+            ->expects($this->once())
+            ->method('execute')
+            ->with('chmod', [123])
+            ->will($this->returnValue($promise))
+        ;
+
+        $this->assertSame($promise, (new Directory('foo/bar/', $filesystem, $recursiveInvoker))->chmodRecursive(123));
+    }
+
+    public function testChownRecursive()
+    {
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+
+        $recursiveInvoker = $this->getMock('React\Filesystem\RecursiveInvoker', [
+            'execute',
+        ], [
+            $this->getMock('React\Filesystem\Node\DirectoryInterface', [], [
+                'foo/bar/',
+                $filesystem,
+            ]),
+        ]);
+
+        $promise = $this->getMock('React\Promise\PromiseInterface');
+
+        $recursiveInvoker
+            ->expects($this->once())
+            ->method('execute')
+            ->with('chown', [1, 2])
+            ->will($this->returnValue($promise))
+        ;
+
+        $this->assertSame($promise, (new Directory('foo/bar/', $filesystem, $recursiveInvoker))->chownRecursive(1, 2));
+    }
+
+    public function testRemoveRecursive()
+    {
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+
+        $recursiveInvoker = $this->getMock('React\Filesystem\RecursiveInvoker', [
+            'execute',
+        ], [
+            $this->getMock('React\Filesystem\Node\DirectoryInterface', [], [
+                'foo/bar/',
+                $filesystem,
+            ]),
+        ]);
+
+        $promise = $this->getMock('React\Promise\PromiseInterface');
+
+        $recursiveInvoker
+            ->expects($this->once())
+            ->method('execute')
+            ->with('remove', [])
+            ->will($this->returnValue($promise))
+        ;
+
+        $this->assertSame($promise, (new Directory('foo/bar/', $filesystem, $recursiveInvoker))->removeRecursive());
+    }
 }

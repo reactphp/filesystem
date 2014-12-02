@@ -3,6 +3,7 @@
 namespace React\Filesystem\Node;
 
 use React\Filesystem\AdapterInterface;
+use React\Filesystem\RecursiveInvoker;
 use React\Promise\Deferred;
 use React\Promise\FulfilledPromise;
 
@@ -28,10 +29,11 @@ class Directory implements DirectoryInterface, GenericOperationInterface
         return $this->recursiveInvoker;
     }
 
-    public function __construct($path, AdapterInterface $filesystem)
+    public function __construct($path, AdapterInterface $filesystem, RecursiveInvoker $recursiveInvoker = null)
     {
         $this->path = $path;
         $this->filesystem = $filesystem;
+        $this->recursiveInvoker = $recursiveInvoker;
     }
 
     protected function getPath()

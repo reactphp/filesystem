@@ -2,6 +2,7 @@
 
 namespace React\Filesystem;
 
+use React\Filesystem\Node\DirectoryInterface;
 use React\Promise\Deferred;
 
 class RecursiveInvoker
