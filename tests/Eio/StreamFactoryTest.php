@@ -32,4 +32,13 @@ class StreamFactoryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('React\Filesystem\Eio\WritableStream', StreamFactory::create('foo.bar', null, EIO_O_WRONLY, $filesystem));
     }
+
+    public function testCreateDuplex()
+    {
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+
+        $this->assertInstanceOf('React\Filesystem\Eio\DuplexStream', StreamFactory::create('foo.bar', null, EIO_O_RDWR, $filesystem));
+    }
 }

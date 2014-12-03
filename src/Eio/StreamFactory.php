@@ -16,6 +16,6 @@ class StreamFactory
             return new WritableStream($path, $fileDescriptor, $filesystem);
         }
 
-        return new Stream($path, $fileDescriptor, $filesystem);
+        return new DuplexStream($path, $fileDescriptor, $filesystem);
     }
 }
