@@ -21,12 +21,16 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
 
     public function testFile()
     {
-        $this->assertInstanceOf('React\Filesystem\Node\File', Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'))->file('foo.bar'));
+        $file = Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'))->file('foo.bar');
+        $this->assertInstanceOf('React\Filesystem\Node\File', $file);
+        $this->assertInstanceOf('React\Filesystem\Node\GenericOperationInterface', $file);
     }
 
     public function testDir()
     {
-        $this->assertInstanceOf('React\Filesystem\Node\Directory', Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'))->dir('foo.bar'));
+        $directory = Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'))->dir('foo.bar');
+        $this->assertInstanceOf('React\Filesystem\Node\Directory', $directory);
+        $this->assertInstanceOf('React\Filesystem\Node\GenericOperationInterface', $directory);
     }
 
     public function testGetContents()
