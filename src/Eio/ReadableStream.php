@@ -20,6 +20,7 @@ class ReadableStream extends EventEmitter implements GenericStreamInterface, Rea
     protected $fileDescriptor;
     protected $cursor;
     protected $chunkSize = 8192;
+    protected $pause = true;
 
     public function __construct($path, $fileDescriptor, EioAdapter $filesystem)
     {
@@ -32,6 +33,8 @@ class ReadableStream extends EventEmitter implements GenericStreamInterface, Rea
 
     public function resume()
     {
+        $this->pause = false;
+
         if ($this->size === null) {
             $this->filesystem->stat($this->path)->then(function($info) {
                 $this->size = $info['size'];
@@ -47,7 +50,7 @@ class ReadableStream extends EventEmitter implements GenericStreamInterface, Rea
 
     public function pause()
     {
-
+        $this->pause = true;
     }
 
     public function pipe(WritableStreamInterface $dest, array $options = [])
@@ -80,7 +83,7 @@ class ReadableStream extends EventEmitter implements GenericStreamInterface, Rea
                 $this,
             ]);
 
-            if ($this->cursor < $this->size) {
+            if (!$this->pause && $this->cursor < $this->size) {
                 $this->readChunk();
             } else {
                 $this->emit('end', [
