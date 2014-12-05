@@ -3,6 +3,7 @@
 namespace React\Filesystem\Node;
 
 use React\Filesystem\AdapterInterface;
+use React\Filesystem\Stream\GenericStreamInterface;
 use React\Promise\FulfilledPromise;
 use React\Promise\RejectedPromise;
 use React\Stream\BufferedSink;
@@ -69,7 +70,7 @@ class File implements FileInterface, GenericOperationInterface
             return new RejectedPromise();
         }
 
-        return $this->filesystem->open($this->filename, $flags)->then(function ($stream) {
+        return $this->filesystem->open($this->filename, $flags)->then(function (GenericStreamInterface $stream) {
             $this->open = true;
             $this->fileDescriptor = $stream->getFiledescriptor();
             return $stream;
