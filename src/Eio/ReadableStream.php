@@ -76,6 +76,10 @@ class ReadableStream extends EventEmitter implements GenericStreamInterface, Rea
 
     protected function readChunk()
     {
+        if ($this->pause) {
+            return;
+        }
+
         $this->filesystem->read($this->fileDescriptor, $this->chunkSize, $this->cursor)->then(function($data) {
             $this->cursor += $this->chunkSize; // If chunk size can be set make sure to copy it before running this operation so that used can't change it mid operation and cause funkyness
             $this->emit('data', [
@@ -83,7 +87,7 @@ class ReadableStream extends EventEmitter implements GenericStreamInterface, Rea
                 $this,
             ]);
 
-            if (!$this->pause && $this->cursor < $this->size) {
+            if ($this->cursor < $this->size) {
                 $this->readChunk();
             } else {
                 $this->emit('end', [
