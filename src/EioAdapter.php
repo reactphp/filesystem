@@ -130,7 +130,7 @@ class EioAdapter implements AdapterInterface
             $args[] = EIO_PRI_DEFAULT;
             $args[] = function ($data, $result, $req) use ($deferred, $errorResultCode, $function, $args) {
                 if ($result == $errorResultCode) {
-                    $deferred->reject(new Eio\Exception(eio_get_last_error($req)));
+                    $deferred->reject(new \Exception(eio_get_last_error($req)));
                     return;
                 }
 
@@ -138,7 +138,7 @@ class EioAdapter implements AdapterInterface
             };
 
             if (!@call_user_func_array($function, $args)) {
-                $deferred->reject(new Eio\Exception($function . ' unknown error: ' . var_export($args, true)));
+                $deferred->reject(new \Exception($function . ' unknown error: ' . var_export($args, true)));
             };
         });
 
