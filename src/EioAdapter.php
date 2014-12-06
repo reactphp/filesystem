@@ -25,41 +25,65 @@ class EioAdapter implements AdapterInterface
         $this->permissionFlagResolver = new Eio\PermissionFlagResolver();
     }
 
+    /**
+     * @return LoopInterface
+     */
     public function getLoop()
     {
         return $this->loop;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function stat($filename)
     {
         return $this->callEio('eio_stat', [$filename]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function unlink($filename)
     {
         return $this->callEio('eio_unlink', [$filename]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function rename($fromFilename, $toFilename)
     {
         return $this->callEio('eio_rename', [$fromFilename, $toFilename]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function chmod($path, $mode)
     {
         return $this->callEio('eio_chmod', [$path, $mode]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function chown($path, $uid, $gid)
     {
         return $this->callEio('eio_chown', [$path, $uid, $gid]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function ls($path, $flags = EIO_READDIR_DIRS_FIRST)
     {
         return $this->callEio('eio_readdir', [$path, $flags], false);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function mkdir($path, $mode = self::CREATION_MODE)
     {
         return $this->callEio('eio_mkdir', [
@@ -68,11 +92,17 @@ class EioAdapter implements AdapterInterface
         ]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function rmdir($path)
     {
         return $this->callEio('eio_rmdir', [$path]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function open($path, $flags, $mode = self::CREATION_MODE)
     {
         $flags = $this->openFlagResolver->resolve($flags);
@@ -85,11 +115,17 @@ class EioAdapter implements AdapterInterface
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function close($fd)
     {
         return $this->callEio('eio_close', [$fd]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function touch($path, $mode = self::CREATION_MODE)
     {
         return $this->callEio('eio_open', [
@@ -101,6 +137,9 @@ class EioAdapter implements AdapterInterface
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function read($fileDescriptor, $length, $offset)
     {
         return $this->callEio('eio_read', [
@@ -110,6 +149,9 @@ class EioAdapter implements AdapterInterface
         ]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function write($fileDescriptor, $data, $length, $offset)
     {
         return $this->callEio('eio_write', [
@@ -120,6 +162,12 @@ class EioAdapter implements AdapterInterface
         ]);
     }
 
+    /**
+     * @param string $function
+     * @param array $args
+     * @param int $errorResultCode
+     * @return \React\Promise\Promise
+     */
     protected function callEio($function, $args, $errorResultCode = -1)
     {
         $deferred = new Deferred();
