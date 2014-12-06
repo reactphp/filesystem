@@ -122,24 +122,25 @@ class EioAdapter implements AdapterInterface
 
     protected function callEio($function, $args, $errorResultCode = -1)
     {
-        $this->register();
         $deferred = new Deferred();
-        $args[] = EIO_PRI_DEFAULT;
-        $args[] = function ($data, $result, $req) use ($deferred, $errorResultCode, $function, $args) {
-            if ($result == $errorResultCode) {
-                $deferred->reject(new Eio\Exception(eio_get_last_error($req)));
-                return;
-            }
-
-            $deferred->resolve($result);
-        };
 
         // Run this in a future tick to make sure all EIO calls are run within the loop
-        //$this->loop->futureTick(function() use ($function, $args, $deferred) {
+        $this->loop->futureTick(function() use ($function, $args, $errorResultCode, $deferred) {
+            $this->register();
+            $args[] = EIO_PRI_DEFAULT;
+            $args[] = function ($data, $result, $req) use ($deferred, $errorResultCode, $function, $args) {
+                if ($result == $errorResultCode) {
+                    $deferred->reject(new Eio\Exception(eio_get_last_error($req)));
+                    return;
+                }
+
+                $deferred->resolve($result);
+            };
+
             if (!@call_user_func_array($function, $args)) {
                 $deferred->reject(new Eio\Exception($function . ' unknown error: ' . var_export($args, true)));
             };
-        //});
+        });
 
         return $deferred->promise();
     }
