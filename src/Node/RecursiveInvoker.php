@@ -1,8 +1,7 @@
 <?php
 
-namespace React\Filesystem;
+namespace React\Filesystem\Node;
 
-use React\Filesystem\Node\DirectoryInterface;
 use React\Promise\Deferred;
 
 class RecursiveInvoker

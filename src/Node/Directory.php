@@ -3,7 +3,6 @@
 namespace React\Filesystem\Node;
 
 use React\Filesystem\AdapterInterface;
-use React\Filesystem\RecursiveInvoker;
 use React\Promise\Deferred;
 use React\Promise\FulfilledPromise;
 

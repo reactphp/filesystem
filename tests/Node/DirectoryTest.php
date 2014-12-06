@@ -262,7 +262,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
-        $recursiveInvoker = $this->getMock('React\Filesystem\RecursiveInvoker', [
+        $recursiveInvoker = $this->getMock('React\Filesystem\Node\RecursiveInvoker', [
             'execute',
         ], [
             $this->getMock('React\Filesystem\Node\DirectoryInterface', [], [
@@ -289,7 +289,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
-        $recursiveInvoker = $this->getMock('React\Filesystem\RecursiveInvoker', [
+        $recursiveInvoker = $this->getMock('React\Filesystem\Node\RecursiveInvoker', [
             'execute',
         ], [
             $this->getMock('React\Filesystem\Node\DirectoryInterface', [], [
@@ -316,7 +316,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
-        $recursiveInvoker = $this->getMock('React\Filesystem\RecursiveInvoker', [
+        $recursiveInvoker = $this->getMock('React\Filesystem\Node\RecursiveInvoker', [
             'execute',
         ], [
             $this->getMock('React\Filesystem\Node\DirectoryInterface', [], [
