@@ -80,7 +80,7 @@ class EioAdapter implements AdapterInterface
             $path,
             $flags,
             $this->permissionFlagResolver->resolve($mode),
-        ])->then(function($fileDescriptor) use ($path, $flags) {
+        ])->then(function ($fileDescriptor) use ($path, $flags) {
             return Eio\StreamFactory::create($path, $fileDescriptor, $flags, $this);
         });
     }
@@ -125,7 +125,7 @@ class EioAdapter implements AdapterInterface
         $deferred = new Deferred();
 
         // Run this in a future tick to make sure all EIO calls are run within the loop
-        $this->loop->futureTick(function() use ($function, $args, $errorResultCode, $deferred) {
+        $this->loop->futureTick(function () use ($function, $args, $errorResultCode, $deferred) {
             $this->register();
             $args[] = EIO_PRI_DEFAULT;
             $args[] = function ($data, $result, $req) use ($deferred, $errorResultCode, $function, $args) {

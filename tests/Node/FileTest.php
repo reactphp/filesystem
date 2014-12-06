@@ -290,7 +290,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('then')
             ->with($this->isType('callable'))
-            ->will($this->returnCallback(function($resolveCb) use ($stream) {
+            ->will($this->returnCallback(function ($resolveCb) use ($stream) {
                 return new FulfilledPromise($resolveCb($stream));
             }))
         ;
@@ -338,7 +338,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('then')
             ->with($this->isType('callable'))
-            ->will($this->returnCallback(function($resolveCb) use ($stream) {
+            ->will($this->returnCallback(function ($resolveCb) use ($stream) {
                 return new FulfilledPromise($resolveCb($stream));
             }))
         ;
@@ -358,7 +358,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('then')
             ->with($this->isType('callable'))
-            ->will($this->returnCallback(function($resolveCb) use ($stream) {
+            ->will($this->returnCallback(function ($resolveCb) use ($stream) {
                 return \React\Promise\resolve($resolveCb($stream));
             }))
         ;

@@ -10,11 +10,19 @@ class RecursiveInvoker
 
     protected $node;
 
+    /**
+     * @param DirectoryInterface $node
+     */
     public function __construct(DirectoryInterface $node)
     {
         $this->node = $node;
     }
 
+    /**
+     * @param string $method
+     * @param array $args
+     * @return \React\Promise\Promise
+     */
     public function execute($method, $args)
     {
         $deferred = new Deferred();
@@ -28,6 +36,12 @@ class RecursiveInvoker
         return $deferred->promise();
     }
 
+    /**
+     * @param array $list
+     * @param Deferred $deferred
+     * @param string $method
+     * @param array $args
+     */
     protected function iterateNode($list, $deferred, $method, $args)
     {
         $promises = [];

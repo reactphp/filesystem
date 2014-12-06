@@ -4,7 +4,12 @@ namespace React\Filesystem;
 
 abstract class FlagResolver
 {
-
+    /**
+     * @param string $flagString
+     * @param null|int $flags
+     * @param null|array $mapping
+     * @return int
+     */
     public function resolve($flagString, $flags = null, $mapping = null)
     {
         if ($flags === null) {

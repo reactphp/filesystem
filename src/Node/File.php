@@ -16,22 +16,35 @@ class File implements FileInterface, GenericOperationInterface
     protected $open = false;
     protected $fileDescriptor;
 
+    /**
+     * @param string $filename
+     * @param AdapterInterface $filesystem
+     */
     public function __construct($filename, AdapterInterface $filesystem)
     {
         $this->filename = $filename;
         $this->filesystem = $filesystem;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getPath()
     {
         return $this->filename;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function exists()
     {
         return $this->stat();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function size()
     {
         return $this->filesystem->stat($this->filename)->then(function ($result) {
@@ -39,6 +52,9 @@ class File implements FileInterface, GenericOperationInterface
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function time()
     {
         return $this->filesystem->stat($this->filename)->then(function ($result) {
@@ -50,11 +66,17 @@ class File implements FileInterface, GenericOperationInterface
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function rename($toFilename)
     {
         return $this->filesystem->rename($this->filename, $toFilename);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function create()
     {
         return $this->stat()->then(function () {
@@ -64,6 +86,9 @@ class File implements FileInterface, GenericOperationInterface
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function open($flags)
     {
         if ($this->open === true) {
@@ -77,6 +102,9 @@ class File implements FileInterface, GenericOperationInterface
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function close()
     {
         if ($this->open === false) {
@@ -90,13 +118,19 @@ class File implements FileInterface, GenericOperationInterface
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getContents()
     {
-        return $this->open('r')->then(function($stream) {
+        return $this->open('r')->then(function ($stream) {
             return BufferedSink::createPromise($stream);
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function remove()
     {
         return $this->filesystem->unlink($this->filename);

@@ -19,6 +19,9 @@ class Directory implements DirectoryInterface, GenericOperationInterface
 
     protected $recursiveInvoker;
 
+    /**
+     * @return RecursiveInvoker
+     */
     protected function getRecursiveInvoker()
     {
         if ($this->recursiveInvoker instanceof RecursiveInvoker) {
@@ -29,6 +32,11 @@ class Directory implements DirectoryInterface, GenericOperationInterface
         return $this->recursiveInvoker;
     }
 
+    /**
+     * @param $path
+     * @param AdapterInterface $filesystem
+     * @param RecursiveInvoker $recursiveInvoker
+     */
     public function __construct($path, AdapterInterface $filesystem, RecursiveInvoker $recursiveInvoker = null)
     {
         $this->path = $path;
@@ -36,11 +44,17 @@ class Directory implements DirectoryInterface, GenericOperationInterface
         $this->recursiveInvoker = $recursiveInvoker;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function getPath()
     {
         return $this->path;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function ls()
     {
         $deferred = new Deferred();
@@ -56,6 +70,10 @@ class Directory implements DirectoryInterface, GenericOperationInterface
         return $deferred->promise();
     }
 
+    /**
+     * @param $result
+     * @return array
+     */
     protected function processLsContents($result)
     {
         $list = [];
@@ -70,13 +88,16 @@ class Directory implements DirectoryInterface, GenericOperationInterface
         return $list;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function size($recursive = false)
     {
         $deferred = new Deferred();
 
-        $this->ls()->then(function($result) use ($deferred, $recursive) {
+        $this->ls()->then(function ($result) use ($deferred, $recursive) {
             $this->filesystem->getLoop()->futureTick(function () use ($result, $deferred, $recursive) {
-                $this->processSizeContents($result, $recursive)->then(function($numbers) use ($deferred) {
+                $this->processSizeContents($result, $recursive)->then(function ($numbers) use ($deferred) {
                     $deferred->resolve($numbers);
                 });
             });
@@ -87,6 +108,11 @@ class Directory implements DirectoryInterface, GenericOperationInterface
         return $deferred->promise();
     }
 
+    /**
+     * @param $nodes
+     * @param $recursive
+     * @return \React\Promise\Promise
+     */
     protected function processSizeContents($nodes, $recursive)
     {
         $deferred = new Deferred();
@@ -102,7 +128,7 @@ class Directory implements DirectoryInterface, GenericOperationInterface
                 case $node instanceof Directory:
                     $numbers['directories']++;
                     if ($recursive) {
-                        $promises[] = $node->size()->then(function($size) use (&$numbers) {
+                        $promises[] = $node->size()->then(function ($size) use (&$numbers) {
                             $numbers['directories'] += $size['directories'];
                             $numbers['files'] += $size['files'];
                             $numbers['size'] += $size['size'];
@@ -112,7 +138,7 @@ class Directory implements DirectoryInterface, GenericOperationInterface
                     break;
                 case $node instanceof File:
                     $numbers['files']++;
-                    $promises[] = $node->size()->then(function($size) use (&$numbers) {
+                    $promises[] = $node->size()->then(function ($size) use (&$numbers) {
                         $numbers['size'] += $size;
                         return new FulfilledPromise();
                     });
@@ -120,23 +146,32 @@ class Directory implements DirectoryInterface, GenericOperationInterface
             }
         }
 
-        \React\Promise\all($promises)->then(function() use ($deferred, &$numbers) {
+        \React\Promise\all($promises)->then(function () use ($deferred, &$numbers) {
             $deferred->resolve($numbers);
         });
 
         return $deferred->promise();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function create()
     {
         return $this->filesystem->mkdir($this->path);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function remove()
     {
         return $this->filesystem->rmdir($this->path);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function createRecursive()
     {
         $deferred = new Deferred();
@@ -157,26 +192,41 @@ class Directory implements DirectoryInterface, GenericOperationInterface
         return $deferred->promise();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function chmodRecursive($mode)
     {
         return $this->getRecursiveInvoker()->execute('chmod', [$mode]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function chownRecursive($uid = -1, $gid = -1)
     {
         return $this->getRecursiveInvoker()->execute('chown', [$uid, $gid]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function removeRecursive()
     {
         return $this->getRecursiveInvoker()->execute('remove', []);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function sizeRecursive()
     {
         return $this->size(true);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function lsRecursive(\SplObjectStorage $list = null)
     {
         if ($list === null) {
@@ -187,6 +237,11 @@ class Directory implements DirectoryInterface, GenericOperationInterface
         });
     }
 
+    /**
+     * @param $nodes
+     * @param $list
+     * @return \React\Promise\Promise
+     */
     protected function processLsRecursiveContents($nodes, $list)
     {
         $promises = [];

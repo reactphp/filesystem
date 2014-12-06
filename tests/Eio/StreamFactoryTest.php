@@ -21,7 +21,10 @@ class StreamFactoryTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($this->getMock('React\Promise\PromiseInterface')))
         ;
 
-        $this->assertInstanceOf('React\Filesystem\Eio\ReadableStream', StreamFactory::create('foo.bar', null, EIO_O_RDONLY, $filesystem));
+        $this->assertInstanceOf(
+            'React\Filesystem\Eio\ReadableStream',
+            StreamFactory::create('foo.bar', null, EIO_O_RDONLY, $filesystem)
+        );
     }
 
     public function testCreateWrite()
@@ -30,7 +33,10 @@ class StreamFactoryTest extends \PHPUnit_Framework_TestCase
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
-        $this->assertInstanceOf('React\Filesystem\Eio\WritableStream', StreamFactory::create('foo.bar', null, EIO_O_WRONLY, $filesystem));
+        $this->assertInstanceOf(
+            'React\Filesystem\Eio\WritableStream',
+            StreamFactory::create('foo.bar', null, EIO_O_WRONLY, $filesystem)
+        );
     }
 
     public function testCreateDuplex()
@@ -39,6 +45,9 @@ class StreamFactoryTest extends \PHPUnit_Framework_TestCase
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
-        $this->assertInstanceOf('React\Filesystem\Eio\DuplexStream', StreamFactory::create('foo.bar', null, EIO_O_RDWR, $filesystem));
+        $this->assertInstanceOf(
+            'React\Filesystem\Eio\DuplexStream',
+            StreamFactory::create('foo.bar', null, EIO_O_RDWR, $filesystem)
+        );
     }
 }

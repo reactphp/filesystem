@@ -36,7 +36,7 @@ class ReadableStream extends EventEmitter implements GenericStreamInterface, Rea
         $this->pause = false;
 
         if ($this->size === null) {
-            $this->filesystem->stat($this->path)->then(function($info) {
+            $this->filesystem->stat($this->path)->then(function ($info) {
                 $this->size = $info['size'];
                 $this->cursor = 0;
 
@@ -62,7 +62,7 @@ class ReadableStream extends EventEmitter implements GenericStreamInterface, Rea
 
     public function close()
     {
-        $this->filesystem->close($this->fileDescriptor)->then(function() {
+        $this->filesystem->close($this->fileDescriptor)->then(function () {
             $this->emit('close', [
                 $this,
             ]);
@@ -80,8 +80,10 @@ class ReadableStream extends EventEmitter implements GenericStreamInterface, Rea
             return;
         }
 
-        $this->filesystem->read($this->fileDescriptor, $this->chunkSize, $this->cursor)->then(function($data) {
-            $this->cursor += $this->chunkSize; // If chunk size can be set make sure to copy it before running this operation so that used can't change it mid operation and cause funkyness
+        $this->filesystem->read($this->fileDescriptor, $this->chunkSize, $this->cursor)->then(function ($data) {
+            // If chunk size can be set make sure to copy it before running this operation so
+            // that used can't change it mid operation and cause funkyness.
+            $this->cursor += $this->chunkSize;
             $this->emit('data', [
                 $data,
                 $this,

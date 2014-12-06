@@ -8,7 +8,10 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
 {
     public function testCreate()
     {
-        $this->assertInstanceOf('React\Filesystem\Filesystem', Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop')));
+        $this->assertInstanceOf(
+            'React\Filesystem\Filesystem',
+            Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'))
+        );
     }
 
     /**
@@ -35,6 +38,9 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
 
     public function testGetContents()
     {
-        $this->assertInstanceOf('React\Promise\PromiseInterface', Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'))->getContents('foo.bar'));
+        $this->assertInstanceOf(
+            'React\Promise\PromiseInterface',
+            Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'))->getContents('foo.bar')
+        );
     }
 }

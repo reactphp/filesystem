@@ -56,7 +56,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('futureTick')
             ->with($this->isType('callable'))
-            ->will($this->returnCallback(function($callback) use ($dents) {
+            ->will($this->returnCallback(function ($callback) use ($dents) {
                 $callback($dents);
             }))
         ;
@@ -90,7 +90,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('then')
             ->with($this->isType('callable'), $this->isType('callable'))
-            ->will($this->returnCallback(function($resolveCb) use ($dents) {
+            ->will($this->returnCallback(function ($resolveCb) use ($dents) {
                 $resolveCb($dents);
             }))
         ;
@@ -99,7 +99,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
         $resultPromise = $directory->ls();
         $this->assertInstanceOf('React\Promise\PromiseInterface', $resultPromise);
         $callbackRan = false;
-        $resultPromise->then(function($list) use (&$callbackRan) {
+        $resultPromise->then(function ($list) use (&$callbackRan) {
             $this->assertInternalType('array', $list);
             $this->assertInstanceOf('React\Filesystem\Node\Directory', $list['bar']);
             $this->assertInstanceOf('React\Filesystem\Node\File', $list['foo']);
@@ -133,7 +133,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('then')
             ->with($this->isType('callable'), $this->isType('callable'))
-            ->will($this->returnCallback(function($resolveCb, $rejectCb) use ($error) {
+            ->will($this->returnCallback(function ($resolveCb, $rejectCb) use ($error) {
                 $rejectCb($error);
             }))
         ;
@@ -142,7 +142,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
         $resultPromise = $directory->ls();
         $this->assertInstanceOf('React\Promise\PromiseInterface', $resultPromise);
         $callbackRan = false;
-        $resultPromise->then(null, function($passedError) use (&$callbackRan, $error) {
+        $resultPromise->then(null, function ($passedError) use (&$callbackRan, $error) {
             $this->assertInstanceOf('Exception', $passedError);
             $this->assertSame($error, $passedError);
             $callbackRan = true;
@@ -239,7 +239,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('then')
             ->with($this->isType('callable'), $this->isType('callable'))
-            ->will($this->returnCallback(function($resolveCb, $rejectCb) use ($error) {
+            ->will($this->returnCallback(function ($resolveCb, $rejectCb) use ($error) {
                 $rejectCb($error);
             }))
         ;
@@ -248,7 +248,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
         $resultPromise = $directory->size();
         $this->assertInstanceOf('React\Promise\PromiseInterface', $resultPromise);
         $callbackRan = false;
-        $resultPromise->then(null, function($passedError) use (&$callbackRan, $error) {
+        $resultPromise->then(null, function ($passedError) use (&$callbackRan, $error) {
             $this->assertInstanceOf('Exception', $passedError);
             $this->assertSame($error, $passedError);
             $callbackRan = true;

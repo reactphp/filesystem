@@ -18,6 +18,11 @@ class WritableStream extends EventEmitter implements GenericStreamInterface, Wri
     protected $cursor = 0;
     protected $closed = false;
 
+    /**
+     * @param string $path
+     * @param resource $fileDescriptor
+     * @param EioAdapter $filesystem
+     */
     public function __construct($path, $fileDescriptor, EioAdapter $filesystem)
     {
         $this->path = $path;
@@ -25,6 +30,9 @@ class WritableStream extends EventEmitter implements GenericStreamInterface, Wri
         $this->fileDescriptor = $fileDescriptor;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function write($data)
     {
         $length = strlen($data);
@@ -34,6 +42,9 @@ class WritableStream extends EventEmitter implements GenericStreamInterface, Wri
         return $this->filesystem->write($this->fileDescriptor, $data, $length, $offset);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function end($data = null)
     {
         if (null !== $data) {
@@ -43,6 +54,9 @@ class WritableStream extends EventEmitter implements GenericStreamInterface, Wri
         $this->close();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function close()
     {
         if ($this->closed) {
@@ -58,6 +72,9 @@ class WritableStream extends EventEmitter implements GenericStreamInterface, Wri
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function isWritable()
     {
         return !$this->closed;

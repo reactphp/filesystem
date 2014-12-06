@@ -24,5 +24,4 @@ class OpenFlagResolverTest extends AbstractFlagResolverTest
     {
         $this->assertSame(OpenFlagResolver::DEFAULT_FLAG, $this->resolver->defaultFlags());
     }
-
 }

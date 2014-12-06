@@ -21,11 +21,17 @@ class OpenFlagResolver extends FlagResolver implements FlagResolverInterface
         'w' => EIO_O_WRONLY,
     ];
 
+    /**
+     * {@inheritDoc}
+     */
     public function defaultFlags()
     {
         return static::DEFAULT_FLAG;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function flagMapping()
     {
         return $this->flagMapping;

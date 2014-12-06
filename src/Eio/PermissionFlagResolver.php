@@ -29,16 +29,25 @@ class PermissionFlagResolver extends FlagResolver implements FlagResolverInterfa
         ],
     ];
 
+    /**
+     * {@inheritDoc}
+     */
     public function defaultFlags()
     {
         return static::DEFAULT_FLAG;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function flagMapping()
     {
         return $this->flagMapping[$this->currentScope];
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function resolve($flag, $flags = null, $mapping = null)
     {
         $resultFlags = 0;
