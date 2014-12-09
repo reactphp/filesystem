@@ -20,7 +20,7 @@ class WritableStreamTest extends \PHPUnit_Framework_TestCase
         $filesystem
             ->expects($this->once())
             ->method('write')
-            ->with($fd)
+            ->with($fd, 'abc', 3, 0)
             ->will($this->returnValue($fd))
         ;
 
