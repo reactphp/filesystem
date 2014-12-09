@@ -1,6 +1,6 @@
 <?php
 
-namespace React\Tests\Filesystem\Stream;
+namespace React\Tests\Filesystem\Eio;
 
 use React\Filesystem\Eio\WritableStream;
 use React\Promise\RejectedPromise;
