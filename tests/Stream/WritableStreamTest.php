@@ -18,13 +18,30 @@ class WritableStreamTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $filesystem
-            ->expects($this->once())
+            ->expects($this->at(0))
             ->method('write')
             ->with($fd, 'abc', 3, 0)
             ->will($this->returnValue($fd))
         ;
 
-        (new WritableStream($path, $fd, $filesystem))->write('abc');
+        $filesystem
+            ->expects($this->at(1))
+            ->method('write')
+            ->with($fd, 'def', 3, 3)
+            ->will($this->returnValue($fd))
+        ;
+
+        $filesystem
+            ->expects($this->at(2))
+            ->method('write')
+            ->with($fd, 'ghijklmnopqrstuvwxyz', 20, 6)
+            ->will($this->returnValue($fd))
+        ;
+
+        $stream = (new WritableStream($path, $fd, $filesystem));
+        $stream->write('abc');
+        $stream->write('def');
+        $stream->write('ghijklmnopqrstuvwxyz');
     }
 
     public function testIsWritable()
