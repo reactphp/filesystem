@@ -61,4 +61,65 @@ class WritableStreamTest extends \PHPUnit_Framework_TestCase
         $stream->close();
         $this->assertTrue(!$stream->isWritable());
     }
+
+    public function testEnd()
+    {
+        $data = 'iahbfeq';
+        $stream = $this->getMock('React\Filesystem\Eio\WritableStream', [
+            'write',
+            'close',
+        ], [
+            'foo.bar',
+            '0123456789abcdef',
+            $this->getMock('React\Filesystem\EioAdapter', [
+                'close',
+            ], [
+                $this->getMock('React\EventLoop\StreamSelectLoop'),
+            ]),
+        ]);
+
+        $stream
+            ->expects($this->once())
+            ->method('write')
+            ->with($data)
+        ;
+
+        $stream
+            ->expects($this->once())
+            ->method('close')
+            ->with()
+        ;
+
+        $stream->end($data);
+    }
+
+    public function testEndNoWrite()
+    {
+        $stream = $this->getMock('React\Filesystem\Eio\WritableStream', [
+            'write',
+            'close',
+        ], [
+            'foo.bar',
+            '0123456789abcdef',
+            $this->getMock('React\Filesystem\EioAdapter', [
+                'close',
+            ], [
+                $this->getMock('React\EventLoop\StreamSelectLoop'),
+            ]),
+        ]);
+
+        $stream
+            ->expects($this->never())
+            ->method('write')
+            ->with()
+        ;
+
+        $stream
+            ->expects($this->once())
+            ->method('close')
+            ->with()
+        ;
+
+        $stream->end();
+    }
 }
