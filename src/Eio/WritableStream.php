@@ -64,10 +64,10 @@ class WritableStream extends EventEmitter implements GenericStreamInterface, Wri
         }
 
         $this->closed = true;
-        $this->emit('end', array($this));
+        $this->emit('end', [$this]);
 
         $this->filesystem->close($this->fileDescriptor)->then(function () {
-            $this->emit('close', array($this));
+            $this->emit('close', [$this]);
             $this->removeAllListeners();
         });
     }
