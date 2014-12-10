@@ -75,7 +75,7 @@ class ReadableStreamTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($promise))
         ;
 
-        $stream = $this->getMock('React\Filesystem\Eio\ReadableStream', [
+        $this->getMock('React\Filesystem\Eio\ReadableStream', [
             'readChunk',
         ], [
             $path,
