@@ -83,4 +83,53 @@ class ReadableStreamTest extends \PHPUnit_Framework_TestCase
             $filesystem,
         ]);
     }
+
+    public function testClose()
+    {
+        $path = 'foo.bar';
+        $fd = '0123456789abcdef';
+
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+            'close',
+        ], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+
+
+        $promise = $this->getMock('React\Promise\PromiseInterface', [
+            'then',
+        ]);
+
+        $promise
+            ->expects($this->once())
+            ->method('then')
+            ->with($this->isType('callable'))
+            ->will($this->returnCallback(function ($resolveCb) {
+                $resolveCb();
+            }))
+        ;
+
+        $filesystem
+            ->expects($this->once())
+            ->method('close')
+            ->with($fd)
+            ->will($this->returnValue($promise))
+        ;
+
+        $stream = $this->getMock('React\Filesystem\Eio\ReadableStream', [
+            'emit',
+        ], [
+            $path,
+            $fd,
+            $filesystem,
+        ]);
+
+        $stream
+            ->expects($this->once())
+            ->method('emit')
+            ->with('close', [$stream])
+        ;
+
+        $stream->close();
+    }
 }
