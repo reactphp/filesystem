@@ -21,6 +21,7 @@ class ReadableStream extends EventEmitter implements GenericStreamInterface, Rea
     protected $cursor;
     protected $chunkSize = 8192;
     protected $pause = true;
+    protected $closed = false;
 
     public function __construct($path, $fileDescriptor, EioAdapter $filesystem)
     {
@@ -62,6 +63,7 @@ class ReadableStream extends EventEmitter implements GenericStreamInterface, Rea
 
     public function close()
     {
+        $this->closed = true;
         $this->filesystem->close($this->fileDescriptor)->then(function () {
             $this->emit('close', [
                 $this,
@@ -71,7 +73,7 @@ class ReadableStream extends EventEmitter implements GenericStreamInterface, Rea
 
     public function isReadable()
     {
-
+        return !$this->closed;
     }
 
     protected function readChunk()
