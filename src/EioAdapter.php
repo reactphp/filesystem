@@ -208,6 +208,7 @@ class EioAdapter implements AdapterInterface
         if (!$this->active) {
             return;
         }
+
         $this->active = false;
         $this->loop->removeReadStream($this->fd, [$this, 'handleEvent']);
     }
