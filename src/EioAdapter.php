@@ -174,23 +174,28 @@ class EioAdapter implements AdapterInterface
 
         // Run this in a future tick to make sure all EIO calls are run within the loop
         $this->loop->futureTick(function () use ($function, $args, $errorResultCode, $deferred) {
-            $this->register();
-            $args[] = EIO_PRI_DEFAULT;
-            $args[] = function ($data, $result, $req) use ($deferred, $errorResultCode, $function, $args) {
-                if ($result == $errorResultCode) {
-                    $deferred->reject(new \UnexpectedValueException(eio_get_last_error($req)));
-                    return;
-                }
-
-                $deferred->resolve($result);
-            };
-
-            if (!@call_user_func_array($function, $args)) {
-                $deferred->reject(new \RuntimeException($function . ' unknown error: ' . var_export($args, true)));
-            };
+            $this->executeDelayedCall($function, $args, $errorResultCode, $deferred);
         });
 
         return $deferred->promise();
+    }
+
+    protected function executeDelayedCall($function, $args, $errorResultCode, $deferred)
+    {
+        $this->register();
+        $args[] = EIO_PRI_DEFAULT;
+        $args[] = function ($data, $result, $req) use ($deferred, $errorResultCode, $function, $args) {
+            if ($result == $errorResultCode) {
+                $deferred->reject(new \UnexpectedValueException(eio_get_last_error($req)));
+                return;
+            }
+
+            $deferred->resolve($result);
+        };
+
+        if (!@call_user_func_array($function, $args)) {
+            $deferred->reject(new \RuntimeException($function . ' unknown error: ' . var_export($args, true)));
+        };
     }
 
     protected function register()
