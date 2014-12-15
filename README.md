@@ -76,4 +76,4 @@ $filesystem->file('test.txt')->open('cwt')->then(function ($stream) {
 License
 -------
 
-React/Promise is released under the [MIT](https://github.com/reactphp/filesystem/blob/master/LICENSE) license.
+React/Filesystem is released under the [MIT](https://github.com/reactphp/filesystem/blob/master/LICENSE) license.
