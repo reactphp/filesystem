@@ -2,6 +2,8 @@
 
 namespace React\Tests\Filesystem\Stream;
 
+use React\Filesystem\Eio\ReadableStream;
+
 class ReadableStreamTest extends \PHPUnit_Framework_TestCase
 {
     public function testConstruct()
@@ -130,6 +132,8 @@ class ReadableStreamTest extends \PHPUnit_Framework_TestCase
             ->with('close', [$stream])
         ;
 
+        $this->assertTrue($stream->isReadable());
         $stream->close();
+        $this->assertTrue(!$stream->isReadable());
     }
 }
