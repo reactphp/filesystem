@@ -10,7 +10,7 @@ class ReadableStreamTest extends \PHPUnit_Framework_TestCase
     public function testConstruct()
     {
         $path = 'foo.bar';
-        $fd = '0123456789abcdef';
+        $fileDescriptor = '0123456789abcdef';
 
         $promise = $this->getMock('React\Promise\PromiseInterface', [
             'then',
@@ -42,7 +42,7 @@ class ReadableStreamTest extends \PHPUnit_Framework_TestCase
             'readChunk',
         ], [
             $path,
-            $fd,
+            $fileDescriptor,
             $filesystem,
         ]);
     }
@@ -50,7 +50,7 @@ class ReadableStreamTest extends \PHPUnit_Framework_TestCase
     public function testResume()
     {
         $path = 'foo.bar';
-        $fd = '0123456789abcdef';
+        $fileDescriptor = '0123456789abcdef';
 
         $promise = $this->getMock('React\Promise\PromiseInterface', [
             'then',
@@ -82,7 +82,7 @@ class ReadableStreamTest extends \PHPUnit_Framework_TestCase
             'readChunk',
         ], [
             $path,
-            $fd,
+            $fileDescriptor,
             $filesystem,
         ]);
     }
@@ -90,7 +90,7 @@ class ReadableStreamTest extends \PHPUnit_Framework_TestCase
     public function testClose()
     {
         $path = 'foo.bar';
-        $fd = '0123456789abcdef';
+        $fileDescriptor = '0123456789abcdef';
 
         $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
             'close',
@@ -115,7 +115,7 @@ class ReadableStreamTest extends \PHPUnit_Framework_TestCase
         $filesystem
             ->expects($this->once())
             ->method('close')
-            ->with($fd)
+            ->with($fileDescriptor)
             ->will($this->returnValue($promise))
         ;
 
@@ -123,7 +123,7 @@ class ReadableStreamTest extends \PHPUnit_Framework_TestCase
             'emit',
         ], [
             $path,
-            $fd,
+            $fileDescriptor,
             $filesystem,
         ]);
 
@@ -141,7 +141,7 @@ class ReadableStreamTest extends \PHPUnit_Framework_TestCase
     public function testPipe()
     {
         $path = 'foo.bar';
-        $fd = '0123456789abcdef';
+        $fileDescriptor = '0123456789abcdef';
 
         $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
             'read',
@@ -149,8 +149,8 @@ class ReadableStreamTest extends \PHPUnit_Framework_TestCase
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
-        $stream = new ReadableStream($path, $fd, $filesystem);
-        $destination = new WritableStream($path, $fd, $filesystem);
+        $stream = new ReadableStream($path, $fileDescriptor, $filesystem);
+        $destination = new WritableStream($path, $fileDescriptor, $filesystem);
 
         $this->assertSame($destination, $stream->pipe($destination));
     }
