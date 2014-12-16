@@ -3,6 +3,7 @@
 namespace React\Tests\Filesystem\Stream;
 
 use React\Filesystem\Eio\ReadableStream;
+use React\Filesystem\Eio\WritableStream;
 
 class ReadableStreamTest extends \PHPUnit_Framework_TestCase
 {
@@ -135,5 +136,23 @@ class ReadableStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($stream->isReadable());
         $stream->close();
         $this->assertTrue(!$stream->isReadable());
+    }
+
+    public function testPipe()
+    {
+        $path = 'foo.bar';
+        $fd = '0123456789abcdef';
+
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+            'read',
+        ], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+
+        $stream = new ReadableStream($path, $fd, $filesystem);
+        $destination = new WritableStream($path, $fd, $filesystem);
+
+        $this->assertSame($destination, $stream->pipe($destination));
+
     }
 }
