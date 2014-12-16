@@ -153,6 +153,5 @@ class ReadableStreamTest extends \PHPUnit_Framework_TestCase
         $destination = new WritableStream($path, $fd, $filesystem);
 
         $this->assertSame($destination, $stream->pipe($destination));
-
     }
 }
