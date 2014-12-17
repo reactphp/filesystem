@@ -162,6 +162,5 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
         ;
 
         $this->assertSame($promise, call_user_func_array([$filesystem, $externalMethod], $externalCallArgs));
-
     }
 }
