@@ -138,6 +138,46 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
                     $pathName,
                 ],
             ],
+            [
+                'close',
+                'eio_close',
+                [
+                    $pathName,
+                ],
+                [
+                    $pathName,
+                ],
+            ],
+            [
+                'read',
+                'eio_read',
+                [
+                    $pathName,
+                    123,
+                    456,
+                ],
+                [
+                    $pathName,
+                    123,
+                    456,
+                ],
+            ],
+            [
+                'write',
+                'eio_write',
+                [
+                    $pathName,
+                    'abc',
+                    3,
+                    456,
+                ],
+                [
+                    $pathName,
+                    'abc',
+                    3,
+                    456,
+                ],
+            ],
         ];
     }
 
