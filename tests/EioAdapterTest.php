@@ -203,4 +203,37 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($promise, call_user_func_array([$filesystem, $externalMethod], $externalCallArgs));
     }
+
+    public function testCallEio()
+    {
+        $filename = 'foo.bar';
+        $loop = $this->getMock('React\EventLoop\StreamSelectLoop', [
+            'futureTick',
+        ]);
+
+        $loop
+            ->expects($this->once())
+            ->method('futureTick')
+            ->with($this->isType('callable'))
+            ->will($this->returnCallback(function ($resolveCb) {
+                $resolveCb();
+            }))
+        ;
+
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+            'executeDelayedCall',
+        ], [
+            $loop,
+        ]);
+
+        $filesystem
+            ->expects($this->once())
+            ->method('executeDelayedCall')
+            ->with('eio_stat', [
+                $filename,
+            ], -1, $this->isInstanceOf('React\Promise\Deferred'))
+        ;
+
+        $this->assertInstanceOf('React\Promise\PromiseInterface', $filesystem->stat($filename));
+    }
 }
