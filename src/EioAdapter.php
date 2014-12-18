@@ -223,6 +223,7 @@ class EioAdapter implements AdapterInterface
         if (!eio_npending()) {
             return;
         }
+
         while (eio_npending()) {
             eio_poll();
         }
