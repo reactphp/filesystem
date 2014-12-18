@@ -236,4 +236,40 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('React\Promise\PromiseInterface', $filesystem->stat($filename));
     }
+
+    public function testHandleEvent()
+    {
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+            'unregister',
+        ], [
+            $this->getMock('React\EventLoop\LoopInterface'),
+        ]);
+
+        $filesystem
+            ->expects($this->once())
+            ->method('unregister')
+            ->with()
+        ;
+
+        eio_stat(__FILE__, EIO_PRI_DEFAULT, function () {});
+
+        $filesystem->handleEvent();
+    }
+
+    public function testHandleEventNothingToDo()
+    {
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+            'unregister',
+        ], [
+            $this->getMock('React\EventLoop\LoopInterface'),
+        ]);
+
+        $filesystem
+            ->expects($this->never())
+            ->method('unregister')
+            ->with()
+        ;
+
+        $filesystem->handleEvent();
+    }
 }
