@@ -3,7 +3,7 @@ Filesystem
 
 Evented filesystem access utilizing [EIO](http://php.net/eio).
 
-[![Build Status](https://secure.travis-ci.org/reactphp/filesystem.png?branch=master)](http://travis-ci.org/reactphp/filesystem)
+[![Build Status](https://secure.travis-ci.org/reactphp/filesystem.png?branch=master)](http://travis-ci.org/reactphp/filesystem) [![Code Climate](https://codeclimate.com/github/reactphp/filesystem/badges/gpa.svg)](https://codeclimate.com/github/reactphp/filesystem)
 
 Table of Contents
 -----------------
