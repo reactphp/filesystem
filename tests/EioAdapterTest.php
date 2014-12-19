@@ -4,6 +4,7 @@ namespace React\Tests\Filesystem;
 
 use React\Filesystem\Eio\PermissionFlagResolver;
 use React\Filesystem\EioAdapter;
+use React\Promise\FulfilledPromise;
 
 class EioFilesystemTest extends \PHPUnit_Framework_TestCase
 {
@@ -271,5 +272,51 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
         ;
 
         $filesystem->handleEvent();
+    }
+
+    public function testTouch()
+    {
+        $filename = 'foo.bar';
+        $fd = '01010100100010011110101';
+
+        $promise = $this->getMock('React\Promise\PromiseInterface', [
+            'then',
+        ]);
+
+        $promise
+            ->expects($this->once())
+            ->method('then')
+            ->with($this->isType('callable'))
+            ->will($this->returnCallback(function ($resolveCb) use ($fd) {
+                return $resolveCb($fd);
+            }))
+        ;
+
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+            'callEio',
+            'close',
+        ], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+
+        $filesystem
+            ->expects($this->at(0))
+            ->method('callEio')
+            ->with('eio_open', [
+                $filename,
+                EIO_O_CREAT,
+                (new PermissionFlagResolver())->resolve(EioAdapter::CREATION_MODE),
+            ])
+            ->will($this->returnValue($promise))
+        ;
+
+        $filesystem
+            ->expects($this->at(1))
+            ->method('close')
+            ->with($fd)
+            ->will($this->returnValue(new FulfilledPromise()))
+        ;
+
+        $this->assertInstanceOf('React\Promise\PromiseInterface', $filesystem->touch($filename));
     }
 }
