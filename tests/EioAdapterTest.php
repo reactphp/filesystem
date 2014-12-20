@@ -319,4 +319,42 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('React\Promise\PromiseInterface', $filesystem->touch($filename));
     }
+
+    public function testOpen()
+    {
+        $filename = 'foo.bar';
+        $fd = '01010100100010011110101';
+
+        $promise = $this->getMock('React\Promise\PromiseInterface', [
+            'then',
+        ]);
+
+        $promise
+            ->expects($this->once())
+            ->method('then')
+            ->with($this->isType('callable'))
+            ->will($this->returnCallback(function ($resolveCb) use ($fd) {
+                return $resolveCb($fd);
+            }))
+        ;
+
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+            'callEio',
+        ], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+
+        $filesystem
+            ->expects($this->at(0))
+            ->method('callEio')
+            ->with('eio_open', [
+                $filename,
+                2,
+                (new PermissionFlagResolver())->resolve(EioAdapter::CREATION_MODE),
+            ])
+            ->will($this->returnValue($promise))
+        ;
+
+        $this->assertInstanceOf('React\Filesystem\Eio\DuplexStream', $filesystem->open($filename, '+'));
+    }
 }
