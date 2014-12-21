@@ -357,4 +357,139 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('React\Filesystem\Eio\DuplexStream', $filesystem->open($filename, '+'));
     }
+
+    public function testExecuteDelayedCall()
+    {
+        $loop = $this->getMock('React\EventLoop\StreamSelectLoop', [
+            'futureTick',
+            'addReadStream',
+        ]);
+
+        $filesystem = new EioAdapter($loop);
+
+        $loop
+            ->expects($this->exactly(2))
+            ->method('futureTick')
+            ->with($this->isType('callable'))
+            ->will($this->returnCallback(function ($resolveCb) {
+                $resolveCb();
+            }))
+        ;
+
+        $loop
+            ->expects($this->once())
+            ->method('addReadStream')
+            ->with($this->isType('resource'), [
+                $filesystem,
+                'handleEvent',
+            ])
+        ;
+
+        $calledFunction = false;
+        $calledCallback = false;
+        $filesystem->callEio(function ($priority, $callback) use (&$calledFunction) {
+            $this->assertSame(EIO_PRI_DEFAULT, $priority);
+            $callback('', 0, 0);
+            $calledFunction = true;
+            return true;
+        }, [])->then(function () use (&$calledCallback) {
+            $calledCallback = true;
+        });
+        $filesystem->callEio(function () {
+            return true;
+        }, []);
+
+        $this->assertTrue($calledFunction);
+        $this->assertTrue($calledCallback);
+    }
+
+    public function testExecuteDelayedCallFailed()
+    {
+        $loop = $this->getMock('React\EventLoop\StreamSelectLoop', [
+            'futureTick',
+            'addReadStream',
+        ]);
+
+        $filesystem = new EioAdapter($loop);
+
+        $loop
+            ->expects($this->once())
+            ->method('futureTick')
+            ->with($this->isType('callable'))
+            ->will($this->returnCallback(function ($resolveCb) {
+                $resolveCb();
+            }))
+        ;
+
+        $loop
+            ->expects($this->once())
+            ->method('addReadStream')
+            ->with($this->isType('resource'), [
+                $filesystem,
+                'handleEvent',
+            ])
+        ;
+
+        $calledFunction = false;
+        $calledCallback = false;
+        $filesystem->callEio(function ($priority, $callback) use (&$calledFunction) {
+            $this->assertSame(EIO_PRI_DEFAULT, $priority);
+            $callback('', -1, 0);
+            $calledFunction = true;
+            return true;
+        }, [])->then(null, function ($e) use (&$calledCallback) {
+            $this->assertInstanceOf('UnexpectedValueException', $e);
+            $calledCallback = true;
+        });
+
+        $this->assertTrue($calledFunction);
+        $this->assertTrue($calledCallback);
+
+        $filesystem->handleEvent(); // Cleanup
+    }
+
+    public function testExecuteDelayedCallFailedResult()
+    {
+        $loop = $this->getMock('React\EventLoop\StreamSelectLoop', [
+            'futureTick',
+            'addReadStream',
+        ]);
+
+        $filesystem = new EioAdapter($loop);
+
+        $loop
+            ->expects($this->once())
+            ->method('futureTick')
+            ->with($this->isType('callable'))
+            ->will($this->returnCallback(function ($resolveCb) {
+                $resolveCb();
+            }))
+        ;
+
+        $loop
+            ->expects($this->once())
+            ->method('addReadStream')
+            ->with($this->isType('resource'), [
+                $filesystem,
+                'handleEvent',
+            ])
+        ;
+
+        $calledFunction = false;
+        $calledCallback = false;
+        $filesystem->callEio(function ($priority, $callback) use (&$calledFunction) {
+            $this->assertSame(EIO_PRI_DEFAULT, $priority);
+            $callback('', -1, 0);
+            $calledFunction = true;
+            return false;
+        }, [])->then(null, function ($e) use (&$calledCallback) {
+            $this->assertInstanceOf('UnexpectedValueException', $e);
+            $calledCallback = true;
+        });
+
+        $this->assertTrue($calledFunction);
+        $this->assertTrue($calledCallback);
+
+        $filesystem->handleEvent(); // Cleanup
+    }
 }

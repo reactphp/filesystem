@@ -168,7 +168,7 @@ class EioAdapter implements AdapterInterface
      * @param int $errorResultCode
      * @return \React\Promise\Promise
      */
-    protected function callEio($function, $args, $errorResultCode = -1)
+    public function callEio($function, $args, $errorResultCode = -1)
     {
         $deferred = new Deferred();
 
@@ -194,7 +194,11 @@ class EioAdapter implements AdapterInterface
         };
 
         if (!@call_user_func_array($function, $args)) {
-            $deferred->reject(new \RuntimeException($function . ' unknown error: ' . var_export($args, true)));
+            $name = $function;
+            if (!is_string($function)) {
+                $name = get_class($function);
+            }
+            $deferred->reject(new \RuntimeException('Unknown error calling "' . $name . '"'));
         };
     }
 
