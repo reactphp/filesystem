@@ -444,8 +444,6 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($calledFunction);
         $this->assertTrue($calledCallback);
-
-        $filesystem->handleEvent(); // Cleanup
     }
 
     public function testExecuteDelayedCallFailedResult()
@@ -489,7 +487,5 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($calledFunction);
         $this->assertTrue($calledCallback);
-
-        $filesystem->handleEvent(); // Cleanup
     }
 }
