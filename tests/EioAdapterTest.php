@@ -488,4 +488,96 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($calledFunction);
         $this->assertTrue($calledCallback);
     }
+
+    public function testUnregister()
+    {
+        $loop = $this->getMock('React\EventLoop\StreamSelectLoop', [
+            'futureTick',
+            'removeReadStream',
+        ]);
+
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+            'workingPendingCount',
+        ], [
+            $loop,
+        ]);
+
+        $filesystem
+            ->expects($this->at(0))
+            ->method('workingPendingCount')
+            ->with()
+            ->will($this->returnValue(1))
+        ;
+
+        $filesystem
+            ->expects($this->at(1))
+            ->method('workingPendingCount')
+            ->with()
+            ->will($this->returnValue(0))
+        ;
+
+        $loop
+            ->expects($this->once())
+            ->method('futureTick')
+            ->with($this->isType('callable'))
+            ->will($this->returnCallback(function ($resolveCb) {
+                $resolveCb();
+            }))
+        ;
+
+        $loop
+            ->expects($this->once())
+            ->method('removeReadStream')
+            ->with($this->isType('resource'), [
+            $filesystem,
+            'handleEvent',
+            ])
+            ->will($this->returnValue(1))
+        ;
+
+        $filesystem->callEio(function () {
+            return true;
+        }, []);
+
+        $filesystem->handleEvent();
+    }
+
+    public function testUnregisterInactive()
+    {
+        $loop = $this->getMock('React\EventLoop\StreamSelectLoop', [
+            'removeReadStream',
+        ]);
+
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+            'workingPendingCount',
+        ], [
+            $loop,
+        ]);
+
+        $filesystem
+            ->expects($this->at(0))
+            ->method('workingPendingCount')
+            ->with()
+            ->will($this->returnValue(1))
+        ;
+
+        $filesystem
+            ->expects($this->at(1))
+            ->method('workingPendingCount')
+            ->with()
+            ->will($this->returnValue(0))
+        ;
+
+        $loop
+            ->expects($this->never())
+            ->method('removeReadStream')
+            ->with($this->isType('resource'), [
+                $filesystem,
+                'handleData',
+            ])
+            ->will($this->returnValue(1))
+        ;
+
+        $filesystem->handleEvent();
+    }
 }
