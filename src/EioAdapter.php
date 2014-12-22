@@ -224,7 +224,7 @@ class EioAdapter implements AdapterInterface
 
     public function handleEvent()
     {
-        if (!eio_npending()) {
+        if ($this->workingPendingCount() == 0) {
             return;
         }
 
@@ -232,8 +232,13 @@ class EioAdapter implements AdapterInterface
             eio_poll();
         }
 
-        if (eio_nreqs() == 0 && eio_npending() == 0 && eio_nready() == 0) {
+        if ($this->workingPendingCount() == 0) {
             $this->unregister();
         }
+    }
+
+    public function workingPendingCount()
+    {
+        return eio_nreqs() + eio_npending() + eio_nready();
     }
 }
