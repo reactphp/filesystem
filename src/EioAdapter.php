@@ -224,7 +224,7 @@ class EioAdapter implements AdapterInterface
 
     public function handleEvent()
     {
-        if ($this->workingPendingCount() == 0) {
+        if ($this->workPendingCount() == 0) {
             return;
         }
 
@@ -232,12 +232,12 @@ class EioAdapter implements AdapterInterface
             eio_poll();
         }
 
-        if ($this->workingPendingCount() == 0) {
+        if ($this->workPendingCount() == 0) {
             $this->unregister();
         }
     }
 
-    public function workingPendingCount()
+    public function workPendingCount()
     {
         return eio_nreqs() + eio_npending() + eio_nready();
     }
