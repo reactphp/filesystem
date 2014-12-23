@@ -241,6 +241,7 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
     public function testHandleEvent()
     {
         $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+            'workingPendingCount',
             'unregister',
         ], [
             $this->getMock('React\EventLoop\LoopInterface'),
@@ -252,7 +253,19 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
             ->with()
         ;
 
-        eio_stat(__FILE__, EIO_PRI_DEFAULT, function () {});
+        $filesystem
+            ->expects($this->at(0))
+            ->method('workingPendingCount')
+            ->with()
+            ->will($this->returnValue(1))
+        ;
+
+        $filesystem
+            ->expects($this->at(1))
+            ->method('workingPendingCount')
+            ->with()
+            ->will($this->returnValue(0))
+        ;
 
         $filesystem->handleEvent();
     }
@@ -260,10 +273,18 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
     public function testHandleEventNothingToDo()
     {
         $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+            'workingPendingCount',
             'unregister',
         ], [
             $this->getMock('React\EventLoop\LoopInterface'),
         ]);
+
+        $filesystem
+            ->expects($this->at(0))
+            ->method('workingPendingCount')
+            ->with()
+            ->will($this->returnValue(0))
+        ;
 
         $filesystem
             ->expects($this->never())
