@@ -154,4 +154,75 @@ class ReadableStreamTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($destination, $stream->pipe($destination));
     }
+
+    public function testReadChunk()
+    {
+        $path = 'foo.bar';
+        $fileDescriptor = '0123456789abcdef';
+
+        $statPromise = $this->getMock('React\Promise\PromiseInterface', [
+            'then',
+        ]);
+
+        $statPromise
+            ->expects($this->once())
+            ->method('then')
+            ->with($this->isType('callable'))
+            ->will($this->returnCallback(function ($resolveCb) {
+                $resolveCb([
+                    'size' => 16384,
+                ]);
+            }))
+        ;
+
+        $readPromise = $this->getMock('React\Promise\PromiseInterface', [
+            'then',
+        ]);
+
+        $readPromise
+            ->expects($this->exactly(2))
+            ->method('then')
+            ->with($this->isType('callable'))
+            ->will($this->returnCallback(function ($resolveCb) {
+                $resolveCb('foo.bar' . (string)microtime(true));
+            }))
+        ;
+
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+            'stat',
+            'read',
+        ], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+
+        $filesystem
+            ->expects($this->at(0))
+            ->method('stat')
+            ->with($path)
+            ->will($this->returnValue($statPromise))
+        ;
+
+        $filesystem
+            ->expects($this->at(1))
+            ->method('read')
+            ->with($fileDescriptor, 8192, 0)
+            ->will($this->returnValue($readPromise))
+        ;
+
+        $filesystem
+            ->expects($this->at(2))
+            ->method('read')
+            ->with($fileDescriptor, 8192, 8192)
+            ->will($this->returnValue($readPromise))
+        ;
+
+        $this->getMock('React\Filesystem\Eio\ReadableStream', [
+            'isReadable',
+            'emit',
+        ], [
+            $path,
+            $fileDescriptor,
+            $filesystem,
+        ]);
+    }
 }
