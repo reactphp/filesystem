@@ -39,7 +39,11 @@ class File implements FileInterface, GenericOperationInterface
      */
     public function exists()
     {
-        return $this->stat();
+        return $this->stat()->then(function () {
+            return new FulfilledPromise();
+        }, function () {
+            return new RejectedPromise();
+        });
     }
 
     /**
