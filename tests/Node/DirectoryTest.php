@@ -7,6 +7,13 @@ use React\Filesystem\Node\File;
 
 class DirectoryTest extends \PHPUnit_Framework_TestCase
 {
+    public function testGetPath()
+    {
+        $path = 'foo.bar';
+        $this->assertSame($path, (new Directory($path, $this->getMock('React\Filesystem\EioAdapter', [], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ])))->getPath());
+    }
 
     public function testLs()
     {

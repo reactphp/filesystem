@@ -46,7 +46,7 @@ class Directory implements DirectoryInterface, GenericOperationInterface
     /**
      * {@inheritDoc}
      */
-    protected function getPath()
+    public function getPath()
     {
         return $this->path;
     }
