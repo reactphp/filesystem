@@ -4,10 +4,20 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 
 $loop = \React\EventLoop\Factory::create();
 
-\React\Filesystem\Filesystem::create($loop)->dir(dirname(__DIR__) . '/src')->sizeRecursive()->then(function ($size) {
-    echo 'Directory "' . dirname(__DIR__) . '" contains ' . $size['directories'] . ' directories, ' . $size['files'] . ' files and is ' . $size['size'] . ' bytes in size', PHP_EOL;
-}, function ($e) {
-    die($e->getMessage() . PHP_EOL);
-});
+$filesystem = \React\Filesystem\Filesystem::create($loop);
+foreach ([
+    'examples',
+    'src',
+    'tests',
+    'vendor',
+] as $directory) {
+    $path = dirname(__DIR__) . '/' . $directory;
+    $filesystem->dir($path)->sizeRecursive()->then(function ($size) use ($path) {
+        echo 'Directory "' . $path . '" contains ' . $size['directories'] . ' directories, ' . $size['files'] . ' files and is ' . $size['size'] . ' bytes in size', PHP_EOL;
+    }, function ($e) {
+        die($e->getMessage() . PHP_EOL . var_export($e->getArgs(), true) . PHP_EOL);
+    });
+
+}
 
 $loop->run();
