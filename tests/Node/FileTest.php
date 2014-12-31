@@ -398,4 +398,24 @@ class FileTest extends \PHPUnit_Framework_TestCase
         ]);
         $this->assertInstanceOf('React\Promise\RejectedPromise', (new File($path, $filesystem))->close());
     }
+
+    public function testTouch()
+    {
+        $path = 'foo.bar';
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+            'touch',
+        ], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+
+        $filesystem
+            ->expects($this->once())
+            ->method('touch')
+            ->with($path)
+            ->will($this->returnValue($this->getMock('React\Promise\PromiseInterface')))
+        ;
+
+        $this->assertInstanceOf('React\Promise\PromiseInterface', (new File($path, $filesystem))->touch());
+    }
+
 }
