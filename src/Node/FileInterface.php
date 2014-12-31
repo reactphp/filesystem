@@ -39,4 +39,14 @@ interface FileInterface
      * @return \React\Promise\PromiseInterface
      */
     public function size();
+
+    /**
+     * @return \React\Promise\PromiseInterface
+     */
+    public function create();
+
+    /**
+     * @return \React\Promise\PromiseInterface
+     */
+    public function touch();
 }

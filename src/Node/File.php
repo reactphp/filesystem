@@ -90,6 +90,15 @@ class File implements FileInterface, GenericOperationInterface
         });
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    public function touch()
+    {
+        return $this->filesystem->touch($this->filename);
+    }
+
     /**
      * {@inheritDoc}
      */
