@@ -26,17 +26,40 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
             $loop,
         ]);
 
-        $lsPromise = $this->getMock('React\Promise\PromiseInterface');
+        $lsPromise = $this->getMock('React\Promise\PromiseInterface', [
+            'then',
+        ]);
 
+        $lsPromise
+            ->expects($this->once())
+            ->method('then')
+            ->with($this->isType('callable'))
+            ->will($this->returnCallback(function ($callback) {
+                return $callback('foo.bar');
+            }))
+        ;
 
         $filesystem
             ->expects($this->once())
             ->method('ls')
-            ->with($path)
+            ->with()
             ->will($this->returnValue($lsPromise))
         ;
 
-        $directory = new Directory($path, $filesystem);
+        $directory = $this->getMock('React\Filesystem\Node\Directory', [
+            'processLsContents',
+        ], [
+            $path,
+            $filesystem,
+        ]);
+
+        $directory
+            ->expects($this->once())
+            ->method('processLsContents')
+            ->with('foo.bar')
+            ->will($this->returnValue($this->getMock('React\Promise\PromiseInterface')))
+        ;
+
         $this->assertInstanceOf('React\Promise\PromiseInterface', $directory->ls());
     }
 
@@ -55,22 +78,10 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
             ],
         ];
         $path = '/home/foo/bar';
-        $loop = $this->getMock('React\EventLoop\StreamSelectLoop', [
-            'futureTick',
-        ]);
-
-        $loop
-            ->expects($this->once())
-            ->method('futureTick')
-            ->with($this->isType('callable'))
-            ->will($this->returnCallback(function ($callback) use ($dents) {
-                $callback($dents);
-            }))
-        ;
+        $loop = $this->getMock('React\EventLoop\StreamSelectLoop');
 
         $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
             'ls',
-            'getLoop',
         ], [
             $loop,
         ]);
@@ -86,75 +97,20 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($lsPromise))
         ;
 
-        $filesystem
-            ->expects($this->once())
-            ->method('getLoop')
-            ->with()
-            ->will($this->returnValue($loop))
-        ;
-
         $lsPromise
             ->expects($this->once())
             ->method('then')
-            ->with($this->isType('callable'), $this->isType('callable'))
+            ->with($this->isType('callable'))
             ->will($this->returnCallback(function ($resolveCb) use ($dents) {
-                $resolveCb($dents);
+                return $resolveCb($dents);
             }))
         ;
 
         $directory = new Directory($path, $filesystem);
-        $resultPromise = $directory->ls();
-        $this->assertInstanceOf('React\Promise\PromiseInterface', $resultPromise);
-        $callbackRan = false;
-        $resultPromise->then(function ($list) use (&$callbackRan) {
-            $this->assertInternalType('array', $list);
-            $this->assertInstanceOf('React\Filesystem\Node\Directory', $list['bar']);
-            $this->assertInstanceOf('React\Filesystem\Node\File', $list['foo']);
-            $callbackRan = true;
-        });
-        $this->assertTrue($callbackRan);
-    }
-
-    public function testLsFail()
-    {
-        $error = new \Exception('foor:bar');
-        $path = '/home/foo/bar';$filesystem = $this->getMock('React\Filesystem\EioAdapter', [
-            'ls',
-            'getLoop',
-        ], [
-            $this->getMock('React\EventLoop\StreamSelectLoop'),
-        ]);
-
-        $lsPromise = $this->getMock('React\Promise\PromiseInterface', [
-            'then',
-        ]);
-
-        $filesystem
-            ->expects($this->once())
-            ->method('ls')
-            ->with($path)
-            ->will($this->returnValue($lsPromise))
-        ;
-
-        $lsPromise
-            ->expects($this->once())
-            ->method('then')
-            ->with($this->isType('callable'), $this->isType('callable'))
-            ->will($this->returnCallback(function ($resolveCb, $rejectCb) use ($error) {
-                $rejectCb($error);
-            }))
-        ;
-
-        $directory = new Directory($path, $filesystem);
-        $resultPromise = $directory->ls();
-        $this->assertInstanceOf('React\Promise\PromiseInterface', $resultPromise);
-        $callbackRan = false;
-        $resultPromise->then(null, function ($passedError) use (&$callbackRan, $error) {
-            $this->assertInstanceOf('Exception', $passedError);
-            $this->assertSame($error, $passedError);
-            $callbackRan = true;
-        });
-        $this->assertTrue($callbackRan);
+        $list = $directory->ls();
+        $this->assertInternalType('array', $list);
+        $this->assertInstanceOf('React\Filesystem\Node\Directory', $list['bar']);
+        $this->assertInstanceOf('React\Filesystem\Node\File', $list['foo']);
     }
 
     public function testCreate()
@@ -201,66 +157,46 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
         $path = '/home/foo/bar';
         $loop = $this->getMock('React\EventLoop\StreamSelectLoop');
 
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
-            'ls',
-        ], [
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
             $loop,
-        ]);
-
-        $lsPromise = $this->getMock('React\Promise\PromiseInterface');
-
-
-        $filesystem
-            ->expects($this->once())
-            ->method('ls')
-            ->with($path)
-            ->will($this->returnValue($lsPromise))
-        ;
-
-        $directory = new Directory($path, $filesystem);
-        $this->assertInstanceOf('React\Promise\PromiseInterface', $directory->size());
-    }
-
-    public function testSizeFail()
-    {
-        $error = new \Exception('foor:bar');
-        $path = '/home/foo/bar';$filesystem = $this->getMock('React\Filesystem\EioAdapter', [
-            'ls',
-            'getLoop',
-        ], [
-            $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
         $lsPromise = $this->getMock('React\Promise\PromiseInterface', [
             'then',
         ]);
 
-        $filesystem
-            ->expects($this->once())
-            ->method('ls')
-            ->with($path)
-            ->will($this->returnValue($lsPromise))
-        ;
-
         $lsPromise
             ->expects($this->once())
             ->method('then')
-            ->with($this->isType('callable'), $this->isType('callable'))
-            ->will($this->returnCallback(function ($resolveCb, $rejectCb) use ($error) {
-                $rejectCb($error);
+            ->with($this->isType('callable'))
+            ->will($this->returnCallback(function ($callback) {
+                return $callback('foo.bar');
             }))
         ;
 
-        $directory = new Directory($path, $filesystem);
-        $resultPromise = $directory->size();
-        $this->assertInstanceOf('React\Promise\PromiseInterface', $resultPromise);
-        $callbackRan = false;
-        $resultPromise->then(null, function ($passedError) use (&$callbackRan, $error) {
-            $this->assertInstanceOf('Exception', $passedError);
-            $this->assertSame($error, $passedError);
-            $callbackRan = true;
-        });
-        $this->assertTrue($callbackRan);
+        $directory = $this->getMock('React\Filesystem\Node\Directory', [
+            'ls',
+            'processSizeContents',
+        ], [
+            $path,
+            $filesystem,
+        ]);
+
+        $directory
+            ->expects($this->once())
+            ->method('ls')
+            ->with()
+            ->will($this->returnValue($lsPromise))
+        ;
+
+        $directory
+            ->expects($this->once())
+            ->method('processSizeContents')
+            ->with('foo.bar', $this->isType('boolean'))
+            ->will($this->returnValue($this->getMock('React\Promise\PromiseInterface')))
+        ;
+
+        $this->assertInstanceOf('React\Promise\PromiseInterface', $directory->size());
     }
 
     public function testChmodRecursive()
