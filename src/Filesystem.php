@@ -11,7 +11,7 @@ class Filesystem
 
     /**
      * @param LoopInterface $loop
-     * @return AdapterInterface
+     * @return Filesystem
      */
     public static function create(LoopInterface $loop)
     {
