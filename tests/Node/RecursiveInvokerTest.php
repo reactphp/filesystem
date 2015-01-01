@@ -10,36 +10,17 @@ class RecursiveInvokerTest extends \PHPUnit_Framework_TestCase
 
     public function testExecute()
     {
-        $loop = $this->getMock('React\EventLoop\LoopInterface', [], [
-            'futureTick',
-        ]);
-
         $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
-            $loop,
+            $this->getMock('React\EventLoop\LoopInterface'),
         ]);
-        $filesystem
-            ->expects($this->once())
-            ->method('getLoop')
-            ->with()
-            ->will($this->returnValue($loop))
-        ;
 
         $node = $this->getMock('React\Filesystem\Node\Directory', [
             'ls',
-            'getFilesystem',
             'chmod',
         ], [
             'foo.bar',
             $filesystem,
         ]);
-
-        $node
-            ->expects($this->once())
-            ->method('getFilesystem')
-            ->with()
-            ->will($this->returnValue($filesystem))
-        ;
-
 
         $promise = $this->getMock('React\Promise\PromiseInterface');
 
@@ -49,7 +30,6 @@ class RecursiveInvokerTest extends \PHPUnit_Framework_TestCase
             ->with()
             ->will($this->returnValue($promise))
         ;
-
 
         $fileDent = $this->getMock('React\Filesystem\Node\File', [
             'chmod',
@@ -92,21 +72,13 @@ class RecursiveInvokerTest extends \PHPUnit_Framework_TestCase
             $fileDent,
             $directoryDent,
         ];
-        $loop
-            ->expects($this->once())
-            ->method('futureTick')
-            ->with($this->isType('callable'))
-            ->will($this->returnCallback(function ($resolveCb) use ($dents) {
-                return new FulfilledPromise($resolveCb($dents));
-            }))
-        ;
 
         $promise
             ->expects($this->once())
             ->method('then')
             ->with($this->isType('callable'))
             ->will($this->returnCallback(function ($resolveCb) use ($dents) {
-                return new FulfilledPromise($resolveCb($dents));
+                return $resolveCb($dents);
             }))
         ;
 
