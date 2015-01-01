@@ -2,11 +2,11 @@
 
 namespace React\Filesystem\Node;
 
-use React\Promise\Deferred;
-
 class RecursiveInvoker
 {
-
+    /**
+     * @var DirectoryInterface
+     */
     protected $node;
 
     /**
@@ -24,24 +24,18 @@ class RecursiveInvoker
      */
     public function execute($method, $args)
     {
-        $deferred = new Deferred();
-
-        $this->node->ls()->then(function ($list) use ($deferred, $method, $args) {
-            $this->node->getFilesystem()->getLoop()->futureTick(function () use ($list, $deferred, $method, $args) {
-                $this->iterateNode($list, $deferred, $method, $args);
-            });
+        return $this->node->ls()->then(function ($list) use ($method, $args) {
+            return $this->iterateNode($list, $method, $args);
         });
-
-        return $deferred->promise();
     }
 
     /**
-     * @param array $list
-     * @param Deferred $deferred
-     * @param string $method
-     * @param array $args
+     * @param $list
+     * @param $method
+     * @param $args
+     * @return \React\Promise\PromiseInterface
      */
-    protected function iterateNode($list, $deferred, $method, $args)
+    protected function iterateNode($list, $method, $args)
     {
         $promises = [];
 
@@ -53,10 +47,8 @@ class RecursiveInvoker
             }
         }
 
-        \React\Promise\all($promises)->then(function () use ($deferred, $method, $args) {
-            call_user_func_array([$this->node, $method], $args)->then(function () use ($deferred) {
-                $deferred->resolve();
-            });
+        return \React\Promise\all($promises)->then(function () use ($method, $args) {
+            return call_user_func_array([$this->node, $method], $args);
         });
     }
 }
