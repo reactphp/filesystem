@@ -228,7 +228,7 @@ class Directory implements DirectoryInterface, GenericOperationInterface
             }
         }
 
-        \React\Promise\all($promises)->then(function () use ($list) {
+        return \React\Promise\all($promises)->then(function () use ($list) {
             return $list;
         });
     }
