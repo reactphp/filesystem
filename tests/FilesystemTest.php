@@ -17,9 +17,9 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException PHPUnit_Framework_Error
      */
-    public function testConstruct()
+    public function testFactory()
     {
-        $this->assertInstanceOf('React\Filesystem\Filesystem', new Filesystem());
+        $this->assertInstanceOf('React\Filesystem\Filesystem', Filesystem::create());
     }
 
     public function testFile()
