@@ -4,7 +4,6 @@ namespace React\Filesystem\Stream;
 
 trait GenericStreamTrait
 {
-
     /**
      * {@inheritDoc}
      */
