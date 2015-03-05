@@ -38,7 +38,7 @@ class EioAdapter implements AdapterInterface
      */
     public function stat($filename)
     {
-        return $this->callEio('eio_stat', [$filename]);
+        return $this->callFilesystem('eio_stat', [$filename]);
     }
 
     /**
@@ -46,7 +46,7 @@ class EioAdapter implements AdapterInterface
      */
     public function unlink($filename)
     {
-        return $this->callEio('eio_unlink', [$filename]);
+        return $this->callFilesystem('eio_unlink', [$filename]);
     }
 
     /**
@@ -54,7 +54,7 @@ class EioAdapter implements AdapterInterface
      */
     public function rename($fromFilename, $toFilename)
     {
-        return $this->callEio('eio_rename', [$fromFilename, $toFilename]);
+        return $this->callFilesystem('eio_rename', [$fromFilename, $toFilename]);
     }
 
     /**
@@ -62,7 +62,7 @@ class EioAdapter implements AdapterInterface
      */
     public function chmod($path, $mode)
     {
-        return $this->callEio('eio_chmod', [$path, $mode]);
+        return $this->callFilesystem('eio_chmod', [$path, $mode]);
     }
 
     /**
@@ -70,15 +70,16 @@ class EioAdapter implements AdapterInterface
      */
     public function chown($path, $uid, $gid)
     {
-        return $this->callEio('eio_chown', [$path, $uid, $gid]);
+        return $this->callFilesystem('eio_chown', [$path, $uid, $gid]);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function ls($path, $flags = EIO_READDIR_DIRS_FIRST)
+    public function ls($path, $flags = EIO_READDIR_STAT_ORDER)
     {
-        return $this->callEio('eio_readdir', [$path, $flags], false);
+        return $this->callFilesystem('eio_readdir', [$path, $flags], false);
+        return $this->queueCall('eio_readdir', [$path, $flags], false);
     }
 
     /**
@@ -86,7 +87,7 @@ class EioAdapter implements AdapterInterface
      */
     public function mkdir($path, $mode = self::CREATION_MODE)
     {
-        return $this->callEio('eio_mkdir', [
+        return $this->callFilesystem('eio_mkdir', [
             $path,
             $this->permissionFlagResolver->resolve($mode),
         ]);
@@ -97,7 +98,7 @@ class EioAdapter implements AdapterInterface
      */
     public function rmdir($path)
     {
-        return $this->callEio('eio_rmdir', [$path]);
+        return $this->callFilesystem('eio_rmdir', [$path]);
     }
 
     /**
@@ -106,7 +107,7 @@ class EioAdapter implements AdapterInterface
     public function open($path, $flags, $mode = self::CREATION_MODE)
     {
         $flags = $this->openFlagResolver->resolve($flags);
-        return $this->callEio('eio_open', [
+        return $this->callFilesystem('eio_open', [
             $path,
             $flags,
             $this->permissionFlagResolver->resolve($mode),
@@ -120,20 +121,31 @@ class EioAdapter implements AdapterInterface
      */
     public function close($fd)
     {
-        return $this->callEio('eio_close', [$fd]);
+        return $this->callFilesystem('eio_close', [$fd]);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function touch($path, $mode = self::CREATION_MODE)
+    public function touch($path, $mode = self::CREATION_MODE, $time = null)
     {
-        return $this->callEio('eio_open', [
-            $path,
-            EIO_O_CREAT,
-            $this->permissionFlagResolver->resolve($mode),
-        ])->then(function ($fd) use ($path) {
-            return $this->close($fd);
+        return $this->stat($path)->then(function () use ($path, $time) {
+            if ($time === null) {
+                $time = microtime(true);
+            }
+            return $this->callFilesystem('eio_utime', [
+                $path,
+                $time,
+                $time,
+            ]);
+        }, function () use ($path, $mode) {
+            return $this->callFilesystem('eio_open', [
+                $path,
+                EIO_O_CREAT,
+                $this->permissionFlagResolver->resolve($mode),
+            ])->then(function ($fd) use ($path) {
+                return $this->close($fd);
+            });
         });
     }
 
@@ -142,7 +154,7 @@ class EioAdapter implements AdapterInterface
      */
     public function read($fileDescriptor, $length, $offset)
     {
-        return $this->callEio('eio_read', [
+        return $this->callFilesystem('eio_read', [
             $fileDescriptor,
             $length,
             $offset,
@@ -154,7 +166,7 @@ class EioAdapter implements AdapterInterface
      */
     public function write($fileDescriptor, $data, $length, $offset)
     {
-        return $this->callEio('eio_write', [
+        return $this->callFilesystem('eio_write', [
             $fileDescriptor,
             $data,
             $length,
@@ -168,7 +180,7 @@ class EioAdapter implements AdapterInterface
      * @param int $errorResultCode
      * @return \React\Promise\Promise
      */
-    public function callEio($function, $args, $errorResultCode = -1)
+    public function callFilesystem($function, $args, $errorResultCode = -1)
     {
         $deferred = new Deferred();
 
@@ -186,19 +198,23 @@ class EioAdapter implements AdapterInterface
         $args[] = EIO_PRI_DEFAULT;
         $args[] = function ($data, $result, $req) use ($deferred, $errorResultCode, $function, $args) {
             if ($result == $errorResultCode) {
-                $deferred->reject(new \UnexpectedValueException(eio_get_last_error($req)));
+                $exception = new Eio\UnexpectedValueException(@eio_get_last_error($req));
+                $exception->setArgs($args);
+                $deferred->reject($exception);
                 return;
             }
 
             $deferred->resolve($result);
         };
 
-        if (!@call_user_func_array($function, $args)) {
+        if (!call_user_func_array($function, $args)) {
             $name = $function;
             if (!is_string($function)) {
                 $name = get_class($function);
             }
-            $deferred->reject(new \RuntimeException('Unknown error calling "' . $name . '"'));
+            $exception = new Eio\RuntimeException('Unknown error calling "' . $name . '"');
+            $exception->setArgs($args);
+            $deferred->reject($exception);
         };
     }
 

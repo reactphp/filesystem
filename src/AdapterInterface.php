@@ -12,6 +12,14 @@ interface AdapterInterface
     public function __construct(LoopInterface $loop);
 
     /**
+     * @param string $function
+     * @param array $args
+     * @param int $errorResultCode
+     * @return \React\Promise\Promise
+     */
+    public function callFilesystem($function, $args, $errorResultCode = -1);
+
+    /**
      * @param string $path
      * @param $mode
      * @return \React\Promise\PromiseInterface

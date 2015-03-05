@@ -29,7 +29,7 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($loop, $filesystem->getLoop());
     }
 
-    public function testCallEioCallsProvider()
+    public function testcallFilesystemCallsProvider()
     {
         $pathName = 'foo.bar';
         return [
@@ -89,7 +89,7 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
                 ],
                 [
                     $pathName,
-                    EIO_READDIR_DIRS_FIRST,
+                    EIO_READDIR_STAT_ORDER,
                 ],
                 false,
             ],
@@ -183,21 +183,21 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider testCallEioCallsProvider
+     * @dataProvider testcallFilesystemCallsProvider
      */
-    public function testCallEioCalls($externalMethod, $internalMethod, $externalCallArgs, $internalCallArgs, $errorResultCode = -1)
+    public function testcallFilesystemCalls($externalMethod, $internalMethod, $externalCallArgs, $internalCallArgs, $errorResultCode = -1)
     {
         $promise = $this->getMock('React\Promise\PromiseInterface');
 
         $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
-            'callEio',
+            'callFilesystem',
         ], [
             $this->getMock('React\EventLoop\LoopInterface'),
         ]);
 
         $filesystem
             ->expects($this->once())
-            ->method('callEio')
+            ->method('callFilesystem')
             ->with($internalMethod, $internalCallArgs, $errorResultCode)
             ->will($this->returnValue($promise))
         ;
@@ -205,7 +205,7 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($promise, call_user_func_array([$filesystem, $externalMethod], $externalCallArgs));
     }
 
-    public function testCallEio()
+    public function testcallFilesystem()
     {
         $filename = 'foo.bar';
         $loop = $this->getMock('React\EventLoop\StreamSelectLoop', [
@@ -295,7 +295,7 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
         $filesystem->handleEvent();
     }
 
-    public function testTouch()
+    public function testTouchExists()
     {
         $filename = 'foo.bar';
         $fd = '01010100100010011110101';
@@ -314,7 +314,7 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
         ;
 
         $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
-            'callEio',
+            'callFilesystem',
             'close',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
@@ -322,23 +322,97 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
 
         $filesystem
             ->expects($this->at(0))
-            ->method('callEio')
+            ->method('callFilesystem')
+            ->with('eio_stat', [
+                $filename,
+            ])
+            ->will($this->returnValue($promise))
+        ;
+
+        $time = microtime(true);
+
+        $filesystem
+            ->expects($this->at(1))
+            ->method('callFilesystem')
+            ->with('eio_utime', [
+                $filename,
+                $time,
+                $time,
+            ])
+            ->will($this->returnValue($promise))
+        ;
+
+        $this->assertInstanceOf('React\Promise\PromiseInterface', $filesystem->touch($filename, EioAdapter::CREATION_MODE, $time));
+    }
+
+    public function testTouchCreate()
+    {
+        $filename = 'foo.bar';
+        $fd = '01010100100010011110101';
+
+        $promiseA = $this->getMock('React\Promise\PromiseInterface', [
+            'then',
+        ]);
+
+        $promiseA
+            ->expects($this->once())
+            ->method('then')
+            ->with($this->isType('callable'))
+            ->will($this->returnCallback(function ($void, $resolveCb) use ($fd) {
+                return $resolveCb($fd);
+            }))
+        ;
+
+        $promiseB = $this->getMock('React\Promise\PromiseInterface', [
+            'then',
+        ]);
+
+        $promiseB
+            ->expects($this->once())
+            ->method('then')
+            ->with($this->isType('callable'))
+            ->will($this->returnCallback(function ($resolveCb) use ($fd) {
+                return $resolveCb($fd);
+            }))
+        ;
+
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+            'callFilesystem',
+            'close',
+        ], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+
+        $filesystem
+            ->expects($this->at(0))
+            ->method('callFilesystem')
+            ->with('eio_stat', [
+                $filename,
+            ])
+            ->will($this->returnValue($promiseA))
+        ;
+
+        $time = microtime(true);
+
+        $filesystem
+            ->expects($this->at(1))
+            ->method('callFilesystem')
             ->with('eio_open', [
                 $filename,
                 EIO_O_CREAT,
                 (new PermissionFlagResolver())->resolve(EioAdapter::CREATION_MODE),
             ])
-            ->will($this->returnValue($promise))
+            ->will($this->returnValue($promiseB))
         ;
 
         $filesystem
-            ->expects($this->at(1))
+            ->expects($this->at(2))
             ->method('close')
             ->with($fd)
             ->will($this->returnValue(new FulfilledPromise()))
         ;
 
-        $this->assertInstanceOf('React\Promise\PromiseInterface', $filesystem->touch($filename));
+        $this->assertInstanceOf('React\Promise\PromiseInterface', $filesystem->touch($filename, EioAdapter::CREATION_MODE, $time));
     }
 
     public function testOpen()
@@ -360,14 +434,14 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
         ;
 
         $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
-            'callEio',
+            'callFilesystem',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
         $filesystem
             ->expects($this->at(0))
-            ->method('callEio')
+            ->method('callFilesystem')
             ->with('eio_open', [
                 $filename,
                 2,
@@ -408,7 +482,7 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
 
         $calledFunction = false;
         $calledCallback = false;
-        $filesystem->callEio(function ($priority, $callback) use (&$calledFunction) {
+        $filesystem->callFilesystem(function ($priority, $callback) use (&$calledFunction) {
             $this->assertSame(EIO_PRI_DEFAULT, $priority);
             $callback('', 0, 0);
             $calledFunction = true;
@@ -416,7 +490,7 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
         }, [])->then(function () use (&$calledCallback) {
             $calledCallback = true;
         });
-        $filesystem->callEio(function () {
+        $filesystem->callFilesystem(function () {
             return true;
         }, []);
 
@@ -453,7 +527,7 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
 
         $calledFunction = false;
         $calledCallback = false;
-        $filesystem->callEio(function ($priority, $callback) use (&$calledFunction) {
+        $filesystem->callFilesystem(function ($priority, $callback) use (&$calledFunction) {
             $this->assertSame(EIO_PRI_DEFAULT, $priority);
             $callback('', -1, 0);
             $calledFunction = true;
@@ -496,7 +570,7 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
 
         $calledFunction = false;
         $calledCallback = false;
-        $filesystem->callEio(function ($priority, $callback) use (&$calledFunction) {
+        $filesystem->callFilesystem(function ($priority, $callback) use (&$calledFunction) {
             $this->assertSame(EIO_PRI_DEFAULT, $priority);
             $callback('', -1, 0);
             $calledFunction = true;
@@ -556,7 +630,7 @@ class EioFilesystemTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(1))
         ;
 
-        $filesystem->callEio(function () {
+        $filesystem->callFilesystem(function () {
             return true;
         }, []);
 
