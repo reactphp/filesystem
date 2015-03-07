@@ -94,6 +94,41 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('React\Promise\PromiseInterface', $file->exists());
     }
 
+    public function testDoesntExists()
+    {
+        $path = 'foo.bar';
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+
+        $file = $this->getMock('React\Filesystem\Node\File', [
+            'stat',
+        ], [
+            $path,
+            $filesystem,
+        ]);
+
+        $promise = $this->getMock('React\Promise\PromiseInterface');
+
+        $promise
+            ->expects($this->once())
+            ->method('then')
+            ->with($this->isType('callable'))
+            ->will($this->returnCallback(function ($null, $resolveCb) {
+                return $resolveCb();
+            }))
+        ;
+
+        $file
+            ->expects($this->once())
+            ->method('stat')
+            ->with()
+            ->will($this->returnValue($promise))
+        ;
+
+        $this->assertInstanceOf('React\Promise\PromiseInterface', $file->exists());
+    }
+
     public function testSize()
     {
         $size = 1337;
