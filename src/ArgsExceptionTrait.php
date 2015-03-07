@@ -4,7 +4,7 @@ namespace React\Filesystem;
 
 trait ArgsExceptionTrait
 {
-    protected  $args = [];
+    protected $args = [];
 
     public function setArgs(array $args = [])
     {
