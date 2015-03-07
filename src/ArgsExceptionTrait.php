@@ -15,4 +15,4 @@ trait ArgsExceptionTrait
     {
         return $this->args;
     }
-} 
+}
