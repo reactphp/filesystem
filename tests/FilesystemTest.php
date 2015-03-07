@@ -13,6 +13,16 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
             Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'))
         );
     }
+    public function testCreateWithAdapter()
+    {
+        $loop = $this->getMock('React\EventLoop\StreamSelectLoop');
+        $this->assertInstanceOf(
+            'React\Filesystem\Filesystem',
+            Filesystem::create($loop, $this->getMock('React\Filesystem\EioAdapter', [], [
+                $loop,
+            ]))
+        );
+    }
 
     /**
      * @expectedException PHPUnit_Framework_Error
