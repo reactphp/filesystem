@@ -15,6 +15,7 @@ class EioAdapter implements AdapterInterface
     protected $loop;
     protected $openFlagResolver;
     protected $permissionFlagResolver;
+    protected $queuedInvoker;
 
     public function __construct(LoopInterface $loop)
     {
@@ -23,6 +24,7 @@ class EioAdapter implements AdapterInterface
         $this->fd = eio_get_event_stream();
         $this->openFlagResolver = new Eio\OpenFlagResolver();
         $this->permissionFlagResolver = new Eio\PermissionFlagResolver();
+        $this->queuedInvoker = new QueuedInvoker($this);
     }
 
     /**
@@ -78,8 +80,7 @@ class EioAdapter implements AdapterInterface
      */
     public function ls($path, $flags = EIO_READDIR_STAT_ORDER)
     {
-        return $this->callFilesystem('eio_readdir', [$path, $flags], false);
-        return $this->queueCall('eio_readdir', [$path, $flags], false);
+        return $this->queuedInvoker->invokeCall('eio_readdir', [$path, $flags], false);
     }
 
     /**
