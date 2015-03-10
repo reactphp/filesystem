@@ -6,7 +6,7 @@ use React\Filesystem\Eio\PermissionFlagResolver;
 use React\Filesystem\EioAdapter;
 use React\Promise\FulfilledPromise;
 
-class EioFilesystemTest extends \PHPUnit_Framework_TestCase
+class EioAdapterTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testEioExtensionInstalled()
