@@ -62,6 +62,7 @@ class Directory implements DirectoryInterface, GenericOperationInterface
     }
 
     /**
+     * @todo Move to EioAdapter
      * @param $result
      * @return array
      */
