@@ -5,6 +5,7 @@ namespace React\Filesystem\Node;
 use React\Filesystem\AdapterInterface;
 use React\Promise\Deferred;
 use React\Promise\FulfilledPromise;
+use React\Promise\RejectedPromise;
 
 class Directory implements DirectoryInterface, GenericOperationInterface
 {
@@ -71,13 +72,28 @@ class Directory implements DirectoryInterface, GenericOperationInterface
         $list = [];
         if (isset($result['dents'])) {
             foreach ($result['dents'] as $entry) {
+                $path = $this->path . DIRECTORY_SEPARATOR . $entry['name'];
                 if (isset($this->typeClassMapping[$entry['type']])) {
-                    $path = $this->path . DIRECTORY_SEPARATOR . $entry['name'];
-                    $list[$entry['name']] = new $this->typeClassMapping[$entry['type']]($path, $this->filesystem);
+                    $list[$entry['name']] = \React\Promise\resolve(new $this->typeClassMapping[$entry['type']]($path, $this->filesystem));
+                    continue;
+                }
+
+                if ($entry['type'] === EIO_DT_UNKNOWN) {
+                    $list[$entry['name']] = $this->filesystem->stat($path)->then(function ($stat) use ($path) {
+                        switch (true) {
+                            case ($stat['mode'] & 0x4000) == 0x4000:
+                                return \React\Promise\resolve(new Directory($path, $this->filesystem));
+                                break;
+                            case ($stat['mode'] & 0x8000) == 0x8000:
+                                return \React\Promise\resolve(new File($path, $this->filesystem));
+                                break;
+                        }
+                    });
                 }
             }
         }
-        return $list;
+
+        return \React\Promise\all($list);
     }
 
     /**
