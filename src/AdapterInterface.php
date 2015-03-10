@@ -12,6 +12,11 @@ interface AdapterInterface
     public function __construct(LoopInterface $loop);
 
     /**
+     * @return LoopInterface
+     */
+    public function getLoop();
+
+    /**
      * @param string $function
      * @param array $args
      * @param int $errorResultCode
