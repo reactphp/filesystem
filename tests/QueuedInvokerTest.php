@@ -13,16 +13,28 @@ class QueuedInvokerTest extends \PHPUnit_Framework_TestCase
         $loop = Factory::create();
 
         $function = [
-            1 => 'foo',
+            'foo',
+            'bar',
+            'baz',
         ];
         $args = [
-            1 => [
+            [
                 'bar',
                 'baz',
             ],
+            [
+                'baz',
+                'foo',
+            ],
+            [
+                'foo',
+                'bar',
+            ],
         ];
         $errorResultCode = [
-            1 => 13,
+            13,
+            14,
+            42,
         ];
 
         $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
@@ -31,17 +43,20 @@ class QueuedInvokerTest extends \PHPUnit_Framework_TestCase
             $loop,
         ]);
 
-
-        $filesystem
-            ->expects($this->any())
-            ->method('callFilesystem')
-            ->with($function[1], $args[1], $errorResultCode[1])
-            ->will($this->returnValue(new FulfilledPromise(time())))
-        ;
+        foreach ($function as $key => $value) {
+            $filesystem
+                ->expects($this->at($key))
+                ->method('callFilesystem')
+                ->with($function[$key], $args[$key], $errorResultCode[$key])
+                ->will($this->returnValue(new FulfilledPromise()))
+            ;
+        }
 
 
         $invoker = new QueuedInvoker($filesystem);
-        $invoker->invokeCall($function, $args, $errorResultCode);
+        foreach ($function as $key => $value) {
+            $invoker->invokeCall($function[$key], $args[$key], $errorResultCode[$key]);
+        }
 
         $loop->run();
     }
