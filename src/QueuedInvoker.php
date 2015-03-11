@@ -48,12 +48,7 @@ class QueuedInvoker implements CallInvokerInterface
         $this->callQueueActive = true;
         $deferred = new Deferred();
 
-        $this->callQueue->enqueue([
-            'deferred' => $deferred,
-            'function' => $function,
-            'args' => $args,
-            'errorResultCode' => $errorResultCode,
-        ]);
+        $this->callQueue->enqueue(new QueuedCall($deferred, $function, $args, $errorResultCode));
 
         if (!$this->callQueue->isEmpty()) {
             $this->processQueue();
@@ -76,11 +71,11 @@ class QueuedInvoker implements CallInvokerInterface
 
             $message = $this->callQueue->dequeue();
             $data = [
-                'function' => $message['function'],
-                'args' => $message['args'],
-                'errorResultCode' => $message['errorResultCode'],
+                'function' => $message->getFunction(),
+                'args' => $message->getArgs(),
+                'errorResultCode' => $message->getErrorResultCode(),
             ];
-            $message['deferred']->resolve($data);
+            $message->getDeferred()->resolve($data);
         });
     }
 
