@@ -12,11 +12,6 @@ class Directory implements DirectoryInterface, GenericOperationInterface
 
     use GenericOperationTrait;
 
-    protected $typeClassMapping = [
-        EIO_DT_DIR => '\React\Filesystem\Node\Directory',
-        EIO_DT_REG => '\React\Filesystem\Node\File',
-    ];
-
     protected $recursiveInvoker;
 
     /**
@@ -57,43 +52,7 @@ class Directory implements DirectoryInterface, GenericOperationInterface
      */
     public function ls()
     {
-        return $this->filesystem->ls($this->path)->then(function ($result) {
-            return $this->processLsContents($result);
-        });
-    }
-
-    /**
-     * @todo Move to EioAdapter
-     * @param $result
-     * @return array
-     */
-    protected function processLsContents($result)
-    {
-        $list = [];
-        if (isset($result['dents'])) {
-            foreach ($result['dents'] as $entry) {
-                $path = $this->path . DIRECTORY_SEPARATOR . $entry['name'];
-                if (isset($this->typeClassMapping[$entry['type']])) {
-                    $list[$entry['name']] = \React\Promise\resolve(new $this->typeClassMapping[$entry['type']]($path, $this->filesystem));
-                    continue;
-                }
-
-                if ($entry['type'] === EIO_DT_UNKNOWN) {
-                    $list[$entry['name']] = $this->filesystem->stat($path)->then(function ($stat) use ($path) {
-                        switch (true) {
-                            case ($stat['mode'] & 0x4000) == 0x4000:
-                                return \React\Promise\resolve(new Directory($path, $this->filesystem));
-                                break;
-                            case ($stat['mode'] & 0x8000) == 0x8000:
-                                return \React\Promise\resolve(new File($path, $this->filesystem));
-                                break;
-                        }
-                    });
-                }
-            }
-        }
-
-        return \React\Promise\all($list);
+        return $this->filesystem->ls($this->path);
     }
 
     /**

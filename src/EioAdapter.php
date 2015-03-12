@@ -11,6 +11,11 @@ class EioAdapter implements AdapterInterface
 
     const CREATION_MODE = 'rw-rw-rw-';
 
+    protected $typeClassMapping = [
+        EIO_DT_DIR => '\React\Filesystem\Node\Directory',
+        EIO_DT_REG => '\React\Filesystem\Node\File',
+    ];
+
     protected $active = false;
     protected $loop;
     protected $openFlagResolver;
@@ -80,8 +85,44 @@ class EioAdapter implements AdapterInterface
      */
     public function ls($path, $flags = EIO_READDIR_STAT_ORDER)
     {
-        return $this->queuedInvoker->invokeCall('eio_readdir', [$path, $flags], false);
+        return $this->queuedInvoker->invokeCall('eio_readdir', [$path, $flags], false)->then(function ($result) use ($path) {
+            return $this->processLsContents($path, $result);
+        });
     }
+
+    /**
+     * @param $result
+     * @return array
+     */
+    protected function processLsContents($basePath, $result)
+    {
+        $list = [];
+        if (isset($result['dents'])) {
+            foreach ($result['dents'] as $entry) {
+                $path = $basePath . DIRECTORY_SEPARATOR . $entry['name'];
+                if (isset($this->typeClassMapping[$entry['type']])) {
+                    $list[$entry['name']] = \React\Promise\resolve(new $this->typeClassMapping[$entry['type']]($path, $this));
+                    continue;
+                }
+
+                if ($entry['type'] === EIO_DT_UNKNOWN) {
+                    $list[$entry['name']] = $this->stat($path)->then(function ($stat) use ($path) {
+                        switch (true) {
+                            case ($stat['mode'] & 0x4000) == 0x4000:
+                                return \React\Promise\resolve(new Directory($path, $this));
+                                break;
+                            case ($stat['mode'] & 0x8000) == 0x8000:
+                                return \React\Promise\resolve(new File($path, $this));
+                                break;
+                        }
+                    });
+                }
+            }
+        }
+
+        return \React\Promise\all($list);
+    }
+
 
     /**
      * {@inheritDoc}
