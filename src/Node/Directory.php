@@ -7,7 +7,7 @@ use React\Promise\Deferred;
 use React\Promise\FulfilledPromise;
 use React\Promise\RejectedPromise;
 
-class Directory implements DirectoryInterface, GenericOperationInterface
+class Directory implements NodeInterface, DirectoryInterface, GenericOperationInterface
 {
 
     use GenericOperationTrait;
