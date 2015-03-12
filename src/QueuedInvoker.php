@@ -58,7 +58,7 @@ class QueuedInvoker implements CallInvokerInterface
             return $this->
                 adapter->
                 callFilesystem($data['function'], $data['args'], $data['errorResultCode'])->
-                then($this->filesystemResultHandler(), $this->filesystemResultHandler());
+                then($this->filesystemResultHandler('React\Promise\resolve'), $this->filesystemResultHandler('React\Promise\reject'));
         });
     }
 
@@ -79,15 +79,15 @@ class QueuedInvoker implements CallInvokerInterface
         });
     }
 
-    protected function filesystemResultHandler()
+    protected function filesystemResultHandler($func)
     {
-        return function ($mixed) {
+        return function ($mixed) use ($func) {
             if ($this->callQueue->count() == 0) {
                 $this->callQueueActive = false;
             } else {
                 $this->processQueue();
             }
-            return $mixed;
+            return $func($mixed);
         };
     }
 }
