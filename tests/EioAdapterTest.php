@@ -82,31 +82,6 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
                 ],
             ],
             [
-                'ls',
-                'eio_readdir',
-                [
-                    $pathName,
-                ],
-                [
-                    $pathName,
-                    EIO_READDIR_STAT_ORDER,
-                ],
-                false,
-            ],
-            [
-                'ls',
-                'eio_readdir',
-                [
-                    $pathName,
-                    112,
-                ],
-                [
-                    $pathName,
-                    112,
-                ],
-                false,
-            ],
-            [
                 'mkdir',
                 'eio_mkdir',
                 [
