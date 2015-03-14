@@ -30,15 +30,6 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
             'then',
         ]);
 
-        $lsPromise
-            ->expects($this->once())
-            ->method('then')
-            ->with($this->isType('callable'))
-            ->will($this->returnCallback(function ($callback) {
-                return $callback('foo.bar');
-            }))
-        ;
-
         $filesystem
             ->expects($this->once())
             ->method('ls')
@@ -46,71 +37,9 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($lsPromise))
         ;
 
-        $directory = $this->getMock('React\Filesystem\Node\Directory', [
-            'processLsContents',
-        ], [
-            $path,
-            $filesystem,
-        ]);
-
-        $directory
-            ->expects($this->once())
-            ->method('processLsContents')
-            ->with('foo.bar')
-            ->will($this->returnValue($this->getMock('React\Promise\PromiseInterface')))
-        ;
+        $directory = new Directory($path, $filesystem);
 
         $this->assertInstanceOf('React\Promise\PromiseInterface', $directory->ls());
-    }
-
-    public function testLsSuccessAndProcessLsContents()
-    {
-        $dents = [
-            'dents' => [
-                [
-                    'type' => EIO_DT_DIR,
-                    'name' => 'bar',
-                ],
-                [
-                    'type' => EIO_DT_REG,
-                    'name' => 'foo',
-                ],
-            ],
-        ];
-        $path = '/home/foo/bar';
-        $loop = $this->getMock('React\EventLoop\StreamSelectLoop');
-
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
-            'ls',
-        ], [
-            $loop,
-        ]);
-
-        $lsPromise = $this->getMock('React\Promise\PromiseInterface', [
-            'then',
-        ]);
-
-        $filesystem
-            ->expects($this->once())
-            ->method('ls')
-            ->with($path)
-            ->will($this->returnValue($lsPromise))
-        ;
-
-        $lsPromise
-            ->expects($this->once())
-            ->method('then')
-            ->with($this->isType('callable'))
-            ->will($this->returnCallback(function ($resolveCb) use ($dents) {
-                return $resolveCb($dents);
-            }))
-        ;
-
-        $directory = new Directory($path, $filesystem);
-        $list = $directory->ls();
-        $this->assertInternalType('array', $list);
-        $this->assertInstanceOf('React\Filesystem\Node\Directory', $list['bar']);
-        $this->assertInstanceOf('React\Filesystem\Node\File', $list['foo']);
     }
 
     public function testCreate()
