@@ -50,6 +50,14 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
     /**
      * {@inheritDoc}
      */
+    public function __toString()
+    {
+        return $this->getPath();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function ls()
     {
         return $this->filesystem->ls($this->path);

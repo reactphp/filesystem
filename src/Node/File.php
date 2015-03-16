@@ -37,6 +37,14 @@ class File implements NodeInterface, FileInterface, GenericOperationInterface
     /**
      * {@inheritDoc}
      */
+    public function __toString()
+    {
+        return $this->getPath();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function exists()
     {
         return $this->stat()->then(function () {
