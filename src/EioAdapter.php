@@ -8,9 +8,6 @@ use React\Filesystem\Eio;
 
 class EioAdapter implements AdapterInterface
 {
-
-    const CREATION_MODE = 'rw-rw-rw-';
-
     protected $typeClassMapping = [
         EIO_DT_DIR => '\React\Filesystem\Node\Directory',
         EIO_DT_REG => '\React\Filesystem\Node\File',
