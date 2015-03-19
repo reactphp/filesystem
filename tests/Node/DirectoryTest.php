@@ -3,10 +3,16 @@
 namespace React\Tests\Filesystem\Node;
 
 use React\Filesystem\Node\Directory;
-use React\Filesystem\Node\File;
 
 class DirectoryTest extends \PHPUnit_Framework_TestCase
 {
+    use NodeTestTrait;
+
+    protected function getNodeClass()
+    {
+        return 'React\Filesystem\Node\Directory';
+    }
+
     public function testGetPath()
     {
         $path = 'foo.bar';

@@ -9,6 +9,12 @@ use React\Promise\RejectedPromise;
 
 class FileTest extends \PHPUnit_Framework_TestCase
 {
+    use NodeTestTrait;
+
+    protected function getNodeClass()
+    {
+        return 'React\Filesystem\Node\File';
+    }
 
     public function testGetPath()
     {
