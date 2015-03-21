@@ -320,6 +320,52 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('React\Promise\PromiseInterface', $filesystem->touch($filename, EioAdapter::CREATION_MODE, $time));
     }
 
+    public function testTouchExistsNoTime()
+    {
+        $filename = 'foo.bar';
+        $fd = '01010100100010011110101';
+
+        $promise = $this->getMock('React\Promise\PromiseInterface', [
+            'then',
+        ]);
+
+        $promise
+            ->expects($this->once())
+            ->method('then')
+            ->with($this->isType('callable'))
+            ->will($this->returnCallback(function ($resolveCb) use ($fd) {
+                return $resolveCb($fd);
+            }))
+        ;
+
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+            'callFilesystem',
+            'close',
+        ], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+
+        $filesystem
+            ->expects($this->at(0))
+            ->method('callFilesystem')
+            ->with('eio_stat', [
+                $filename,
+            ])
+            ->will($this->returnValue($promise))
+        ;
+
+        $filesystem
+            ->expects($this->at(1))
+            ->method('callFilesystem')
+            ->with('eio_utime', $this->callback(function ($array) use ($filename) {
+                return $array[0] === $filename && is_float($array[1]) && is_float($array[2]);
+            }))
+            ->will($this->returnValue($promise))
+        ;
+
+        $this->assertInstanceOf('React\Promise\PromiseInterface', $filesystem->touch($filename));
+    }
+
     public function testTouchCreate()
     {
         $filename = 'foo.bar';
