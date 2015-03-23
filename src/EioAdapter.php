@@ -3,8 +3,12 @@
 namespace React\Filesystem;
 
 use React\EventLoop\LoopInterface;
+use React\Filesystem\Node\Directory;
+use React\Filesystem\Node\File;
+use React\Filesystem\Node\NodeInterface;
 use React\Promise\Deferred;
 use React\Filesystem\Eio;
+use React\Promise\FulfilledPromise;
 
 class EioAdapter implements AdapterInterface
 {
@@ -93,17 +97,18 @@ class EioAdapter implements AdapterInterface
      */
     protected function processLsContents($basePath, $result)
     {
-        $list = [];
+        $list = new \SplObjectStorage();
+        $promises = [];
         if (isset($result['dents'])) {
             foreach ($result['dents'] as $entry) {
                 $path = $basePath . DIRECTORY_SEPARATOR . $entry['name'];
                 if (isset($this->typeClassMapping[$entry['type']])) {
-                    $list[$entry['name']] = \React\Promise\resolve(new $this->typeClassMapping[$entry['type']]($path, $this));
+                    $list->attach(new $this->typeClassMapping[$entry['type']]($path, $this));
                     continue;
                 }
 
                 if ($entry['type'] === EIO_DT_UNKNOWN) {
-                    $list[$entry['name']] = $this->stat($path)->then(function ($stat) use ($path) {
+                    $promises[] = $this->stat($path)->then(function ($stat) use ($path) {
                         switch (true) {
                             case ($stat['mode'] & 0x4000) == 0x4000:
                                 return \React\Promise\resolve(new Directory($path, $this));
@@ -112,12 +117,16 @@ class EioAdapter implements AdapterInterface
                                 return \React\Promise\resolve(new File($path, $this));
                                 break;
                         }
+                    })->then(function (NodeInterface $node) use ($list) {
+                        $list->attach($node);
                     });
                 }
             }
         }
 
-        return \React\Promise\all($list);
+        return \React\Promise\all($promises)->then(function () use ($list) {
+            return $list;
+        });
     }
 
 
