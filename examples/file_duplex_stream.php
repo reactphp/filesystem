@@ -1,5 +1,7 @@
 <?php
 
+die('This example\'s underlying required code isn\'t ready yet.')
+
 echo 'Warning this example uses 850MB in disk space and at least that in memory. If your machine can\'t handle that please kill this example now. It will start in 10 seconds otherwise.', PHP_EOL, PHP_EOL, PHP_EOL;
 sleep(10);
 echo 'Starting';
