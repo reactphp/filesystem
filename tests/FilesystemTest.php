@@ -3,6 +3,7 @@
 namespace React\Tests\Filesystem;
 
 use React\Filesystem\Filesystem;
+use React\Filesystem\InstantInvoker;
 
 class FilesystemTest extends \PHPUnit_Framework_TestCase
 {
@@ -52,5 +53,20 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
             'React\Promise\PromiseInterface',
             Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'))->getContents('foo.bar')
         );
+    }
+
+    public function testSetInvoker()
+    {
+        $loop = $this->getMock('React\EventLoop\StreamSelectLoop');
+        $adapter = $this->getMock('React\Filesystem\EioAdapter', [], [
+            $loop,
+        ]);
+        $invoker = new InstantInvoker($adapter);
+        $adapter
+            ->expects($this->at(0))
+            ->method('setInvoker')
+            ->with($invoker)
+        ;
+        Filesystem::create($loop, $adapter)->setInvoker($invoker);
     }
 }
