@@ -79,7 +79,11 @@ class QueuedInvoker implements CallInvokerInterface
         });
     }
 
-    protected function filesystemResultHandler($func)
+    /**
+     * @param callable $func
+     * @return callable
+     */
+    protected function filesystemResultHandler(callable $func)
     {
         return function ($mixed) use ($func) {
             if ($this->callQueue->count() == 0) {
