@@ -21,6 +21,7 @@ class EioAdapter implements AdapterInterface
     protected $loop;
     protected $openFlagResolver;
     protected $permissionFlagResolver;
+    protected $invoker;
     protected $queuedInvoker;
 
     public function __construct(LoopInterface $loop)
@@ -30,11 +31,12 @@ class EioAdapter implements AdapterInterface
         $this->fd = eio_get_event_stream();
         $this->openFlagResolver = new Eio\OpenFlagResolver();
         $this->permissionFlagResolver = new Eio\PermissionFlagResolver();
+        $this->invoker = new InstantInvoker($this);
         $this->queuedInvoker = new QueuedInvoker($this);
     }
 
     /**
-     * @return LoopInterface
+     * {@inheritDoc}
      */
     public function getLoop()
     {
@@ -44,9 +46,17 @@ class EioAdapter implements AdapterInterface
     /**
      * {@inheritDoc}
      */
+    public function setInvoker(CallInvokerInterface $invoker)
+    {
+        $this->invoker = $invoker;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function stat($filename)
     {
-        return $this->callFilesystem('eio_stat', [$filename]);
+        return $this->invoker->invokeCall('eio_stat', [$filename]);
     }
 
     /**
@@ -54,7 +64,7 @@ class EioAdapter implements AdapterInterface
      */
     public function unlink($filename)
     {
-        return $this->callFilesystem('eio_unlink', [$filename]);
+        return $this->invoker->invokeCall('eio_unlink', [$filename]);
     }
 
     /**
@@ -62,7 +72,7 @@ class EioAdapter implements AdapterInterface
      */
     public function rename($fromFilename, $toFilename)
     {
-        return $this->callFilesystem('eio_rename', [$fromFilename, $toFilename]);
+        return $this->invoker->invokeCall('eio_rename', [$fromFilename, $toFilename]);
     }
 
     /**
@@ -70,7 +80,7 @@ class EioAdapter implements AdapterInterface
      */
     public function chmod($path, $mode)
     {
-        return $this->callFilesystem('eio_chmod', [$path, $mode]);
+        return $this->invoker->invokeCall('eio_chmod', [$path, $mode]);
     }
 
     /**
@@ -78,7 +88,7 @@ class EioAdapter implements AdapterInterface
      */
     public function chown($path, $uid, $gid)
     {
-        return $this->callFilesystem('eio_chown', [$path, $uid, $gid]);
+        return $this->invoker->invokeCall('eio_chown', [$path, $uid, $gid]);
     }
 
     /**
@@ -135,7 +145,7 @@ class EioAdapter implements AdapterInterface
      */
     public function mkdir($path, $mode = self::CREATION_MODE)
     {
-        return $this->callFilesystem('eio_mkdir', [
+        return $this->invoker->invokeCall('eio_mkdir', [
             $path,
             $this->permissionFlagResolver->resolve($mode),
         ]);
@@ -146,7 +156,7 @@ class EioAdapter implements AdapterInterface
      */
     public function rmdir($path)
     {
-        return $this->callFilesystem('eio_rmdir', [$path]);
+        return $this->invoker->invokeCall('eio_rmdir', [$path]);
     }
 
     /**
@@ -155,7 +165,7 @@ class EioAdapter implements AdapterInterface
     public function open($path, $flags, $mode = self::CREATION_MODE)
     {
         $flags = $this->openFlagResolver->resolve($flags);
-        return $this->callFilesystem('eio_open', [
+        return $this->invoker->invokeCall('eio_open', [
             $path,
             $flags,
             $this->permissionFlagResolver->resolve($mode),
@@ -169,7 +179,7 @@ class EioAdapter implements AdapterInterface
      */
     public function close($fd)
     {
-        return $this->callFilesystem('eio_close', [$fd]);
+        return $this->invoker->invokeCall('eio_close', [$fd]);
     }
 
     /**
@@ -181,13 +191,13 @@ class EioAdapter implements AdapterInterface
             if ($time === null) {
                 $time = microtime(true);
             }
-            return $this->callFilesystem('eio_utime', [
+            return $this->invoker->invokeCall('eio_utime', [
                 $path,
                 $time,
                 $time,
             ]);
         }, function () use ($path, $mode) {
-            return $this->callFilesystem('eio_open', [
+            return $this->invoker->invokeCall('eio_open', [
                 $path,
                 EIO_O_CREAT,
                 $this->permissionFlagResolver->resolve($mode),
@@ -202,7 +212,7 @@ class EioAdapter implements AdapterInterface
      */
     public function read($fileDescriptor, $length, $offset)
     {
-        return $this->callFilesystem('eio_read', [
+        return $this->invoker->invokeCall('eio_read', [
             $fileDescriptor,
             $length,
             $offset,
@@ -214,7 +224,7 @@ class EioAdapter implements AdapterInterface
      */
     public function write($fileDescriptor, $data, $length, $offset)
     {
-        return $this->callFilesystem('eio_write', [
+        return $this->invoker->invokeCall('eio_write', [
             $fileDescriptor,
             $data,
             $length,

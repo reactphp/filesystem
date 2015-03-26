@@ -19,6 +19,12 @@ interface AdapterInterface
     public function getLoop();
 
     /**
+     * @param CallInvokerInterface $invoker
+     * @return void
+     */
+    public function setInvoker(CallInvokerInterface $invoker);
+
+    /**
      * @param string $function
      * @param array $args
      * @param int $errorResultCode
