@@ -2,6 +2,7 @@
 
 namespace React\Tests\Filesystem;
 
+use React\EventLoop\Factory;
 use React\Filesystem\Eio\PermissionFlagResolver;
 use React\Filesystem\EioAdapter;
 use React\Promise\FulfilledPromise;
@@ -164,10 +165,12 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
     {
         $promise = $this->getMock('React\Promise\PromiseInterface');
 
+        $loop = Factory::create();
+
         $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
             'callFilesystem',
         ], [
-            $this->getMock('React\EventLoop\LoopInterface'),
+            $loop,
         ]);
 
         $filesystem
@@ -177,7 +180,9 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($promise))
         ;
 
-        $this->assertSame($promise, call_user_func_array([$filesystem, $externalMethod], $externalCallArgs));
+        $this->assertInstanceOf('React\Promise\PromiseInterface', call_user_func_array([$filesystem, $externalMethod], $externalCallArgs));
+
+        $loop->run();
     }
 
     public function testcallFilesystem()
