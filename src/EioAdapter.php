@@ -31,7 +31,7 @@ class EioAdapter implements AdapterInterface
         $this->fd = eio_get_event_stream();
         $this->openFlagResolver = new Eio\OpenFlagResolver();
         $this->permissionFlagResolver = new Eio\PermissionFlagResolver();
-        $this->invoker = new InstantInvoker($this);
+        $this->invoker = new PooledInvoker($this);
         $this->readDirInvoker = new QueuedInvoker($this);
     }
 
