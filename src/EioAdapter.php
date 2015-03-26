@@ -8,7 +8,6 @@ use React\Filesystem\Node\File;
 use React\Filesystem\Node\NodeInterface;
 use React\Promise\Deferred;
 use React\Filesystem\Eio;
-use React\Promise\FulfilledPromise;
 
 class EioAdapter implements AdapterInterface
 {
