@@ -30,7 +30,7 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($loop, $filesystem->getLoop());
     }
 
-    public function testcallFilesystemCallsProvider()
+    public function testCallFilesystemCallsProvider()
     {
         $pathName = 'foo.bar';
         return [
@@ -159,9 +159,9 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider testcallFilesystemCallsProvider
+     * @dataProvider testCallFilesystemCallsProvider
      */
-    public function testcallFilesystemCalls($externalMethod, $internalMethod, $externalCallArgs, $internalCallArgs, $errorResultCode = -1)
+    public function testCallFilesystemCalls($externalMethod, $internalMethod, $externalCallArgs, $internalCallArgs, $errorResultCode = -1)
     {
         $promise = $this->getMock('React\Promise\PromiseInterface');
 
