@@ -35,11 +35,19 @@ class ThrottledQueuedInvoker implements CallInvokerInterface
     /**
      * @param AdapterInterface $adapter
      */
-    public function __construct(AdapterInterface $adapter)
+    public function __construct(AdapterInterface $adapter, $interval = 2.3)
     {
         $this->loop = $adapter->getLoop();
         $this->adapter = $adapter;
         $this->callQueue = new \SplQueue();
+        $this->interval = $interval;
+    }
+    /**
+     * @param float $interval
+     */
+    public function setInterval($interval)
+    {
+        $this->interval = $interval;
     }
 
     /**
@@ -48,14 +56,6 @@ class ThrottledQueuedInvoker implements CallInvokerInterface
     public function getInterval()
     {
         return $this->interval;
-    }
-
-    /**
-     * @param float $interval
-     */
-    public function setInterval($interval)
-    {
-        $this->interval = $interval;
     }
 
     /**
