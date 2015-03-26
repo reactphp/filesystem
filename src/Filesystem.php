@@ -62,4 +62,12 @@ class Filesystem
     {
         return $this->file($filename)->getContents();
     }
+
+    /**
+     * @param CallInvokerInterface $invoker
+     */
+    public function setInvoker(CallInvokerInterface $invoker)
+    {
+        $this->filesystem->setInvoker($invoker);
+    }
 }
