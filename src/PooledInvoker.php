@@ -62,7 +62,7 @@ class PooledInvoker implements CallInvokerInterface
 
         $this->callQueue->enqueue(new QueuedCall($deferred, $function, $args, $errorResultCode));
 
-        if (!$this->callQueue->isEmpty()) {
+        if (!$this->callQueue->isEmpty() && $this->runningOperations < $this->maxSimultaneousOperations) {
             $this->processQueue();
         }
 
