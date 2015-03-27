@@ -185,7 +185,7 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
         $loop->run();
     }
 
-    public function testcallFilesystem()
+    public function testCallFilesystem()
     {
         $filename = 'foo.bar';
         $loop = $this->getMock('React\EventLoop\StreamSelectLoop', [
