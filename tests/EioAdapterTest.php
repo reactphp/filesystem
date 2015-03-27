@@ -193,7 +193,7 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $loop
-            ->expects($this->exactly(2))
+            ->expects($this->any())
             ->method('futureTick')
             ->with($this->isType('callable'))
             ->will($this->returnCallback(function ($resolveCb) {
