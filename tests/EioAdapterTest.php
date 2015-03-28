@@ -185,39 +185,6 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
         $loop->run();
     }
 
-    public function testCallFilesystem()
-    {
-        $filename = 'foo.bar';
-        $loop = $this->getMock('React\EventLoop\StreamSelectLoop', [
-            'futureTick',
-        ]);
-
-        $loop
-            ->expects($this->any())
-            ->method('futureTick')
-            ->with($this->isType('callable'))
-            ->will($this->returnCallback(function ($resolveCb) {
-                $resolveCb();
-            }))
-        ;
-
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
-            'executeDelayedCall',
-        ], [
-            $loop,
-        ]);
-
-        $filesystem
-            ->expects($this->once())
-            ->method('executeDelayedCall')
-            ->with('eio_stat', [
-                $filename,
-            ], -1, $this->isInstanceOf('React\Promise\Deferred'))
-        ;
-
-        $this->assertInstanceOf('React\Promise\PromiseInterface', $filesystem->stat($filename));
-    }
-
     public function testHandleEvent()
     {
         $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
@@ -275,7 +242,10 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
         $filesystem->handleEvent();
     }
 
-    public function testTouchExists()
+    /**
+     * @dataProvider React\Tests\Filesystem\CallInvokerProvider::callInvokerProvider
+     */
+    public function testTouchExists($loop, $adapter, $invoker)
     {
         $filename = 'foo.bar';
         $fd = '01010100100010011110101';
@@ -285,7 +255,7 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $promise
-            ->expects($this->once())
+            ->expects($this->any())
             ->method('then')
             ->with($this->isType('callable'))
             ->will($this->returnCallback(function ($resolveCb) use ($fd) {
@@ -293,14 +263,7 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
             }))
         ;
 
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
-            'callFilesystem',
-            'close',
-        ], [
-            $this->getMock('React\EventLoop\StreamSelectLoop'),
-        ]);
-
-        $filesystem
+        $adapter
             ->expects($this->at(0))
             ->method('callFilesystem')
             ->with('eio_stat', [
@@ -311,7 +274,7 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
 
         $time = microtime(true);
 
-        $filesystem
+        $adapter
             ->expects($this->at(1))
             ->method('callFilesystem')
             ->with('eio_utime', [
@@ -322,10 +285,15 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($promise))
         ;
 
-        $this->assertInstanceOf('React\Promise\PromiseInterface', $filesystem->touch($filename, EioAdapter::CREATION_MODE, $time));
+        $this->assertInstanceOf('React\Promise\PromiseInterface', $adapter->touch($filename, EioAdapter::CREATION_MODE, $time));
+
+        $loop->run();
     }
 
-    public function testTouchExistsNoTime()
+    /**
+     * @dataProvider React\Tests\Filesystem\CallInvokerProvider::callInvokerProvider
+     */
+    public function testTouchExistsNoTime($loop, $adapter, $invoker)
     {
         $filename = 'foo.bar';
         $fd = '01010100100010011110101';
@@ -335,22 +303,17 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $promise
-            ->expects($this->once())
+            ->expects($this->any())
             ->method('then')
             ->with($this->isType('callable'))
             ->will($this->returnCallback(function ($resolveCb) use ($fd) {
                 return $resolveCb($fd);
+            }, function ($resolveCb) use ($fd) {
+                return $resolveCb($fd);
             }))
         ;
 
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
-            'callFilesystem',
-            'close',
-        ], [
-            $this->getMock('React\EventLoop\StreamSelectLoop'),
-        ]);
-
-        $filesystem
+        $adapter
             ->expects($this->at(0))
             ->method('callFilesystem')
             ->with('eio_stat', [
@@ -359,7 +322,7 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($promise))
         ;
 
-        $filesystem
+        $adapter
             ->expects($this->at(1))
             ->method('callFilesystem')
             ->with('eio_utime', $this->callback(function ($array) use ($filename) {
@@ -368,10 +331,15 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($promise))
         ;
 
-        $this->assertInstanceOf('React\Promise\PromiseInterface', $filesystem->touch($filename));
+        $this->assertInstanceOf('React\Promise\PromiseInterface', $adapter->touch($filename));
+
+        $loop->run();
     }
 
-    public function testTouchCreate()
+    /**
+     * @dataProvider React\Tests\Filesystem\CallInvokerProvider::callInvokerProvider
+     */
+    public function testTouchCreate($loop, $adapter, $invoker)
     {
         $filename = 'foo.bar';
         $fd = '01010100100010011110101';
@@ -402,14 +370,7 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
             }))
         ;
 
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
-            'callFilesystem',
-            'close',
-        ], [
-            $this->getMock('React\EventLoop\StreamSelectLoop'),
-        ]);
-
-        $filesystem
+        $adapter
             ->expects($this->at(0))
             ->method('callFilesystem')
             ->with('eio_stat', [
@@ -420,7 +381,7 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
 
         $time = microtime(true);
 
-        $filesystem
+        $adapter
             ->expects($this->at(1))
             ->method('callFilesystem')
             ->with('eio_open', [
@@ -431,17 +392,22 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($promiseB))
         ;
 
-        $filesystem
+        $adapter
             ->expects($this->at(2))
             ->method('close')
             ->with($fd)
             ->will($this->returnValue(new FulfilledPromise()))
         ;
 
-        $this->assertInstanceOf('React\Promise\PromiseInterface', $filesystem->touch($filename, EioAdapter::CREATION_MODE, $time));
+        $this->assertInstanceOf('React\Promise\PromiseInterface', $adapter->touch($filename, EioAdapter::CREATION_MODE, $time));
+
+        $loop->run();
     }
 
-    public function testOpen()
+    /**
+     * @dataProvider React\Tests\Filesystem\CallInvokerProvider::callInvokerProvider
+     */
+    public function testOpen($loop, $adapter, $invoker)
     {
         $filename = 'foo.bar';
         $fd = '01010100100010011110101';
@@ -455,17 +421,11 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
             ->method('then')
             ->with($this->isType('callable'))
             ->will($this->returnCallback(function ($resolveCb) use ($fd) {
-                return $resolveCb($fd);
+                return new FulfilledPromise($resolveCb($fd));
             }))
         ;
 
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
-            'callFilesystem',
-        ], [
-            $this->getMock('React\EventLoop\StreamSelectLoop'),
-        ]);
-
-        $filesystem
+        $adapter
             ->expects($this->at(0))
             ->method('callFilesystem')
             ->with('eio_open', [
@@ -476,7 +436,11 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($promise))
         ;
 
-        $this->assertInstanceOf('React\Filesystem\Eio\DuplexStream', $filesystem->open($filename, '+'));
+        $adapter->open($filename, '+')->then(function ($stream) {
+            $this->assertInstanceOf('React\Filesystem\Eio\DuplexStream', $stream);
+        });
+
+        $loop->run();
     }
 
     public function testExecuteDelayedCall()
