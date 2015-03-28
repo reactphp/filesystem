@@ -10,44 +10,67 @@ use React\Filesystem\ThrottledQueuedInvoker;
 
 class CallInvokerProvider extends \PHPUnit_Framework_TestCase
 {
+    protected $mockedMethods = [
+        'executeDelayedCall',
+        'callFilesystem',
+        'close',
+    ];
+
     public function callInvokerProvider()
     {
-        $mockedMethods = [
-            'executeDelayedCall',
-            'callFilesystem',
-            'close',
+        return [
+            'pooled' => $this->pooled(),
+            'instant' => $this->instant(),
+            'queued' => $this->queued(),
+            'throttledqueued' => $this->throttledqueued(),
         ];
+    }
 
-        $invokers = [];
-
-        $invokers['pooled'][0] = Factory::create();
-        $invokers['pooled'][1] = $this->getMock('React\Filesystem\EioAdapter', $mockedMethods, [
-            $invokers['pooled'][0],
+    protected function pooled()
+    {
+        $loop = Factory::create();
+        $adapter = $this->getMock('React\Filesystem\EioAdapter', $this->mockedMethods, [
+            $loop,
         ]);
-        $invokers['pooled'][2] = new PooledInvoker($invokers['pooled'][1]);
-        $invokers['pooled'][1]->setInvoker($invokers['pooled'][2]);
+        $invoker = new PooledInvoker($adapter);
+        $adapter->setInvoker($invoker);
 
-        $invokers['instant'][0] = Factory::create();
-        $invokers['instant'][1] = $this->getMock('React\Filesystem\EioAdapter', $mockedMethods, [
-            $invokers['instant'][0],
+        return [$loop, $adapter, $invoker];
+    }
+
+    protected function instant()
+    {
+        $loop = Factory::create();
+        $adapter = $this->getMock('React\Filesystem\EioAdapter', $this->mockedMethods, [
+            $loop,
         ]);
-        $invokers['instant'][2] = new InstantInvoker($invokers['instant'][1]);
-        $invokers['instant'][1]->setInvoker($invokers['instant'][2]);
+        $invoker = new InstantInvoker($adapter);
+        $adapter->setInvoker($invoker);
 
-        $invokers['queued'][0] = Factory::create();
-        $invokers['queued'][1] = $this->getMock('React\Filesystem\EioAdapter', $mockedMethods, [
-            $invokers['queued'][0],
+        return [$loop, $adapter, $invoker];
+    }
+
+    protected function queued()
+    {
+        $loop = Factory::create();
+        $adapter = $this->getMock('React\Filesystem\EioAdapter', $this->mockedMethods, [
+            $loop,
         ]);
-        $invokers['queued'][2] = new QueuedInvoker($invokers['pooled'][1]);
-        $invokers['queued'][1]->setInvoker($invokers['queued'][2]);
+        $invoker = new QueuedInvoker($adapter);
+        $adapter->setInvoker($invoker);
 
-        $invokers['throttledqueued'][0] = Factory::create();
-        $invokers['throttledqueued'][1] = $this->getMock('React\Filesystem\EioAdapter', $mockedMethods, [
-            $invokers['throttledqueued'][0],
+        return [$loop, $adapter, $invoker];
+    }
+
+    protected function throttledqueued()
+    {
+        $loop = Factory::create();
+        $adapter = $this->getMock('React\Filesystem\EioAdapter', $this->mockedMethods, [
+            $loop,
         ]);
-        $invokers['throttledqueued'][2] = new ThrottledQueuedInvoker($invokers['throttledqueued'][1]);
-        $invokers['throttledqueued'][1]->setInvoker($invokers['throttledqueued'][2]);
+        $invoker = new ThrottledQueuedInvoker($adapter);
+        $adapter->setInvoker($invoker);
 
-        return $invokers;
+        return [$loop, $adapter, $invoker];
     }
 }
