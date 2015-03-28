@@ -65,7 +65,7 @@ class ThrottledQueuedInvokerTest extends \PHPUnit_Framework_TestCase
         $invoker = new ThrottledQueuedInvoker($this->getMock('React\Filesystem\EioAdapter', [], [
             Factory::create(),
         ]));
-        $this->assertSame(2.3, $invoker->getInterval());
+        $this->assertSame(ThrottledQueuedInvoker::DEFAULT_INTERVAL, $invoker->getInterval());
         $invoker = new ThrottledQueuedInvoker($this->getMock('React\Filesystem\EioAdapter', [], [
             Factory::create(),
         ]), 1.3);

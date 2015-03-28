@@ -7,6 +7,8 @@ use React\Promise\Deferred;
 
 class ThrottledQueuedInvoker implements CallInvokerInterface
 {
+    const DEFAULT_INTERVAL = 0.1;
+
     /**
      * @var LoopInterface
      */
@@ -30,12 +32,13 @@ class ThrottledQueuedInvoker implements CallInvokerInterface
     /**
      * @var float
      */
-    protected $interval = 2.3;
+    protected $interval = self::DEFAULT_INTERVAL;
 
     /**
      * @param AdapterInterface $adapter
+     * @param float $interval
      */
-    public function __construct(AdapterInterface $adapter, $interval = 2.3)
+    public function __construct(AdapterInterface $adapter, $interval = self::DEFAULT_INTERVAL)
     {
         $this->loop = $adapter->getLoop();
         $this->adapter = $adapter;
