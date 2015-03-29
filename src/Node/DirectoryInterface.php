@@ -39,4 +39,10 @@ interface DirectoryInterface
      * @return \React\Promise\PromiseInterface
      */
     public function lsRecursive();
+
+    /**
+     * @param DirectoryInterface $directory
+     * @return \React\Promise\PromiseInterface
+     */
+    //public function rsync(DirectoryInterface $directory);
 }
