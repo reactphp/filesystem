@@ -7,6 +7,9 @@ use React\Promise\Deferred;
 
 class ThrottledQueuedInvoker implements CallInvokerInterface
 {
+    /**
+     * @var float
+     */
     const DEFAULT_INTERVAL = 0.1;
 
     /**
@@ -103,6 +106,11 @@ class ThrottledQueuedInvoker implements CallInvokerInterface
         });
     }
 
+    /**
+     * @param $func
+     *
+     * @return callable
+     */
     protected function filesystemResultHandler($func)
     {
         return function ($mixed) use ($func) {
