@@ -10,6 +10,7 @@ Table of Contents
 
 1. [Introduction](#introduction)
 2. [Examples](#examples)
+   * [Creating filesystem object](#creating-filesystem-object)
    * [Reading files](#reading-files)
    * [Writing files](#writing-files)
 3. [License](#license)
@@ -23,6 +24,16 @@ Examples
 --------
 
 `Adding examples here over time.`
+
+Creating filesystem object
+--------------------------
+
+```php
+<?php
+
+$loop = \React\EventLoop\Factory::create();
+$filesystem = \React\Filesystem\Filesystem::create($loop);
+```
 
 Reading files
 -------------
