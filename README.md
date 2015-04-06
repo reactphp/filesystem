@@ -11,8 +11,9 @@ Table of Contents
 1. [Introduction](#introduction)
 2. [Examples](#examples)
    * [Creating filesystem object](#creating-filesystem-object)
-   * [Reading files](#reading-files)
-   * [Writing files](#writing-files)
+   * [File object](#file-object)
+     * [Reading files](#reading-files)
+     * [Writing files](#writing-files)
 3. [License](#license)
 
 Introduction
@@ -33,6 +34,18 @@ Creating filesystem object
 
 $loop = \React\EventLoop\Factory::create();
 $filesystem = \React\Filesystem\Filesystem::create($loop);
+```
+
+File object
+--------------------------
+
+```php
+<?php
+
+$loop = \React\EventLoop\Factory::create();
+$filesystem = \React\Filesystem\Filesystem::create($loop);
+
+$file = $filesystem->file(__FILE__); // Returns a \React\Filesystem\Node\FileInterface compatible object
 ```
 
 Reading files
