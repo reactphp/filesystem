@@ -14,6 +14,7 @@ Table of Contents
    * [File object](#file-object)
      * [Reading files](#reading-files)
      * [Writing files](#writing-files)
+   * [Directory object](#directory-object)
 3. [License](#license)
 
 Introduction
@@ -95,6 +96,18 @@ $filesystem->file('test.txt')->open('cwt')->then(function ($stream) {
     $stream->write('d');
     $stream->end('e');
 });
+```
+
+Directory object
+--------------------------
+
+```php
+<?php
+
+$loop = \React\EventLoop\Factory::create();
+$filesystem = \React\Filesystem\Filesystem::create($loop);
+
+$dir = $filesystem->dir(__DIR__); // Returns a \React\Filesystem\Node\DirectoryInterface compatible object
 ```
 
 License
