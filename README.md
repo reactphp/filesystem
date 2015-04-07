@@ -15,6 +15,7 @@ Table of Contents
      * [Reading files](#reading-files)
      * [Writing files](#writing-files)
    * [Directory object](#directory-object)
+     * [List contents](#list-contents)
 3. [License](#license)
 
 Introduction
@@ -108,6 +109,17 @@ $loop = \React\EventLoop\Factory::create();
 $filesystem = \React\Filesystem\Filesystem::create($loop);
 
 $dir = $filesystem->dir(__DIR__); // Returns a \React\Filesystem\Node\DirectoryInterface compatible object
+```
+
+List contents
+-------------
+
+```php
+$filesystem->dir(__DIR__)->ls()->then(function (\SplObjectStorage $list) {
+   foreach ($list as $node) {
+       echo $node->getPath(), PHP_EOL;
+   }
+});
 ```
 
 License
