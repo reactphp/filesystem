@@ -7,7 +7,22 @@ use React\Promise\RejectedPromise;
 
 class WritableStreamTest extends \PHPUnit_Framework_TestCase
 {
-    public function testWrite()
+    public function classNamesProvider()
+    {
+        return [
+            [
+                'React\Filesystem\Eio\WritableStream',
+            ],
+            [
+                'React\Filesystem\Eio\DuplexStream',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider classNamesProvider
+     */
+    public function testWrite($className)
     {
         $path = 'foo.bar';
         $fd = '0123456789abcdef';
@@ -38,13 +53,16 @@ class WritableStreamTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($fd))
         ;
 
-        $stream = (new WritableStream($path, $fd, $filesystem));
+        $stream = (new $className($path, $fd, $filesystem));
         $stream->write('abc');
         $stream->write('def');
         $stream->write('ghijklmnopqrstuvwxyz');
     }
 
-    public function testIsWritable()
+    /**
+     * @dataProvider classNamesProvider
+     */
+    public function testIsWritable($className)
     {
         $path = 'foo.bar';
         $fd = '0123456789abcdef';
@@ -52,10 +70,13 @@ class WritableStreamTest extends \PHPUnit_Framework_TestCase
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
-        $this->assertTrue((new WritableStream($path, $fd, $filesystem))->isWritable());
+        $this->assertTrue((new $className($path, $fd, $filesystem))->isWritable());
     }
 
-    public function testIsNotWritable()
+    /**
+     * @dataProvider classNamesProvider
+     */
+    public function testIsNotWritable($className)
     {
         $path = 'foo.bar';
         $fd = '0123456789abcdef';
@@ -74,15 +95,18 @@ class WritableStreamTest extends \PHPUnit_Framework_TestCase
         ;
 
 
-        $stream = (new WritableStream($path, $fd, $filesystem));
+        $stream = (new $className($path, $fd, $filesystem));
         $stream->close();
         $this->assertTrue(!$stream->isWritable());
     }
 
-    public function testEnd()
+    /**
+     * @dataProvider classNamesProvider
+     */
+    public function testEnd($className)
     {
         $data = 'iahbfeq';
-        $stream = $this->getMock('React\Filesystem\Eio\WritableStream', [
+        $stream = $this->getMock($className, [
             'write',
             'close',
         ], [
@@ -110,9 +134,12 @@ class WritableStreamTest extends \PHPUnit_Framework_TestCase
         $stream->end($data);
     }
 
-    public function testEndNoWrite()
+    /**
+     * @dataProvider classNamesProvider
+     */
+    public function testEndNoWrite($className)
     {
-        $stream = $this->getMock('React\Filesystem\Eio\WritableStream', [
+        $stream = $this->getMock($className, [
             'write',
             'close',
         ], [
@@ -140,7 +167,10 @@ class WritableStreamTest extends \PHPUnit_Framework_TestCase
         $stream->end();
     }
 
-    public function testClose()
+    /**
+     * @dataProvider classNamesProvider
+     */
+    public function testClose($className)
     {
         $path = 'foo.bar';
         $fd = '0123456789abcdef';
@@ -172,7 +202,7 @@ class WritableStreamTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($promise))
         ;
 
-        $stream = $this->getMock('React\Filesystem\Eio\WritableStream', [
+        $stream = $this->getMock($className, [
             'emit',
             'removeAllListeners',
         ], [
@@ -202,7 +232,10 @@ class WritableStreamTest extends \PHPUnit_Framework_TestCase
         $stream->close();
     }
 
-    public function testAlreadyClosed()
+    /**
+     * @dataProvider classNamesProvider
+     */
+    public function testAlreadyClosed($className)
     {
         $path = 'foo.bar';
         $fd = '0123456789abcdef';
@@ -221,7 +254,7 @@ class WritableStreamTest extends \PHPUnit_Framework_TestCase
         ;
 
 
-        $stream = (new WritableStream($path, $fd, $filesystem));
+        $stream = (new $className($path, $fd, $filesystem));
         $stream->close();
         $stream->close();
     }

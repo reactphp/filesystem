@@ -257,7 +257,7 @@ class EioAdapter implements AdapterInterface
         return $deferred->promise();
     }
 
-    protected function executeDelayedCall($function, $args, $errorResultCode, $deferred)
+    protected function executeDelayedCall($function, $args, $errorResultCode, Deferred $deferred)
     {
         $this->register();
         $args[] = EIO_PRI_DEFAULT;

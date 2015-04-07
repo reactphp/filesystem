@@ -1,6 +1,6 @@
 <?php
 
-echo 'Warning this example uses 850MB in disk space and at least that in memory. If your machine can\'t handle that please kill this example now. It will start in 10 seconds otherwise.', PHP_EOL, PHP_EOL, PHP_EOL;
+echo 'Warning this example uses 850MB in disk space and at least that in memory. If your machine can\'t handle that please kill this example now otherwise it will start in 10 seconds otherwise.', PHP_EOL, PHP_EOL, PHP_EOL;
 sleep(10);
 echo 'Starting';
 usleep(25000);
@@ -23,22 +23,23 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 $loop = \React\EventLoop\Factory::create();
 
 $fileName = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'react_filesystem_file_duplex_stream_' . uniqid();
-echo $fileName;
 $file = \React\Filesystem\Filesystem::create($loop)->file($fileName);
-$file->open('c+')
-->then(function (\React\Filesystem\Stream\DuplexStreamInterface $stream) use ($file, $fileName, $generatedFileContents, &$readedFileContents) {
-    $stream->write($generatedFileContents);
+$file->open('ct+')
+->then(function (\React\Filesystem\Stream\DuplexStreamInterface $stream) use ($loop, $file, $fileName, $generatedFileContents, &$readedFileContents) {
+    $stream->on('end', function ($stream) use ($generatedFileContents, &$readedFileContents) {
+        if (strlen($generatedFileContents) != strlen($readedFileContents)) {
+            $stream->resume();
+        }
+    });
     $stream->on('data', function ($data) use (&$readedFileContents) {
         $readedFileContents .= $data;
     });
-    $stream->on('end', function (\React\Filesystem\Stream\DuplexStreamInterface $stream) {
-        $stream->close();
-    });
     $stream->resume();
+    $stream->write($generatedFileContents);
 });
 
+$loop->run();
 $file->remove();
-
 $loop->run();
 
 if ($generatedFileContents == $readedFileContents) {
