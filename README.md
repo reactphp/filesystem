@@ -10,8 +10,11 @@ Table of Contents
 
 1. [Introduction](#introduction)
 2. [Examples](#examples)
-   * [Reading files](#reading-files)
-   * [Writing files](#writing-files)
+   * [Creating filesystem object](#creating-filesystem-object)
+   * [File object](#file-object)
+     * [Reading files](#reading-files)
+     * [Writing files](#writing-files)
+   * [Directory object](#directory-object)
 3. [License](#license)
 
 Introduction
@@ -23,6 +26,28 @@ Examples
 --------
 
 `Adding examples here over time.`
+
+Creating filesystem object
+--------------------------
+
+```php
+<?php
+
+$loop = \React\EventLoop\Factory::create();
+$filesystem = \React\Filesystem\Filesystem::create($loop);
+```
+
+File object
+--------------------------
+
+```php
+<?php
+
+$loop = \React\EventLoop\Factory::create();
+$filesystem = \React\Filesystem\Filesystem::create($loop);
+
+$file = $filesystem->file(__FILE__); // Returns a \React\Filesystem\Node\FileInterface compatible object
+```
 
 Reading files
 -------------
@@ -71,6 +96,18 @@ $filesystem->file('test.txt')->open('cwt')->then(function ($stream) {
     $stream->write('d');
     $stream->end('e');
 });
+```
+
+Directory object
+--------------------------
+
+```php
+<?php
+
+$loop = \React\EventLoop\Factory::create();
+$filesystem = \React\Filesystem\Filesystem::create($loop);
+
+$dir = $filesystem->dir(__DIR__); // Returns a \React\Filesystem\Node\DirectoryInterface compatible object
 ```
 
 License
