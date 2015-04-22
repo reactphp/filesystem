@@ -141,7 +141,7 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
         $parentPath = implode(DIRECTORY_SEPARATOR, $parentPath);
 
         $parentDirectory = new Directory($parentPath, $this->filesystem);
-        $parentDirectory->stat()->then(null, function () use ($parentDirectory) {
+        return $parentDirectory->stat()->then(null, function () use ($parentDirectory) {
             return $parentDirectory->createRecursive();
         })->then(function () {
             return $this->create();
