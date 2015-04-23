@@ -118,9 +118,9 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
     /**
      * {@inheritDoc}
      */
-    public function create()
+    public function create($mode = AdapterInterface::CREATION_MODE)
     {
-        return $this->filesystem->mkdir($this->path);
+        return $this->filesystem->mkdir($this->path, $mode);
     }
 
     /**
@@ -134,17 +134,17 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
     /**
      * {@inheritDoc}
      */
-    public function createRecursive()
+    public function createRecursive($mode = AdapterInterface::CREATION_MODE)
     {
         $parentPath = explode(DIRECTORY_SEPARATOR, $this->path);
         array_pop($parentPath);
         $parentPath = implode(DIRECTORY_SEPARATOR, $parentPath);
 
         $parentDirectory = new Directory($parentPath, $this->filesystem);
-        $parentDirectory->stat()->then(null, function () use ($parentDirectory) {
-            return $parentDirectory->createRecursive();
-        })->then(function () {
-            return $this->create();
+        $parentDirectory->stat()->then(null, function () use ($parentDirectory, $mode) {
+            return $parentDirectory->createRecursive($mode);
+        })->then(function () use ($mode) {
+            return $this->create($mode);
         })->then(function () {
             return new FulfilledPromise();
         });
