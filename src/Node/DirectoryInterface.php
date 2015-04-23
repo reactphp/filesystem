@@ -2,12 +2,14 @@
 
 namespace React\Filesystem\Node;
 
+use React\Filesystem\AdapterInterface;
+
 interface DirectoryInterface
 {
     /**
      * @return \React\Promise\PromiseInterface
      */
-    public function create();
+    public function create($mode = AdapterInterface::CREATION_MODE);
 
     /**
      * @return \React\Promise\PromiseInterface
