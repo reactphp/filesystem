@@ -14,6 +14,11 @@ interface DirectoryInterface
     /**
      * @return \React\Promise\PromiseInterface
      */
+    public function createRecursive($mode = AdapterInterface::CREATION_MODE);
+
+    /**
+     * @return \React\Promise\PromiseInterface
+     */
     public function remove();
 
     /**
