@@ -211,6 +211,89 @@ class ChildProcessAdapterTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function testShouldInvokeRmdir()
+    {
+        // Set
+        $path = '/my/path';
+        $promise = $this->getMock('React\Promise\PromiseInterface');
+
+        // Expectation
+        $this->invoker
+            ->expects($this->once())
+            ->method('invokeCall')
+            ->with('rmdir', [$path])
+            ->willReturn($promise);
+
+        // Assertion
+        $this->assertEquals(
+            $promise,
+            $this->adapter->rmdir($path)
+        );
+    }
+
+    public function testShouldInvokeOpen()
+    {
+        // Set
+        $path = 'john.doe';
+        $flag = 'rw';
+        $mode = null;
+        $promise = $this->getMock('React\Promise\PromiseInterface');
+
+        // Expectation
+        $this->invoker
+            ->expects($this->once())
+            ->method('invokeCall')
+            ->with('open', [$path, $flag, $mode])
+            ->willReturn($promise);
+
+        // Assertion
+        $this->assertEquals(
+            $promise,
+            $this->adapter->open($path, $flag, $mode)
+        );
+    }
+
+    public function testShouldInvokeClose()
+    {
+        // Set
+        $fd = '???';
+        $promise = $this->getMock('React\Promise\PromiseInterface');
+
+        // Expectation
+        $this->invoker
+            ->expects($this->once())
+            ->method('invokeCall')
+            ->with('close', [$fd])
+            ->willReturn($promise);
+
+        // Assertion
+        $this->assertEquals(
+            $promise,
+            $this->adapter->close($fd)
+        );
+    }
+
+    public function testShouldInvokeTouch()
+    {
+        // Set
+        $path = 'john.doe';
+        $mode = 23;
+        $promise = $this->getMock('React\Promise\PromiseInterface');
+
+        // Expectation
+        $this->invoker
+            ->expects($this->once())
+            ->method('invokeCall')
+            ->with('touch', [$path, $mode])
+            ->willReturn($promise);
+
+        // Assertion
+        $this->assertEquals(
+            $promise,
+            $this->adapter->touch($path, $mode)
+        );
+    }
+
     /**
      * Call a protected property of an object
      *

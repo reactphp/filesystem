@@ -97,15 +97,19 @@ class ChildProcessAdapter implements AdapterInterface
      */
     public function rmdir($path)
     {
-        // todo
+        return $this->invoker->invokeCall('rmdir', [$path]);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function open($path, $flags, $mode = self::CREATION_MODE)
+    public function open($path, $flags, $mode = null)
     {
-        // todo
+        return $this->invoker->invokeCall('open', [
+            $path,
+            $flags,
+            $mode
+        ]);
     }
 
     /**
@@ -113,15 +117,15 @@ class ChildProcessAdapter implements AdapterInterface
      */
     public function close($fd)
     {
-        // todo
+        return $this->invoker->invokeCall('close', [$fd]);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function touch($path, $mode = self::CREATION_MODE, $time = null)
+    public function touch($path, $mode = self::CREATION_MODE)
     {
-        // todo
+        return $this->invoker->invokeCall('touch', [$path, $mode]);
     }
 
     /**
