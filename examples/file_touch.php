@@ -23,7 +23,7 @@ $file->time()->then($timesFunction)->then(function () use ($file) {
 })->then(function () use ($file) {
     return $file->time();
 })->then($timesFunction)->then(null, function ($e) {
-    die($e->getMessage() . PHP_EOL);
+    echo $e->getMessage(), PHP_EOL;
 });
 
 $loop->run();

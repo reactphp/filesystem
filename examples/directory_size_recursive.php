@@ -15,7 +15,7 @@ foreach ([
     $filesystem->dir($path)->sizeRecursive()->then(function ($size) use ($path) {
         echo 'Directory "' . $path . '" contains ' . $size['directories'] . ' directories, ' . $size['files'] . ' files and is ' . $size['size'] . ' bytes in size', PHP_EOL;
     }, function ($e) {
-        die($e->getMessage() . PHP_EOL . var_export($e->getArgs(), true) . PHP_EOL);
+        echo $e->getMessage(), PHP_EOL, var_export($e->getArgs(), true), PHP_EOL;
     });
 
 }

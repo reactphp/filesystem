@@ -15,7 +15,7 @@ $loop = \React\EventLoop\Factory::create();
     echo 'Modified timestamp: ' . $times['mtime'];
     echo "\r\n";
 }, function ($e) {
-    die($e->getMessage() . PHP_EOL);
+    echo $e->getMessage(), PHP_EOL;
 });
 
 $loop->run();

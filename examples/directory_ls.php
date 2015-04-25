@@ -9,7 +9,7 @@ $loop = \React\EventLoop\Factory::create();
         echo $node->getPath(), PHP_EOL;
     }
 }, function ($e) {
-    die($e->getMessage() . PHP_EOL);
+    echo $e->getMessage(), PHP_EOL;
 });
 
 $loop->run();

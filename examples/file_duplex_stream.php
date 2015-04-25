@@ -1,7 +1,7 @@
 <?php
 
 echo 'Warning this example uses 850MB in disk space and at least that in memory. If your machine can\'t handle that please kill this example now otherwise it will start in 10 seconds otherwise.', PHP_EOL, PHP_EOL, PHP_EOL;
-sleep(10);
+usleep(10000000);
 echo 'Starting';
 usleep(25000);
 echo '.';

@@ -12,14 +12,17 @@ $file->create()
     return $file->stat();
 })
 ->then(function ($data) use ($file) {
-    echo 'stat data: ', var_export($data, true), PHP_EOL;
+    echo 'stat data: ', PHP_EOL;
+    foreach ($data as $key => $value) {
+        echo "\t", $key, ': ', $value, PHP_EOL;
+    }
     return $file->remove();
 })
 ->then(function () {
     echo 'File removed', PHP_EOL;
     echo 'Done!', PHP_EOL;
 }, function ($e) {
-    die($e->getMessage() . PHP_EOL);
+    echo $e->getMessage(), PHP_EOL;
 });
 
 $loop->run();
