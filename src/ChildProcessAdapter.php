@@ -18,17 +18,17 @@ use React\Filesystem\ChildProcess\StreamFactory;
 class ChildProcessAdapter implements AdapterInterface
 {
     /**
-     * @var React\EventLoop\LoopInterface
+     * @var LoopInterface
      */
     protected $loop;
 
     /**
-     * @var React\Filesystem\ChildProcess\PooledInvoker
+     * @var \React\Filesystem\ChildProcess\PooledInvoker
      */
     protected $invoker;
 
     /**
-     * @var React\Filesystem\FlagResolver
+     * @var \React\Filesystem\FlagResolver
      */
     protected $permissionResolver;
 
