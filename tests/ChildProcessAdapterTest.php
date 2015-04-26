@@ -294,6 +294,51 @@ class ChildProcessAdapterTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function testShouldInvokeRead()
+    {
+        // Set
+        $path = $this->getMock('React\Filesystem\Node\FileInterface');
+        $length = 23;
+        $offset = 14;
+        $promise = $this->getMock('React\Promise\PromiseInterface');
+
+        // Expectation
+        $this->invoker
+            ->expects($this->once())
+            ->method('invokeCall')
+            ->with('read', [$path, $length, $offset])
+            ->willReturn($promise);
+
+        // Assertion
+        $this->assertEquals(
+            $promise,
+            $this->adapter->read($path, $length, $offset)
+        );
+    }
+
+    public function testShouldInvokeWrite()
+    {
+        // Set
+        $path    = $this->getMock('React\Filesystem\Node\FileInterface');
+        $data    = 'foobar';
+        $length  = 23;
+        $offset  = 14;
+        $promise = $this->getMock('React\Promise\PromiseInterface');
+
+        // Expectation
+        $this->invoker
+            ->expects($this->once())
+            ->method('invokeCall')
+            ->with('write', [$path, $data, $length, $offset])
+            ->willReturn($promise);
+
+        // Assertion
+        $this->assertEquals(
+            $promise,
+            $this->adapter->write($path, $data, $length, $offset)
+        );
+    }
+
     /**
      * Call a protected property of an object
      *

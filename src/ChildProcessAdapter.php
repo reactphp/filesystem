@@ -133,7 +133,11 @@ class ChildProcessAdapter implements AdapterInterface
      */
     public function read($fileDescriptor, $length, $offset)
     {
-        // todo
+        return $this->invoker->invokeCall('read', [
+            $fileDescriptor,
+            $length,
+            $offset
+        ]);
     }
 
     /**
@@ -141,7 +145,12 @@ class ChildProcessAdapter implements AdapterInterface
      */
     public function write($fileDescriptor, $data, $length, $offset)
     {
-        // todo
+        return $this->invoker->invokeCall('write', [
+            $fileDescriptor,
+            $data,
+            $length,
+            $offset
+        ]);
     }
 
     /**
