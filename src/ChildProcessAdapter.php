@@ -5,10 +5,31 @@ use React\EventLoop\LoopInterface;
 use React\Filesystem\ChildProcess\PooledInvoker as ChildProcessInvoker;
 use React\Filesystem\ChildProcess\StreamFactory;
 
+/**
+ * ChildProcessAdapter
+ *
+ * The ChildProcess adapter will run a script as a child process using
+ * react/child-process to interact with the files using the default PHP
+ * filesystem functions. By runing a child-process, the interaction with the
+ * files will be done asynchronously.
+ *
+ * @package  React\Filesystem
+ */
 class ChildProcessAdapter implements AdapterInterface
 {
+    /**
+     * @var React\EventLoop\LoopInterface
+     */
     protected $loop;
+
+    /**
+     * @var React\Filesystem\ChildProcess\PooledInvoker
+     */
     protected $invoker;
+
+    /**
+     * @var React\Filesystem\FlagResolver
+     */
     protected $permissionResolver;
 
     public function __construct(LoopInterface $loop)
