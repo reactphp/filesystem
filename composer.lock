@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "7d9ca94edf3dc267e6711b2106bc84a0",
+    "hash": "b6c732c66c51e425cf1b811f2de17fb8",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -51,6 +51,50 @@
                 "event-emitter"
             ],
             "time": "2012-11-02 14:49:47"
+        },
+        {
+            "name": "react/child-process",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/reactphp/child-process.git",
+                "reference": "a75cb3e7d444abfea339bc40ad9ced7ba78d4afa"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/reactphp/child-process/zipball/a75cb3e7d444abfea339bc40ad9ced7ba78d4afa",
+                "reference": "a75cb3e7d444abfea339bc40ad9ced7ba78d4afa",
+                "shasum": ""
+            },
+            "require": {
+                "evenement/evenement": "~2.0",
+                "php": ">=5.4.0",
+                "react/event-loop": "0.4.*",
+                "react/stream": "0.4.*"
+            },
+            "require-dev": {
+                "sebastian/environment": "~1.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.5-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "React\\ChildProcess\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Library for executing child processes.",
+            "keywords": [
+                "process"
+            ],
+            "time": "2014-08-08 23:27:29"
         },
         {
             "name": "react/event-loop",
@@ -191,7 +235,9 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "react/child-process": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
