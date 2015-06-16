@@ -89,12 +89,12 @@ class File implements NodeInterface, FileInterface, GenericOperationInterface
     /**
      * {@inheritDoc}
      */
-    public function create()
+    public function create($mode = AdapterInterface::CREATION_MODE, $time = null)
     {
         return $this->stat()->then(function () {
             return new RejectedPromise(new \Exception('File exists'));
-        }, function () {
-            return $this->filesystem->touch($this->filename);
+        }, function () use ($mode, $time) {
+            return $this->filesystem->touch($this->filename, $mode, $time);
         });
     }
 
@@ -102,21 +102,21 @@ class File implements NodeInterface, FileInterface, GenericOperationInterface
     /**
      * {@inheritDoc}
      */
-    public function touch()
+    public function touch($mode = AdapterInterface::CREATION_MODE, $time = null)
     {
-        return $this->filesystem->touch($this->filename);
+        return $this->filesystem->touch($this->filename, $mode, $time);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function open($flags)
+    public function open($flags, $mode = AdapterInterface::CREATION_MODE)
     {
         if ($this->open === true) {
             return new RejectedPromise();
         }
 
-        return $this->filesystem->open($this->filename, $flags)->then(function (GenericStreamInterface $stream) {
+        return $this->filesystem->open($this->filename, $flags, $mode)->then(function (GenericStreamInterface $stream) {
             $this->open = true;
             $this->fileDescriptor = $stream->getFiledescriptor();
             return $stream;

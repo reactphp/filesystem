@@ -20,9 +20,11 @@ interface FileInterface
 
     /**
      * @param $flags
-     * @return \React\Promise\PromiseInterface
+     * @param string $mode
+     * @param null $time
+     * @return mixed
      */
-    public function open($flags);
+    public function open($flags, $mode = AdapterInterface::CREATION_MODE);
 
     /**
      * @return \React\Promise\PromiseInterface
@@ -43,10 +45,10 @@ interface FileInterface
     /**
      * @return \React\Promise\PromiseInterface
      */
-    public function create();
+    public function create($mode = AdapterInterface::CREATION_MODE, $time = null);
 
     /**
      * @return \React\Promise\PromiseInterface
      */
-    public function touch();
+    public function touch($mode = AdapterInterface::CREATION_MODE, $time = null);
 }
