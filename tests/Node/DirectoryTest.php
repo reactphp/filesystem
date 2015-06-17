@@ -3,6 +3,7 @@
 namespace React\Tests\Filesystem\Node;
 
 use React\Filesystem\Node\Directory;
+use React\Promise\FulfilledPromise;
 
 class DirectoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -56,7 +57,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
-        $promise = $this->getMock('React\Promise\PromiseInterface');
+        $promise = new FulfilledPromise();
 
         $filesystem
             ->expects($this->once())
@@ -65,7 +66,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($promise))
         ;
 
-        $this->assertSame($promise, (new Directory($path, $filesystem))->create());
+        $this->assertInstanceOf('React\Promise\PromiseInterface', (new Directory($path, $filesystem))->create());
     }
 
     public function testRemove()

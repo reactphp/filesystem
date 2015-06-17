@@ -120,7 +120,21 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
      */
     public function create($mode = AdapterInterface::CREATION_MODE)
     {
-        return $this->filesystem->mkdir($this->path, $mode);
+        return $this->filesystem->mkdir($this->path, $mode)->then(function () {
+            $deferred = new Deferred();
+
+            $check = function () use (&$check, $deferred) {
+                $this->stat()->then(function () use ($deferred) {
+                    $deferred->resolve();
+                }, function () use (&$check) {
+                    $this->filesystem->getLoop()->addTimer(0.1, $check);
+                });
+            };
+
+            $this->filesystem->getLoop()->addTimer(0.1, $check);
+
+            return $deferred->promise();
+        });
     }
 
     /**
