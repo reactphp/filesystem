@@ -16,4 +16,9 @@ interface CallInvokerInterface
      * @return \React\Promise\PromiseInterface
      */
     public function invokeCall($function, $args, $errorResultCode = -1);
+
+    /**
+     * @return bool
+     */
+    public function isEmpty();
 }

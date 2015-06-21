@@ -54,10 +54,13 @@ class QueuedInvokerTest extends \PHPUnit_Framework_TestCase
 
 
         $invoker = new QueuedInvoker($filesystem);
+        $this->assertTrue($invoker->isEmpty());
         foreach ($function as $key => $value) {
             $invoker->invokeCall($function[$key], $args[$key], $errorResultCode[$key]);
         }
+        $this->assertFalse($invoker->isEmpty());
 
         $loop->run();
+        $this->assertTrue($invoker->isEmpty());
     }
 }

@@ -74,6 +74,14 @@ class PooledInvoker implements CallInvokerInterface
         });
     }
 
+    /**
+     * @return bool
+     */
+    public function isEmpty()
+    {
+        return $this->callQueue->isEmpty();
+    }
+
     protected function processQueue()
     {
         $this->loop->futureTick(function () {

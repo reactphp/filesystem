@@ -38,4 +38,12 @@ class InstantInvoker implements CallInvokerInterface
             adapter->
             callFilesystem($function, $args, $errorResultCode);
     }
+
+    /**
+     * @return bool
+     */
+    public function isEmpty()
+    {
+        return true;
+    }
 }

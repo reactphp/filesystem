@@ -30,6 +30,8 @@ class InstantInvokerTest extends \PHPUnit_Framework_TestCase
 
 
         $invoker = new InstantInvoker($filesystem);
+        $this->assertTrue($invoker->isEmpty());
         $invoker->invokeCall($function, $args, $errorResultCode);
+        $this->assertTrue($invoker->isEmpty());
     }
 }
