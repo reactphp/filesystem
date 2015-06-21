@@ -95,6 +95,23 @@ interface AdapterInterface
     public function open($path, $flags, $mode = self::CREATION_MODE);
 
     /**
+     * @param $fileDescriptor
+     * @param int $length
+     * @param int $offset
+     * @return \React\Promise\PromiseInterface
+     */
+    public function read($fileDescriptor, $length, $offset);
+
+    /**
+     * @param $fileDescriptor
+     * @param string $data
+     * @param int $length
+     * @param int $offset
+     * @return \React\Promise\PromiseInterface
+     */
+    public function write($fileDescriptor, $data, $length, $offset);
+
+    /**
      * @param resource $fd
      * @return \React\Promise\PromiseInterface
      */
