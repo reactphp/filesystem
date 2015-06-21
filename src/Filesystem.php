@@ -26,7 +26,6 @@ class Filesystem
     /**
      * @param AdapterInterface $adapter
      * @return static
-     * @throws NoAdapterException
      */
     public static function createFromAdapter(AdapterInterface $adapter)
     {
