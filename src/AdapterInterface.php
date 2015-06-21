@@ -116,4 +116,11 @@ interface AdapterInterface
      * @return \React\Promise\PromiseInterface
      */
     public function close($fd);
+
+    /**
+     * @param string $fromPath
+     * @param string $toPath
+     * @return \React\Promise\PromiseInterface
+     */
+    public function rename($fromPath, $toPath);
 }
