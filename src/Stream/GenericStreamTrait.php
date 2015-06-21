@@ -28,11 +28,59 @@ trait GenericStreamTrait
     }
 
     /**
+     * @return AdapterInterface
+     */
+    public function getFilesystem()
+    {
+        return $this->filesystem;
+    }
+
+    /**
+     * @param AdapterInterface $filesystem
+     */
+    public function setFilesystem($filesystem)
+    {
+        $this->filesystem = $filesystem;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function getFiledescriptor()
     {
         return $this->fileDescriptor;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isClosed()
+    {
+        return $this->closed;
+    }
+
+    /**
+     * @param boolean $closed
+     */
+    public function setClosed($closed)
+    {
+        $this->closed = $closed;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPath()
+    {
+        return $this->path;
+    }
+
+    /**
+     * @param string $path
+     */
+    public function setPath($path)
+    {
+        $this->path = $path;
     }
 
     /**

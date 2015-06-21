@@ -2,21 +2,9 @@
 
 namespace React\Filesystem\Eio;
 
-use React\Filesystem\AdapterInterface;
-
 trait WritableStreamTrait
 {
-    /**
-     * @var AdapterInterface
-     */
-    protected $filesystem;
-
-    /**
-     * @var resource
-     */
-    protected $fileDescriptor;
     protected $writeCursor = 0;
-    protected $closed = false;
 
     /**
      * {@inheritDoc}
@@ -27,7 +15,7 @@ trait WritableStreamTrait
         $offset = $this->writeCursor;
         $this->writeCursor += $length;
 
-        return $this->filesystem->write($this->fileDescriptor, $data, $length, $offset);
+        return $this->getFilesystem()->write($this->getFileDescriptor(), $data, $length, $offset);
     }
 
     /**
@@ -47,7 +35,7 @@ trait WritableStreamTrait
      */
     public function isWritable()
     {
-        return !$this->closed;
+        return !$this->isClosed();
     }
 
     abstract function close();

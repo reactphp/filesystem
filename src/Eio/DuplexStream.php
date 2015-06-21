@@ -24,7 +24,7 @@ class DuplexStream extends EventEmitter implements DuplexStreamInterface, Generi
     public function __construct($path, $fileDescriptor, AdapterInterface $filesystem)
     {
         $this->path = $path;
-        $this->filesystem = $filesystem;
+        $this->setFilesystem($filesystem);
         $this->fileDescriptor = $fileDescriptor;
 
         $this->callInvoker = new ThrottledQueuedInvoker($filesystem);
