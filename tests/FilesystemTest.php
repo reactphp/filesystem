@@ -66,6 +66,6 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
             ->method('setInvoker')
             ->with($invoker)
         ;
-        Filesystem::create($loop, $adapter)->setInvoker($invoker);
+        Filesystem::createFromAdapter($adapter)->setInvoker($invoker);
     }
 }
