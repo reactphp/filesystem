@@ -11,18 +11,27 @@ class Filesystem
 
     /**
      * @param LoopInterface $loop
+     * @return static
+     * @throws NoAdapterException
+     */
+    public static function create(LoopInterface $loop)
+    {
+        if (extension_loaded('eio')) {
+            return new static(new EioAdapter($loop));
+        }
+
+        throw new NoAdapterException();
+    }
+
+    /**
      * @param AdapterInterface $adapter
      * @return static
      * @throws NoAdapterException
      */
-    public static function create(LoopInterface $loop, AdapterInterface $adapter = null)
+    public static function createFromAdapter(AdapterInterface $adapter)
     {
         if ($adapter instanceof AdapterInterface) {
             return new static($adapter);
-        }
-
-        if (extension_loaded('eio')) {
-            return new static(new EioAdapter($loop));
         }
 
         throw new NoAdapterException();

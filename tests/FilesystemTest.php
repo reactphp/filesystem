@@ -16,11 +16,10 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
     }
     public function testCreateWithAdapter()
     {
-        $loop = $this->getMock('React\EventLoop\StreamSelectLoop');
         $this->assertInstanceOf(
             'React\Filesystem\Filesystem',
-            Filesystem::create($loop, $this->getMock('React\Filesystem\EioAdapter', [], [
-                $loop,
+            Filesystem::createFromAdapter($this->getMock('React\Filesystem\EioAdapter', [], [
+                $this->getMock('React\EventLoop\StreamSelectLoop'),
             ]))
         );
     }
