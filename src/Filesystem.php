@@ -17,7 +17,7 @@ class Filesystem
     public static function create(LoopInterface $loop)
     {
         if (extension_loaded('eio')) {
-            return new static(new EioAdapter($loop));
+            return static::createFromAdapter(new EioAdapter($loop));
         }
 
         throw new NoAdapterException();
@@ -30,11 +30,7 @@ class Filesystem
      */
     public static function createFromAdapter(AdapterInterface $adapter)
     {
-        if ($adapter instanceof AdapterInterface) {
-            return new static($adapter);
-        }
-
-        throw new NoAdapterException();
+        return new static($adapter);
     }
 
     /**
