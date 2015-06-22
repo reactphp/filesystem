@@ -104,15 +104,21 @@ class EioAdapter implements AdapterInterface
     public function ls($path, $flags = EIO_READDIR_STAT_ORDER)
     {
         return $this->readDirInvoker->invokeCall('eio_readdir', [$path, $flags], false)->then(function ($result) use ($path) {
-            return $this->processLsContents($path, $result);
+            $deferred = new Deferred();
+            $this->loop->futureTick(function () use ($path, $result, $deferred) {
+                return $this->processLsContents($path, $result, $deferred);
+            });
+            return $deferred->promise();
         });
     }
 
     /**
+     * @param $basePath
      * @param $result
-     * @return array
+     * @param $deferred
+     * @return \React\Promise\Promise
      */
-    protected function processLsContents($basePath, $result)
+    protected function processLsContents($basePath, $result, $deferred)
     {
         $list = new \SplObjectStorage();
         $promises = [];
@@ -120,7 +126,9 @@ class EioAdapter implements AdapterInterface
             foreach ($result['dents'] as $entry) {
                 $path = $basePath . DIRECTORY_SEPARATOR . $entry['name'];
                 if (isset($this->typeClassMapping[$entry['type']])) {
-                    $list->attach(new $this->typeClassMapping[$entry['type']]($path, $this));
+                    $node = new $this->typeClassMapping[$entry['type']]($path, $this);
+                    $deferred->progress($node);
+                    $list->attach($node);
                     continue;
                 }
 
@@ -134,15 +142,16 @@ class EioAdapter implements AdapterInterface
                                 return \React\Promise\resolve(new File($path, $this));
                                 break;
                         }
-                    })->then(function (NodeInterface $node) use ($list) {
+                    })->then(function (NodeInterface $node) use ($list, $deferred) {
+                        $deferred->progress($node);
                         $list->attach($node);
                     });
                 }
             }
         }
 
-        return \React\Promise\all($promises)->then(function () use ($list) {
-            return $list;
+        \React\Promise\all($promises)->then(function () use ($list, $deferred) {
+            $deferred->resolve($list);
         });
     }
 
