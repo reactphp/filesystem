@@ -6,8 +6,10 @@ use React\EventLoop\LoopInterface;
 use React\Filesystem\Node\Directory;
 use React\Filesystem\Node\File;
 use React\Filesystem\Node\NodeInterface;
+use React\Filesystem\Node\Stream;
 use React\Promise\Deferred;
 use React\Filesystem\Eio;
+use React\Stream\ReadableStream;
 
 class EioAdapter implements AdapterInterface
 {
@@ -103,13 +105,13 @@ class EioAdapter implements AdapterInterface
      */
     public function ls($path, $flags = EIO_READDIR_STAT_ORDER)
     {
-        return $this->readDirInvoker->invokeCall('eio_readdir', [$path, $flags], false)->then(function ($result) use ($path) {
-            $deferred = new Deferred();
-            $this->loop->futureTick(function () use ($path, $result, $deferred) {
-                return $this->processLsContents($path, $result, $deferred);
-            });
-            return $deferred->promise();
+        $stream = new Stream();
+
+        $this->readDirInvoker->invokeCall('eio_readdir', [$path, $flags], false)->then(function ($result) use ($path, $stream) {
+            $this->processLsContents($path, $result, $stream);
         });
+
+        return $stream;
     }
 
     /**
@@ -118,22 +120,21 @@ class EioAdapter implements AdapterInterface
      * @param $deferred
      * @return \React\Promise\Promise
      */
-    protected function processLsContents($basePath, $result, $deferred)
+    protected function processLsContents($basePath, $result, Stream $stream)
     {
-        $list = new \SplObjectStorage();
-        $promises = [];
+        $statCount = 0;
         if (isset($result['dents'])) {
             foreach ($result['dents'] as $entry) {
                 $path = $basePath . DIRECTORY_SEPARATOR . $entry['name'];
                 if (isset($this->typeClassMapping[$entry['type']])) {
                     $node = new $this->typeClassMapping[$entry['type']]($path, $this);
-                    $deferred->progress($node);
-                    $list->attach($node);
+                    $stream->emit('data', [$node]);
                     continue;
                 }
 
                 if ($entry['type'] === EIO_DT_UNKNOWN) {
-                    $promises[] = $this->stat($path)->then(function ($stat) use ($path) {
+                    $statCount++;
+                    $this->stat($path)->then(function ($stat) use ($path) {
                         switch (true) {
                             case ($stat['mode'] & 0x4000) == 0x4000:
                                 return \React\Promise\resolve(new Directory($path, $this));
@@ -142,16 +143,19 @@ class EioAdapter implements AdapterInterface
                                 return \React\Promise\resolve(new File($path, $this));
                                 break;
                         }
-                    })->then(function (NodeInterface $node) use ($list, $deferred) {
-                        $deferred->progress($node);
-                        $list->attach($node);
+                    })->then(function (NodeInterface $node) use ($stream, &$statCount) {
+                        $statCount++;
+                        $stream->emit('data', [$node]);
                     });
                 }
             }
         }
 
-        \React\Promise\all($promises)->then(function () use ($list, $deferred) {
-            $deferred->resolve($list);
+        $this->filesystem->getLoop()->addPeriodicTimer(0.01, function (TimerInterface $timer) use (&$statCount, $stream) {
+            if ($statCount === 0) {
+                $timer->cancel();
+                $stream->close();
+            }
         });
     }
 

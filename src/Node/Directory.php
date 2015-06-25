@@ -2,15 +2,19 @@
 
 namespace React\Filesystem\Node;
 
+use Evenement\EventEmitterTrait;
+use React\EventLoop\Timer\TimerInterface;
 use React\Filesystem\AdapterInterface;
 use React\Promise\Deferred;
 use React\Promise\FulfilledPromise;
 use React\Promise\RejectedPromise;
+use React\Stream\ReadableStream;
 
 class Directory implements NodeInterface, DirectoryInterface, GenericOperationInterface
 {
 
     use GenericOperationTrait;
+    use EventEmitterTrait;
 
     protected $recursiveInvoker;
 
@@ -59,6 +63,14 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
      * {@inheritDoc}
      */
     public function ls()
+    {
+        return StreamSink::promise($this->lsStreaming());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function lsStreaming()
     {
         return $this->filesystem->ls($this->path);
     }
@@ -199,35 +211,59 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
     /**
      * {@inheritDoc}
      */
-    public function lsRecursive(\SplObjectStorage $list = null)
+    public function lsRecursive()
     {
-        if ($list === null) {
-            $list = new \SplObjectStorage();
-        }
-        return $this->ls()->then(function ($nodes) use ($list) {
-            return $this->processLsRecursiveContents($nodes, $list);
-        });
+        return StreamSink::promise($this->lsRecursiveStreaming());
+    }
+
+    public function lsRecursiveStreaming()
+    {
+        return $this->processLsRecursiveContents($this->lsStreaming());
     }
 
     /**
-     * @param $nodes
-     * @param $list
-     * @return \React\Promise\Promise
+     * @param $sourceStream
+     * @return Stream
      */
-    protected function processLsRecursiveContents($nodes, $list)
+    protected function processLsRecursiveContents($sourceStream)
     {
-        $promises = [];
-        foreach ($nodes as $node) {
+        $stream = new Stream();
+        $closeCount = 0;
+        $sourceStream->on('data', function (NodeInterface $node) use (&$closeCount, $stream) {
             if ($node instanceof Directory || $node instanceof File) {
-                $list->attach($node);
+                $stream->emit('data', [$node]);
             }
             if ($node instanceof Directory) {
-                $promises[] = $node->lsRecursive($list);
+                $this->streamLsIntoStream($node, $stream, $closeCount);
             }
-        }
-
-        return \React\Promise\all($promises)->then(function () use ($list) {
-            return $list;
         });
+
+        $sourceStream->on('end', function () use (&$closeCount, $stream) {
+            $this->filesystem->getLoop()->addPeriodicTimer(0.01, function (TimerInterface $timer) use (&$closeCount, $stream) {
+                if ($closeCount === 0) {
+                    $timer->cancel();
+                    $stream->close();
+                }
+            });
+        });
+
+        return $stream;
+    }
+
+    /**
+     * @param DirectoryInterface $node
+     * @param $stream
+     * @param $closeCount
+     */
+    protected function streamLsIntoStream(DirectoryInterface $node, $stream, &$closeCount)
+    {
+        $closeCount++;
+        $nodeStream = $node->lsRecursiveStreaming();
+        $nodeStream->on('end', function () use (&$closeCount) {
+            $closeCount--;
+        });
+        $nodeStream->pipe($stream, [
+            'end' => false,
+        ]);
     }
 }

@@ -33,15 +33,13 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
             $loop,
         ]);
 
-        $lsPromise = $this->getMock('React\Promise\PromiseInterface', [
-            'then',
-        ]);
+        $lsStream = $this->getMock('React\Filesystem\Node\Stream');
 
         $filesystem
             ->expects($this->once())
             ->method('ls')
             ->with()
-            ->will($this->returnValue($lsPromise))
+            ->will($this->returnValue($lsStream))
         ;
 
         $directory = new Directory($path, $filesystem);
