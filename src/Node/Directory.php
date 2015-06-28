@@ -5,10 +5,9 @@ namespace React\Filesystem\Node;
 use Evenement\EventEmitterTrait;
 use React\EventLoop\Timer\TimerInterface;
 use React\Filesystem\AdapterInterface;
+use React\Filesystem\ObjectStreamSink;
 use React\Promise\Deferred;
 use React\Promise\FulfilledPromise;
-use React\Promise\RejectedPromise;
-use React\Stream\ReadableStream;
 
 class Directory implements NodeInterface, DirectoryInterface, GenericOperationInterface
 {
@@ -64,7 +63,7 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
      */
     public function ls()
     {
-        return StreamSink::promise($this->lsStreaming());
+        return ObjectStreamSink::promise($this->lsStreaming());
     }
 
     /**
@@ -213,7 +212,7 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
      */
     public function lsRecursive()
     {
-        return StreamSink::promise($this->lsRecursiveStreaming());
+        return ObjectStreamSink::promise($this->lsRecursiveStreaming());
     }
 
     public function lsRecursiveStreaming()

@@ -1,21 +1,17 @@
 <?php
 
-namespace React\Tests\Filesystem\Node;
+namespace React\Tests\Filesystem;
 
-use React\Filesystem\Node\File;
-use React\Filesystem\Node\Stream;
-use React\Filesystem\Node\StreamSink;
-use React\Promise\Deferred;
-use React\Promise\FulfilledPromise;
-use React\Promise\RejectedPromise;
+use React\Filesystem\ObjectStream;
+use React\Filesystem\ObjectStreamSink;
 
-class StreamSinkTest extends \PHPUnit_Framework_TestCase
+class ObjectStreamSinkTest extends \PHPUnit_Framework_TestCase
 {
     public function testSink()
     {
         $node = $this->getMock('React\Filesystem\Node\NodeInterface');
-        $stream = new Stream();
-        $sink = StreamSink::promise($stream);
+        $stream = new ObjectStream();
+        $sink = ObjectStreamSink::promise($stream);
         $this->assertInstanceOf('React\Promise\PromiseInterface', $sink);
         $stream->emit('data', [$node]);
         $stream->close();

@@ -33,7 +33,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
             $loop,
         ]);
 
-        $lsStream = $this->getMock('React\Filesystem\Node\Stream');
+        $lsStream = $this->getMock('React\Filesystem\ObjectStream');
 
         $filesystem
             ->expects($this->once())

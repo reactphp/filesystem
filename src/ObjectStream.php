@@ -1,13 +1,13 @@
 <?php
 
-namespace React\Filesystem\Node;
+namespace React\Filesystem;
 
 use Evenement\EventEmitter;
 use React\Stream\ReadableStreamInterface;
 use React\Stream\Util;
 use React\Stream\WritableStreamInterface;
 
-class Stream extends EventEmitter implements ReadableStreamInterface, WritableStreamInterface
+class ObjectStream extends EventEmitter implements ReadableStreamInterface, WritableStreamInterface
 {
     protected $closed = false;
 

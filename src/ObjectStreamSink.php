@@ -1,24 +1,22 @@
 <?php
 
-namespace React\Filesystem\Node;
-
+namespace React\Filesystem;
 
 use React\Promise\Deferred;
-use React\Stream\ReadableStreamInterface;
 
-class StreamSink
+class ObjectStreamSink
 {
     /**
-     * @param ReadableStreamInterface $stream
+     * @param ObjectStream $stream
      * @return \React\Promise\Promise
      */
-    public static function promise(ReadableStreamInterface $stream)
+    public static function promise(ObjectStream $stream)
     {
         $deferred = new Deferred();
         $list = new \SplObjectStorage();
 
-        $stream->on('data', function (NodeInterface $node) use ($list) {
-            $list->attach($node);
+        $stream->on('data', function ($object) use ($list) {
+            $list->attach($object);
         });
         $stream->on('end', function () use ($deferred, $list) {
             $deferred->resolve($list);
