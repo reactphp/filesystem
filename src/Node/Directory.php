@@ -5,6 +5,7 @@ namespace React\Filesystem\Node;
 use Evenement\EventEmitterTrait;
 use React\EventLoop\Timer\TimerInterface;
 use React\Filesystem\AdapterInterface;
+use React\Filesystem\ObjectStream;
 use React\Filesystem\ObjectStreamSink;
 use React\Promise\Deferred;
 use React\Promise\FulfilledPromise;
@@ -166,7 +167,7 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
         $parentPath = implode(DIRECTORY_SEPARATOR, $parentPath);
 
         $parentDirectory = new Directory($parentPath, $this->filesystem);
-        $parentDirectory->stat()->then(null, function () use ($parentDirectory, $mode) {
+        return $parentDirectory->stat()->then(null, function () use ($parentDirectory, $mode) {
             return $parentDirectory->createRecursive($mode);
         })->then(function () use ($mode) {
             return $this->create($mode);
@@ -226,7 +227,7 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
      */
     protected function processLsRecursiveContents($sourceStream)
     {
-        $stream = new Stream();
+        $stream = new ObjectStream();
         $closeCount = 0;
         $sourceStream->on('data', function (NodeInterface $node) use (&$closeCount, $stream) {
             if ($node instanceof Directory || $node instanceof File) {

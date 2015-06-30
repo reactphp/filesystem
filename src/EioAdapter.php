@@ -3,13 +3,12 @@
 namespace React\Filesystem;
 
 use React\EventLoop\LoopInterface;
+use React\EventLoop\Timer\TimerInterface;
 use React\Filesystem\Node\Directory;
 use React\Filesystem\Node\File;
 use React\Filesystem\Node\NodeInterface;
-use React\Filesystem\Node\Stream;
 use React\Promise\Deferred;
 use React\Filesystem\Eio;
-use React\Stream\ReadableStream;
 
 class EioAdapter implements AdapterInterface
 {
@@ -105,7 +104,7 @@ class EioAdapter implements AdapterInterface
      */
     public function ls($path, $flags = EIO_READDIR_STAT_ORDER)
     {
-        $stream = new Stream();
+        $stream = new ObjectStream();
 
         $this->readDirInvoker->invokeCall('eio_readdir', [$path, $flags], false)->then(function ($result) use ($path, $stream) {
             $this->processLsContents($path, $result, $stream);
@@ -120,7 +119,7 @@ class EioAdapter implements AdapterInterface
      * @param $deferred
      * @return \React\Promise\Promise
      */
-    protected function processLsContents($basePath, $result, Stream $stream)
+    protected function processLsContents($basePath, $result, ObjectStream $stream)
     {
         $statCount = 0;
         if (isset($result['dents'])) {
@@ -151,7 +150,7 @@ class EioAdapter implements AdapterInterface
             }
         }
 
-        $this->filesystem->getLoop()->addPeriodicTimer(0.01, function (TimerInterface $timer) use (&$statCount, $stream) {
+        $this->getLoop()->addPeriodicTimer(0.01, function (TimerInterface $timer) use (&$statCount, $stream) {
             if ($statCount === 0) {
                 $timer->cancel();
                 $stream->close();
