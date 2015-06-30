@@ -4,11 +4,14 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 
 $loop = \React\EventLoop\Factory::create();
 
-$dirName = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'react_filesystem_dir_create' . DIRECTORY_SEPARATOR . uniqid() . DIRECTORY_SEPARATOR . uniqid() . DIRECTORY_SEPARATOR . uniqid();
-$dir = \React\Filesystem\Filesystem::create($loop)->dir($dirName);
+$start = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'react_filesystem_dir_create' . DIRECTORY_SEPARATOR . uniqid();
+$dirName = $start . DIRECTORY_SEPARATOR . uniqid() . DIRECTORY_SEPARATOR . uniqid();
+$filesystem = \React\Filesystem\Filesystem::create($loop);
+$startDir = $filesystem->dir($start);
+$dir = $filesystem->dir($dirName);
 echo 'Creating directory: ' . $dirName, PHP_EOL;
-$dir->createRecursive('rwxrwx---')->then(function () use ($dir) {
-    return $dir->lsRecursive();
+$dir->createRecursive('rwxrwx---')->then(function () use ($startDir) {
+    return $startDir->lsRecursive();
 })->then(function (\SplObjectStorage $list) {
     foreach ($list as $node) {
         echo $node->getPath(), PHP_EOL;
