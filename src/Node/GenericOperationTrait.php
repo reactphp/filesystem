@@ -5,6 +5,68 @@ namespace React\Filesystem\Node;
 trait GenericOperationTrait
 {
     /**
+     * @var string
+     */
+    protected $path;
+
+    /**
+     * @var string
+     */
+    protected $name;
+
+    /**
+     * @var NodeInterface|null
+     */
+    protected $parent;
+
+    /**
+     * @param string $path
+     */
+    protected function createNameNParentFromFilename($path)
+    {
+        $this->path = $path;
+
+        $pathBits = explode(NodeInterface::DS, $path);
+        $this->name = array_pop($pathBits);
+
+        if (count($pathBits) > 0) {
+            $this->parent = new Directory(implode(NodeInterface::DS, $pathBits), $this->getFilesystem());
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getPath()
+    {
+        return $this->path;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function __toString()
+    {
+        return $this->getPath();
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function getFilesystem()

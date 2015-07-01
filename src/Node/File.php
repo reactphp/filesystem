@@ -10,7 +10,6 @@ use React\Stream\BufferedSink;
 
 class File implements NodeInterface, FileInterface, GenericOperationInterface
 {
-
     use GenericOperationTrait;
 
     protected $open = false;
@@ -22,24 +21,8 @@ class File implements NodeInterface, FileInterface, GenericOperationInterface
      */
     public function __construct($filename, AdapterInterface $filesystem)
     {
-        $this->filename = $filename;
         $this->filesystem = $filesystem;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getPath()
-    {
-        return $this->filename;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function __toString()
-    {
-        return $this->getPath();
+        $this->createNameNParentFromFilename($filename);
     }
 
     /**
@@ -59,7 +42,7 @@ class File implements NodeInterface, FileInterface, GenericOperationInterface
      */
     public function size()
     {
-        return $this->filesystem->stat($this->filename)->then(function ($result) {
+        return $this->filesystem->stat($this->path)->then(function ($result) {
             return $result['size'];
         });
     }
@@ -69,7 +52,7 @@ class File implements NodeInterface, FileInterface, GenericOperationInterface
      */
     public function time()
     {
-        return $this->filesystem->stat($this->filename)->then(function ($result) {
+        return $this->filesystem->stat($this->path)->then(function ($result) {
             return [
                 'atime' => $result['atime'],
                 'ctime' => $result['ctime'],
@@ -83,7 +66,7 @@ class File implements NodeInterface, FileInterface, GenericOperationInterface
      */
     public function rename($toFilename)
     {
-        return $this->filesystem->rename($this->filename, $toFilename);
+        return $this->filesystem->rename($this->path, $toFilename);
     }
 
     /**
@@ -94,7 +77,7 @@ class File implements NodeInterface, FileInterface, GenericOperationInterface
         return $this->stat()->then(function () {
             return new RejectedPromise(new \Exception('File exists'));
         }, function () use ($mode, $time) {
-            return $this->filesystem->touch($this->filename, $mode, $time);
+            return $this->filesystem->touch($this->path, $mode, $time);
         });
     }
 
@@ -104,7 +87,7 @@ class File implements NodeInterface, FileInterface, GenericOperationInterface
      */
     public function touch($mode = AdapterInterface::CREATION_MODE, $time = null)
     {
-        return $this->filesystem->touch($this->filename, $mode, $time);
+        return $this->filesystem->touch($this->path, $mode, $time);
     }
 
     /**
@@ -116,7 +99,7 @@ class File implements NodeInterface, FileInterface, GenericOperationInterface
             return new RejectedPromise();
         }
 
-        return $this->filesystem->open($this->filename, $flags, $mode)->then(function (GenericStreamInterface $stream) {
+        return $this->filesystem->open($this->path, $flags, $mode)->then(function (GenericStreamInterface $stream) {
             $this->open = true;
             $this->fileDescriptor = $stream->getFiledescriptor();
             return $stream;
@@ -154,6 +137,6 @@ class File implements NodeInterface, FileInterface, GenericOperationInterface
      */
     public function remove()
     {
-        return $this->filesystem->unlink($this->filename);
+        return $this->filesystem->unlink($this->path);
     }
 }

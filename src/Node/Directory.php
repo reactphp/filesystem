@@ -38,25 +38,9 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
      */
     public function __construct($path, AdapterInterface $filesystem, RecursiveInvoker $recursiveInvoker = null)
     {
-        $this->path = $path;
         $this->filesystem = $filesystem;
+        $this->createNameNParentFromFilename($path);
         $this->recursiveInvoker = $recursiveInvoker;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getPath()
-    {
-        return $this->path;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function __toString()
-    {
-        return $this->getPath();
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace React\Tests\Filesystem\Node;
 
+use React\Filesystem\Node\File;
 use React\Promise\FulfilledPromise;
 
 class GenericOperationTraitTest extends \PHPUnit_Framework_TestCase
@@ -112,5 +113,47 @@ class GenericOperationTraitTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($promise));
 
         $this->assertSame($promise, $got->chown());
+    }
+
+    public function testCreateNameNParentFromFilename()
+    {
+        $node = new File('/foo/bar/baz/rabbit/kitten/index.php', $this->getMock('React\Filesystem\EioAdapter', [], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]));
+
+        foreach ([
+            [
+                'index.php',
+                '/foo/bar/baz/rabbit/kitten/index.php',
+            ],
+            [
+                'kitten',
+                '/foo/bar/baz/rabbit/kitten',
+            ],
+            [
+                'rabbit',
+                '/foo/bar/baz/rabbit',
+            ],
+            [
+                'baz',
+                '/foo/bar/baz',
+            ],
+            [
+                'bar',
+                '/foo/bar',
+            ],
+            [
+                'foo',
+                '/foo',
+            ],
+            [
+                '',
+                '',
+            ],
+        ] as $names) {
+            $this->assertSame($names[0], $node->getName());
+            $this->assertSame($names[1], $node->getPath());
+            $node = $node->getParent();
+        }
     }
 }
