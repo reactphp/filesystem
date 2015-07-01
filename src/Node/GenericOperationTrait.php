@@ -4,7 +4,6 @@ namespace React\Filesystem\Node;
 
 trait GenericOperationTrait
 {
-
     /**
      * {@inheritDoc}
      */
