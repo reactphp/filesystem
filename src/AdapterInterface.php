@@ -6,7 +6,7 @@ use React\EventLoop\LoopInterface;
 
 interface AdapterInterface
 {
-    const CREATION_MODE = 'rw-rw-rw-';
+    const CREATION_MODE = 'rwxrwx---';
 
     /**
      * @param LoopInterface $loop
