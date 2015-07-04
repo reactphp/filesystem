@@ -3,6 +3,12 @@
   "description": "Asynchronous filesystem abstraction.",
   "keywords": ["filesystem", "asynchronous"],
   "license": "MIT",
+  "authors": [
+    {
+      "name": "Cees-Jan Kiewiet",
+      "email": "ceesjank@gmail.com"
+    }
+  ],
   "require": {
     "php": ">=5.4.0",
     "ext-eio": "*",
