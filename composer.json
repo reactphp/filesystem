@@ -11,7 +11,7 @@
   ],
   "require": {
     "php": ">=5.4.0",
-    "ext-eio": "*",
+    "ext-eio": "^1.2",
     "react/event-loop": "^0.4",
     "react/promise": "~1.0|~2.0",
     "react/stream": "^0.4",
