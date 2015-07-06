@@ -1,6 +1,6 @@
 <?php
 
-use React\Filesystem\Node\DirectoryInterface;
+use React\Filesystem\Node\NodeInterface;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -12,14 +12,15 @@ $to = $filesystem->dir(sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'react_filesys
 echo 'From: ', $from->getPath(), PHP_EOL;
 echo 'To: ', $to->getPath(), PHP_EOL;
 $to->createRecursive()->then(function () use ($from, $to) {
-    return $from->copy($to);
-})->then(function (DirectoryInterface $dir) {
-    echo $dir->getPath(), PHP_EOL;
-    return $dir->lsRecursive();
-})->then(function (\SplObjectStorage $list) {
-    foreach ($list as $node) {
+    $i = 0;
+    $stream = $from->copyStreaming($to);
+    $stream->on('data', function (NodeInterface $node) use (&$i) {
         echo $node->getPath(), PHP_EOL;
-    }
+        $i++;
+    });
+    $stream->on('end', function () use (&$i) {
+        echo 'Copied ', $i, ' nodes', PHP_EOL;
+    });
 });
 
 $loop->run();
