@@ -26,6 +26,8 @@ trait GenericOperationTrait
     {
         $this->path = $path;
 
+        $path = rtrim($path, NodeInterface::DS);
+
         $pathBits = explode(NodeInterface::DS, $path);
         $this->name = array_pop($pathBits);
 

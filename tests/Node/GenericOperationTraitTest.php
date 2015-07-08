@@ -128,27 +128,27 @@ class GenericOperationTraitTest extends \PHPUnit_Framework_TestCase
             ],
             [
                 'kitten',
-                '/foo/bar/baz/rabbit/kitten',
+                '/foo/bar/baz/rabbit/kitten/',
             ],
             [
                 'rabbit',
-                '/foo/bar/baz/rabbit',
+                '/foo/bar/baz/rabbit/',
             ],
             [
                 'baz',
-                '/foo/bar/baz',
+                '/foo/bar/baz/',
             ],
             [
                 'bar',
-                '/foo/bar',
+                '/foo/bar/',
             ],
             [
                 'foo',
-                '/foo',
+                '/foo/',
             ],
             [
                 '',
-                '',
+                '/',
             ],
         ] as $names) {
             $this->assertSame($names[0], $node->getName());
