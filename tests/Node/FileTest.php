@@ -2,14 +2,27 @@
 
 namespace React\Tests\Filesystem\Node;
 
+use React\Filesystem\Node\Directory;
 use React\Filesystem\Node\File;
+use React\Filesystem\ObjectStream;
 use React\Promise\Deferred;
 use React\Promise\FulfilledPromise;
 use React\Promise\RejectedPromise;
+use React\Tests\Filesystem\UnknownNodeType;
 
 class FileTest extends \PHPUnit_Framework_TestCase
 {
     use NodeTestTrait;
+
+    public function providerToString()
+    {
+        return [
+            [
+                'foo.bar',
+                'foo.bar',
+            ],
+        ];
+    }
 
     protected function getNodeClass()
     {
@@ -459,4 +472,190 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('React\Promise\PromiseInterface', (new File($path, $filesystem))->touch());
     }
 
+    public function testCopy()
+    {
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+
+        $fileFrom = $this->getMock('React\Filesystem\Node\File', [
+            'copyStreaming',
+        ], [
+            'foo.bar',
+            $filesystem,
+        ]);
+
+        $fileTo = new File('bar.foo', $filesystem);
+
+        $fileFrom
+            ->expects($this->once())
+            ->method('copyStreaming')
+            ->with($fileTo)
+            ->will($this->returnValue(new ObjectStream()))
+        ;
+
+        $stream = $fileFrom->copy($fileTo);
+        $this->assertInstanceOf('React\Promise\PromiseInterface', $stream);
+    }
+
+    /**
+     * @expectedException UnexpectedValueException
+     */
+    public function testCopyUnknownNode()
+    {
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+
+        (new File('foo.bar', $filesystem))->copy(new UnknownNodeType());
+    }
+
+    public function testCopyFile()
+    {
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+
+        $fileFrom = $this->getMock('React\Filesystem\Node\File', [
+            'open',
+        ], [
+            'foo.bar',
+            $filesystem,
+        ]);
+
+        $streamFrom = $this->getMock('React\Filesystem\Stream\ReadableStreamInterface', [
+            'pipe',
+
+            // Must define these...
+            'isReadable',
+            'pause',
+            'resume',
+            'close',
+            'on',
+            'once',
+            'removeListener',
+            'removeAllListeners',
+            'listeners',
+            'emit',
+        ]);
+
+        $fileTo = $this->getMock('React\Filesystem\Node\File', [
+            'open',
+        ], [
+            'foo.bar',
+            $filesystem,
+        ]);
+
+        $streamTo = $this->getMock('React\Filesystem\Stream\WritableStreamInterface', [
+            'on',
+
+            // Must define these...
+            'isWritable',
+            'write',
+            'end',
+            'close',
+            'once',
+            'removeListener',
+            'removeAllListeners',
+            'listeners',
+            'emit',
+        ]);
+
+        $promiseFrom = $this->getMock('React\Promise\PromiseInterface', [
+            'then',
+        ]);
+
+        $promiseTo = $this->getMock('React\Promise\PromiseInterface', [
+            'then',
+        ]);
+
+        $streamFrom
+            ->expects($this->once())
+            ->method('pipe')
+            ->with($streamTo)
+            ->will($this->returnValue($streamTo))
+        ;
+
+        $fileFrom
+            ->expects($this->once())
+            ->method('open')
+            ->with('r', 'rwxrwx---')
+            ->will($this->returnValue($promiseFrom))
+        ;
+
+        $fileTo
+            ->expects($this->once())
+            ->method('open')
+            ->with('ctw', 'rwxrwx---')
+            ->will($this->returnValue($promiseTo))
+        ;
+
+        $streamTo
+            ->expects($this->once())
+            ->method('on')
+            ->with('end', $this->isType('callable'))
+            ->will($this->returnCallback(function ($end, $callable) {
+                $callable();
+            }))
+        ;
+
+        $promiseFrom
+            ->expects($this->once())
+            ->method('then')
+            ->with($this->isType('callable'))
+            ->will($this->returnCallback(function ($resolveCb) use ($streamFrom) {
+                return $resolveCb($streamFrom);
+            }))
+        ;
+
+        $promiseTo
+            ->expects($this->once())
+            ->method('then')
+            ->with($this->isType('callable'))
+            ->will($this->returnCallback(function ($resolveCb) use ($streamTo) {
+                return $resolveCb($streamTo);
+            }))
+        ;
+
+        $stream = $fileFrom->copyStreaming($fileTo);
+        $this->assertInstanceOf('React\Filesystem\ObjectStream', $stream);
+    }
+
+    public function testCopyDirectory()
+    {
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+
+        $file = $this->getMock('React\Filesystem\Node\File', [
+            'copyToFile',
+        ], [
+            'foo.bar',
+            $filesystem,
+        ]);
+
+        $directoryTo = new Directory('bar.foo', $filesystem);
+
+        $file
+            ->expects($this->once())
+            ->method('copyToFile')
+            ->with($this->isInstanceOf('React\Filesystem\Node\File'))
+            ->will($this->returnValue(new ObjectStream()))
+        ;
+
+        $stream = $file->copyStreaming($directoryTo);
+        $this->assertInstanceOf('React\Filesystem\ObjectStream', $stream);
+    }
+
+    /**
+     * @expectedException UnexpectedValueException
+     */
+    public function testCopyStreamingUnknownNode()
+    {
+        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+            $this->getMock('React\EventLoop\StreamSelectLoop'),
+        ]);
+
+        (new File('foo.bar', $filesystem))->copyStreaming(new UnknownNodeType());
+    }
 }

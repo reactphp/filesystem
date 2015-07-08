@@ -19,6 +19,14 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
     protected $recursiveInvoker;
 
     /**
+     * {@inheritDoc}
+     */
+    public function getPath()
+    {
+        return $this->path . NodeInterface::DS;
+    }
+
+    /**
      * @return RecursiveInvoker
      */
     protected function getRecursiveInvoker()
@@ -39,6 +47,7 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
     public function __construct($path, AdapterInterface $filesystem, RecursiveInvoker $recursiveInvoker = null)
     {
         $this->filesystem = $filesystem;
+
         $this->createNameNParentFromFilename($path);
         $this->recursiveInvoker = $recursiveInvoker;
     }
@@ -127,7 +136,7 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
                 });
             };
 
-            $this->filesystem->getLoop()->addTimer(0.1, $check);
+            $check();
 
             return $deferred->promise();
         });
@@ -249,5 +258,70 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
         $nodeStream->pipe($stream, [
             'end' => false,
         ]);
+    }
+
+    public function copy(NodeInterface $node)
+    {
+        return ObjectStreamSink::promise($this->copyStreaming($node));
+    }
+
+    /**
+     * @param NodeInterface $node
+     * @return ObjectStream
+     */
+    public function copyStreaming(NodeInterface $node)
+    {
+        if ($node instanceof DirectoryInterface) {
+            return $this->copyToDirectory($node);
+        }
+
+        throw new \UnexpectedValueException('Unsupported node type');
+    }
+
+    protected function copyToDirectory(DirectoryInterface $targetNode)
+    {
+        $promises = [];
+        $objectStream = new ObjectStream();
+
+        $stream = $this->lsStreaming();
+        $stream->on('data', function (NodeInterface $node) use ($targetNode, &$promises, $objectStream) {
+            $deferred = new Deferred();
+            $promises[] = $deferred->promise();
+
+            $stream = $this->handleStreamingCopyNode($node, $targetNode);
+            $stream->on('end', function () use ($deferred) {
+                $deferred->resolve();
+            });
+            $stream->pipe($objectStream , [
+                'end' => false,
+            ]);
+        });
+        $stream->on('end', function () use ($objectStream, &$promises, $targetNode) {
+            \React\Promise\all($promises)->then(function () use ($objectStream, $targetNode) {
+                $objectStream->end();
+            });
+        });
+
+        return $objectStream;
+    }
+
+    protected function handleStreamingCopyNode(NodeInterface $node, DirectoryInterface $targetNode)
+    {
+        if ($node instanceof FileInterface) {
+            return $node->copyStreaming($targetNode);
+        }
+
+        if ($node instanceof DirectoryInterface) {
+            $stream = new ObjectStream();
+            $newDir = new Directory($targetNode->getPath() . $node->getName(), $this->filesystem);
+
+            $newDir->stat()->then(null, function () use ($newDir) {
+                return $newDir->createRecursive();
+            })->then(function () use ($node, $newDir, $stream) {
+                $node->copyStreaming($newDir)->pipe($stream);
+            });
+
+            return $stream;
+        }
     }
 }

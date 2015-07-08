@@ -3,7 +3,12 @@
 namespace React\Filesystem\Node;
 
 use React\Filesystem\AdapterInterface;
+use React\Filesystem\ObjectStream;
+use React\Filesystem\ObjectStreamSink;
 use React\Filesystem\Stream\GenericStreamInterface;
+use React\Filesystem\Stream\ReadableStreamInterface;
+use React\Filesystem\Stream\WritableStreamInterface;
+use React\Promise\Deferred;
 use React\Promise\FulfilledPromise;
 use React\Promise\RejectedPromise;
 use React\Stream\BufferedSink;
@@ -138,5 +143,47 @@ class File implements NodeInterface, FileInterface, GenericOperationInterface
     public function remove()
     {
         return $this->filesystem->unlink($this->path);
+    }
+
+    /**
+     * @param NodeInterface $node
+     * @return \React\Promise\PromiseInterface
+     */
+    public function copy(NodeInterface $node)
+    {
+        return ObjectStreamSink::promise($this->copyStreaming($node));
+    }
+
+    public function copyStreaming(NodeInterface $node)
+    {
+        if ($node instanceof FileInterface) {
+            return $this->copyToFile($node);
+        }
+
+        if ($node instanceof DirectoryInterface) {
+            return $this->copyToDirectory($node);
+        }
+
+        throw new \UnexpectedValueException('Unsupported node type');
+    }
+
+    protected function copyToFile(FileInterface $node)
+    {
+        $stream = new ObjectStream();
+
+        $this->open('r')->then(function (ReadableStreamInterface $readStream) use ($node, $stream) {
+            $node->open('ctw')->then(function (WritableStreamInterface $writeStream) use ($readStream, $node, $stream) {
+                $readStream->pipe($writeStream)->on('end', function () use ($stream, $node) {
+                    $stream->end($node);
+                });
+            });
+        });
+
+        return $stream;
+    }
+
+    protected function copyToDirectory(DirectoryInterface $node)
+    {
+        return $this->copyToFile(new File($node->getPath() . $this->getName(), $this->filesystem));
     }
 }
