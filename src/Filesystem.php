@@ -5,7 +5,7 @@ namespace React\Filesystem;
 use React\EventLoop\LoopInterface;
 use React\Filesystem\Node;
 
-class Filesystem
+class Filesystem implements FilesystemInterface
 {
     protected $filesystem;
 
@@ -38,6 +38,14 @@ class Filesystem
     private function __construct(AdapterInterface $filesystem)
     {
         $this->filesystem = $filesystem;
+    }
+
+    /**
+     * @return AdapterInterface
+     */
+    public function getAdapter()
+    {
+        return $this->filesystem;
     }
 
     /**
