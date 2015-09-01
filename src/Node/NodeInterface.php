@@ -2,7 +2,7 @@
 
 namespace React\Filesystem\Node;
 
-interface NodeInterface
+interface NodeInterface extends GenericOperationInterface
 {
     const DS = DIRECTORY_SEPARATOR;
 

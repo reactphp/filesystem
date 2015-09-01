@@ -11,7 +11,7 @@ use React\Filesystem\ObjectStreamSink;
 use React\Promise\Deferred;
 use React\Promise\FulfilledPromise;
 
-class Directory implements DirectoryInterface, GenericOperationInterface
+class Directory implements DirectoryInterface
 {
 
     use GenericOperationTrait;

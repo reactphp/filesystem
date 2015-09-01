@@ -14,7 +14,7 @@ use React\Promise\FulfilledPromise;
 use React\Promise\RejectedPromise;
 use React\Stream\BufferedSink;
 
-class File implements FileInterface, GenericOperationInterface
+class File implements FileInterface
 {
     use GenericOperationTrait;
 
