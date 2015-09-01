@@ -3,6 +3,7 @@
 namespace React\Filesystem\Node;
 
 use React\Filesystem\AdapterInterface;
+use React\Filesystem\FilesystemInterface;
 use React\Filesystem\ObjectStream;
 use React\Filesystem\ObjectStreamSink;
 use React\Filesystem\Stream\GenericStreamInterface;
@@ -13,20 +14,34 @@ use React\Promise\FulfilledPromise;
 use React\Promise\RejectedPromise;
 use React\Stream\BufferedSink;
 
-class File implements NodeInterface, FileInterface, GenericOperationInterface
+class File implements FileInterface, GenericOperationInterface
 {
     use GenericOperationTrait;
 
+    /**
+     * @var bool
+     */
     protected $open = false;
     protected $fileDescriptor;
 
     /**
-     * @param string $filename
-     * @param AdapterInterface $filesystem
+     * @var FilesystemInterface
      */
-    public function __construct($filename, AdapterInterface $filesystem)
+    protected $filesystem;
+
+    /**
+     * @var AdapterInterface
+     */
+    protected $adapter;
+
+    /**
+     * @param string $filename
+     * @param FilesystemInterface $filesystem
+     */
+    public function __construct($filename, FilesystemInterface $filesystem)
     {
         $this->filesystem = $filesystem;
+        $this->adapter = $filesystem->getAdapter();
         $this->createNameNParentFromFilename($filename);
     }
 
@@ -47,7 +62,7 @@ class File implements NodeInterface, FileInterface, GenericOperationInterface
      */
     public function size()
     {
-        return $this->filesystem->stat($this->path)->then(function ($result) {
+        return $this->adapter->stat($this->path)->then(function ($result) {
             return $result['size'];
         });
     }
@@ -57,7 +72,7 @@ class File implements NodeInterface, FileInterface, GenericOperationInterface
      */
     public function time()
     {
-        return $this->filesystem->stat($this->path)->then(function ($result) {
+        return $this->adapter->stat($this->path)->then(function ($result) {
             return [
                 'atime' => $result['atime'],
                 'ctime' => $result['ctime'],
@@ -71,7 +86,7 @@ class File implements NodeInterface, FileInterface, GenericOperationInterface
      */
     public function rename($toFilename)
     {
-        return $this->filesystem->rename($this->path, $toFilename);
+        return $this->adapter->rename($this->path, $toFilename);
     }
 
     /**
@@ -82,7 +97,7 @@ class File implements NodeInterface, FileInterface, GenericOperationInterface
         return $this->stat()->then(function () {
             return new RejectedPromise(new \Exception('File exists'));
         }, function () use ($mode, $time) {
-            return $this->filesystem->touch($this->path, $mode, $time);
+            return $this->adapter->touch($this->path, $mode, $time);
         });
     }
 
@@ -92,7 +107,7 @@ class File implements NodeInterface, FileInterface, GenericOperationInterface
      */
     public function touch($mode = AdapterInterface::CREATION_MODE, $time = null)
     {
-        return $this->filesystem->touch($this->path, $mode, $time);
+        return $this->adapter->touch($this->path, $mode, $time);
     }
 
     /**
@@ -104,7 +119,7 @@ class File implements NodeInterface, FileInterface, GenericOperationInterface
             return new RejectedPromise();
         }
 
-        return $this->filesystem->open($this->path, $flags, $mode)->then(function (GenericStreamInterface $stream) {
+        return $this->adapter->open($this->path, $flags, $mode)->then(function (GenericStreamInterface $stream) {
             $this->open = true;
             $this->fileDescriptor = $stream->getFiledescriptor();
             return $stream;
@@ -120,7 +135,7 @@ class File implements NodeInterface, FileInterface, GenericOperationInterface
             return new RejectedPromise();
         }
 
-        return $this->filesystem->close($this->fileDescriptor)->then(function () {
+        return $this->adapter->close($this->fileDescriptor)->then(function () {
             $this->open = false;
             $this->fileDescriptor = null;
             return new FulfilledPromise();
@@ -142,7 +157,7 @@ class File implements NodeInterface, FileInterface, GenericOperationInterface
      */
     public function remove()
     {
-        return $this->filesystem->unlink($this->path);
+        return $this->adapter->unlink($this->path);
     }
 
     /**
@@ -184,6 +199,6 @@ class File implements NodeInterface, FileInterface, GenericOperationInterface
 
     protected function copyToDirectory(DirectoryInterface $node)
     {
-        return $this->copyToFile(new File($node->getPath() . $this->getName(), $this->filesystem));
+        return $this->copyToFile($node->getFilesystem()->file($node->getPath() . $this->getName()));
     }
 }

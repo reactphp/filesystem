@@ -2,6 +2,7 @@
 
 namespace React\Tests\Filesystem\Node;
 
+use React\Filesystem\Filesystem;
 use React\Filesystem\Node\Directory;
 use React\Filesystem\Node\File;
 use React\Filesystem\Node\NodeInterface;
@@ -32,9 +33,9 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
     public function testGetPath()
     {
         $path = 'foo.bar';
-        $this->assertSame($path . NodeInterface::DS, (new Directory($path, $this->getMock('React\Filesystem\EioAdapter', [], [
+        $this->assertSame($path . NodeInterface::DS, (new Directory($path, Filesystem::createFromAdapter($this->getMock('React\Filesystem\EioAdapter', [], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
-        ])))->getPath());
+        ]))))->getPath());
     }
 
     public function testLs()
@@ -57,7 +58,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($lsStream))
         ;
 
-        $directory = new Directory($path, $filesystem);
+        $directory = new Directory($path, Filesystem::createFromAdapter($filesystem));
 
         $this->assertInstanceOf('React\Promise\PromiseInterface', $directory->ls());
     }
@@ -79,7 +80,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($promise))
         ;
 
-        $this->assertInstanceOf('React\Promise\PromiseInterface', (new Directory($path, $filesystem))->create());
+        $this->assertInstanceOf('React\Promise\PromiseInterface', (new Directory($path, Filesystem::createFromAdapter($filesystem)))->create());
     }
 
     public function testRemove()
@@ -99,7 +100,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($promise))
         ;
 
-        $this->assertSame($promise, (new Directory($path, $filesystem))->remove());
+        $this->assertSame($promise, (new Directory($path, Filesystem::createFromAdapter($filesystem)))->remove());
     }
     public function testSize()
     {
@@ -128,7 +129,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
             'processSizeContents',
         ], [
             $path,
-            $filesystem,
+            Filesystem::createFromAdapter($filesystem),
         ]);
 
         $directory
@@ -159,7 +160,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
         ], [
             $this->getMock('React\Filesystem\Node\DirectoryInterface', [], [
                 'foo/bar/',
-                $filesystem,
+                Filesystem::createFromAdapter($filesystem),
             ]),
         ]);
 
@@ -172,7 +173,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($promise))
         ;
 
-        $this->assertSame($promise, (new Directory('foo/bar/', $filesystem, $recursiveInvoker))->chmodRecursive(123));
+        $this->assertSame($promise, (new Directory('foo/bar/', Filesystem::createFromAdapter($filesystem), $recursiveInvoker))->chmodRecursive(123));
     }
 
     public function testChownRecursive()
@@ -186,7 +187,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
         ], [
             $this->getMock('React\Filesystem\Node\DirectoryInterface', [], [
                 'foo/bar/',
-                $filesystem,
+                Filesystem::createFromAdapter($filesystem),
             ]),
         ]);
 
@@ -199,7 +200,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($promise))
         ;
 
-        $this->assertSame($promise, (new Directory('foo/bar/', $filesystem, $recursiveInvoker))->chownRecursive(1, 2));
+        $this->assertSame($promise, (new Directory('foo/bar/', Filesystem::createFromAdapter($filesystem), $recursiveInvoker))->chownRecursive(1, 2));
     }
 
     public function testRemoveRecursive()
@@ -213,7 +214,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
         ], [
             $this->getMock('React\Filesystem\Node\DirectoryInterface', [], [
                 'foo/bar/',
-                $filesystem,
+                Filesystem::createFromAdapter($filesystem),
             ]),
         ]);
 
@@ -226,7 +227,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($promise))
         ;
 
-        $this->assertSame($promise, (new Directory('foo/bar/', $filesystem, $recursiveInvoker))->removeRecursive());
+        $this->assertSame($promise, (new Directory('foo/bar/', Filesystem::createFromAdapter($filesystem), $recursiveInvoker))->removeRecursive());
     }
 
     public function testCopy()
@@ -239,10 +240,10 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
             'copyStreaming',
         ], [
             'foo.bar',
-            $filesystem,
+            Filesystem::createFromAdapter($filesystem),
         ]);
 
-        $fileTo = new Directory('bar.foo', $filesystem);
+        $fileTo = new Directory('bar.foo', Filesystem::createFromAdapter($filesystem));
 
         $directoryFrom
             ->expects($this->once())
@@ -262,9 +263,9 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
                 new UnknownNodeType(),
             ],
             [
-                new File('foo.bar', $this->getMock('React\Filesystem\EioAdapter', [], [
+                new File('foo.bar', Filesystem::createFromAdapter($this->getMock('React\Filesystem\EioAdapter', [], [
                     $this->getMock('React\EventLoop\StreamSelectLoop'),
-                ])),
+                ]))),
             ],
         ];
     }
@@ -275,45 +276,47 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testCopyStreamingUnknownNode($type)
     {
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+        $filesystem = Filesystem::createFromAdapter($this->getMock('React\Filesystem\EioAdapter', [], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
-        ]);
+        ]));
 
         (new Directory('foo.bar', $filesystem))->copyStreaming($type);
     }
 
-    public function testCopyStreaming()
+    public function testCopyStreamingABC()
     {
 
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $adapter = $this->getMock('React\Filesystem\EioAdapter', [
             'stat',
             'mkdir',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
-        $filesystem
+        $filesystem = Filesystem::createFromAdapter($adapter);
+
+        $adapter
             ->expects($this->at(0))
             ->method('stat')
             ->with('bar.foo/foo.bar/')
             ->will($this->returnValue(new RejectedPromise()))
         ;
 
-        $filesystem
+        $adapter
             ->expects($this->at(1))
             ->method('stat')
             ->with('bar.foo/')
             ->will($this->returnValue(new FulfilledPromise()))
         ;
 
-        $filesystem
+        $adapter
             ->expects($this->at(3))
             ->method('stat')
             ->with('bar.foo/foo.bar/')
             ->will($this->returnValue(new FulfilledPromise()))
         ;
 
-        $filesystem
+        $adapter
             ->expects($this->any())
             ->method('mkdir')
             ->with($this->isType('string'))

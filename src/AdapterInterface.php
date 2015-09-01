@@ -19,6 +19,12 @@ interface AdapterInterface
     public function getLoop();
 
     /**
+     * @param FilesystemInterface $filesystem
+     * @return void
+     */
+    public function setFilesystem(FilesystemInterface $filesystem);
+
+    /**
      * @param CallInvokerInterface $invoker
      * @return void
      */

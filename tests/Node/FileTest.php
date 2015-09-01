@@ -2,6 +2,7 @@
 
 namespace React\Tests\Filesystem\Node;
 
+use React\Filesystem\Filesystem;
 use React\Filesystem\Node\Directory;
 use React\Filesystem\Node\File;
 use React\Filesystem\ObjectStream;
@@ -32,9 +33,9 @@ class FileTest extends \PHPUnit_Framework_TestCase
     public function testGetPath()
     {
         $path = 'foo.bar';
-        $this->assertSame($path, (new File($path, $this->getMock('React\Filesystem\EioAdapter', [], [
+        $this->assertSame($path, (new File($path, Filesystem::createFromAdapter($this->getMock('React\Filesystem\EioAdapter', [], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
-        ])))->getPath());
+        ]))))->getPath());
     }
 
     public function testRemove()
@@ -54,7 +55,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($promise))
         ;
 
-        $this->assertSame($promise, (new File($path, $filesystem))->remove());
+        $this->assertSame($promise, (new File($path, Filesystem::createFromAdapter($filesystem)))->remove());
     }
 
     public function testRename()
@@ -75,7 +76,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($promise))
         ;
 
-        $this->assertSame($promise, (new File($pathFrom, $filesystem))->rename($pathTo));
+        $this->assertSame($promise, (new File($pathFrom, Filesystem::createFromAdapter($filesystem)))->rename($pathTo));
     }
 
     public function testExists()
@@ -89,7 +90,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
             'stat',
         ], [
             $path,
-            $filesystem,
+            Filesystem::createFromAdapter($filesystem),
         ]);
 
         $promise = $this->getMock('React\Promise\PromiseInterface');
@@ -124,7 +125,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
             'stat',
         ], [
             $path,
-            $filesystem,
+            Filesystem::createFromAdapter($filesystem),
         ]);
 
         $promise = $this->getMock('React\Promise\PromiseInterface');
@@ -167,7 +168,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($promise))
         ;
 
-        $sizePromise = (new File($path, $filesystem))->size();
+        $sizePromise = (new File($path, Filesystem::createFromAdapter($filesystem)))->size();
         $this->assertInstanceOf('React\Promise\PromiseInterface', $sizePromise);
 
         $callbackFired = false;
@@ -204,7 +205,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($promise))
         ;
 
-        $timePromise = (new File($path, $filesystem))->time();
+        $timePromise = (new File($path, Filesystem::createFromAdapter($filesystem)))->time();
         $this->assertInstanceOf('React\Promise\PromiseInterface', $timePromise);
 
         $callbackFired = false;
@@ -241,7 +242,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
         ;
 
         $callbackFired = false;
-        (new File($path, $filesystem))->create()->then(function () use (&$callbackFired) {
+        (new File($path, Filesystem::createFromAdapter($filesystem)))->create()->then(function () use (&$callbackFired) {
             $callbackFired = true;
         });
 
@@ -266,7 +267,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
         ;
 
         $callbackFired = false;
-        (new File($path, $filesystem))->create()->then(null, function ($e) use (&$callbackFired) {
+        (new File($path, Filesystem::createFromAdapter($filesystem)))->create()->then(null, function ($e) use (&$callbackFired) {
             $this->assertInstanceOf('Exception', $e);
             $this->assertSame('File exists', $e->getMessage());
             $callbackFired = true;
@@ -295,7 +296,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
         ;
 
         $callbackFired = false;
-        (new File($path, $filesystem))->open($flags)->then(function ($passStream) use (&$callbackFired, $stream) {
+        (new File($path, Filesystem::createFromAdapter($filesystem)))->open($flags)->then(function ($passStream) use (&$callbackFired, $stream) {
             $this->assertSame($stream, $passStream);
             $callbackFired = true;
         });
@@ -323,7 +324,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(new FulfilledPromise($stream)))
         ;
 
-        $file = new File($path, $filesystem);
+        $file = new File($path, Filesystem::createFromAdapter($filesystem));
         $file->open($flags);
         $this->assertInstanceOf('React\Promise\RejectedPromise', $file->open($flags));
     }
@@ -371,7 +372,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($openPromise))
         ;
 
-        $getContentsPromise = (new File($path, $filesystem))->getContents();
+        $getContentsPromise = (new File($path, Filesystem::createFromAdapter($filesystem)))->getContents();
         $this->assertInstanceOf('React\Promise\PromiseInterface', $getContentsPromise);
     }
 
@@ -439,7 +440,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($closePromise))
         ;
 
-        $file = new File($path, $filesystem);
+        $file = new File($path, Filesystem::createFromAdapter($filesystem));
         $file->open('r');
         $file->close();
     }
@@ -450,7 +451,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
-        $this->assertInstanceOf('React\Promise\RejectedPromise', (new File($path, $filesystem))->close());
+        $this->assertInstanceOf('React\Promise\RejectedPromise', (new File($path, Filesystem::createFromAdapter($filesystem)))->close());
     }
 
     public function testTouch()
@@ -469,7 +470,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($this->getMock('React\Promise\PromiseInterface')))
         ;
 
-        $this->assertInstanceOf('React\Promise\PromiseInterface', (new File($path, $filesystem))->touch());
+        $this->assertInstanceOf('React\Promise\PromiseInterface', (new File($path, Filesystem::createFromAdapter($filesystem)))->touch());
     }
 
     public function testCopy()
@@ -482,10 +483,10 @@ class FileTest extends \PHPUnit_Framework_TestCase
             'copyStreaming',
         ], [
             'foo.bar',
-            $filesystem,
+            Filesystem::createFromAdapter($filesystem),
         ]);
 
-        $fileTo = new File('bar.foo', $filesystem);
+        $fileTo = new File('bar.foo', Filesystem::createFromAdapter($filesystem));
 
         $fileFrom
             ->expects($this->once())
@@ -507,7 +508,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
-        (new File('foo.bar', $filesystem))->copy(new UnknownNodeType());
+        (new File('foo.bar', Filesystem::createFromAdapter($filesystem)))->copy(new UnknownNodeType());
     }
 
     public function testCopyFile()
@@ -520,7 +521,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
             'open',
         ], [
             'foo.bar',
-            $filesystem,
+            Filesystem::createFromAdapter($filesystem),
         ]);
 
         $streamFrom = $this->getMock('React\Filesystem\Stream\ReadableStreamInterface', [
@@ -543,7 +544,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
             'open',
         ], [
             'foo.bar',
-            $filesystem,
+            Filesystem::createFromAdapter($filesystem),
         ]);
 
         $streamTo = $this->getMock('React\Filesystem\Stream\WritableStreamInterface', [
@@ -631,10 +632,10 @@ class FileTest extends \PHPUnit_Framework_TestCase
             'copyToFile',
         ], [
             'foo.bar',
-            $filesystem,
+            Filesystem::createFromAdapter($filesystem),
         ]);
 
-        $directoryTo = new Directory('bar.foo', $filesystem);
+        $directoryTo = new Directory('bar.foo', Filesystem::createFromAdapter($filesystem));
 
         $file
             ->expects($this->once())
@@ -656,6 +657,6 @@ class FileTest extends \PHPUnit_Framework_TestCase
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
-        (new File('foo.bar', $filesystem))->copyStreaming(new UnknownNodeType());
+        (new File('foo.bar', Filesystem::createFromAdapter($filesystem)))->copyStreaming(new UnknownNodeType());
     }
 }

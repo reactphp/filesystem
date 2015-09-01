@@ -4,7 +4,7 @@ namespace React\Filesystem\Node;
 
 use React\Filesystem\AdapterInterface;
 
-interface DirectoryInterface
+interface DirectoryInterface extends NodeInterface
 {
     /**
      * @return \React\Promise\PromiseInterface

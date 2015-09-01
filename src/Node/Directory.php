@@ -5,17 +5,31 @@ namespace React\Filesystem\Node;
 use Evenement\EventEmitterTrait;
 use React\EventLoop\Timer\TimerInterface;
 use React\Filesystem\AdapterInterface;
+use React\Filesystem\FilesystemInterface;
 use React\Filesystem\ObjectStream;
 use React\Filesystem\ObjectStreamSink;
 use React\Promise\Deferred;
 use React\Promise\FulfilledPromise;
 
-class Directory implements NodeInterface, DirectoryInterface, GenericOperationInterface
+class Directory implements DirectoryInterface, GenericOperationInterface
 {
 
     use GenericOperationTrait;
     use EventEmitterTrait;
 
+    /**
+     * @var FilesystemInterface
+     */
+    protected $filesystem;
+
+    /**
+     * @var AdapterInterface
+     */
+    protected $adapter;
+
+    /**
+     * @var RecursiveInvoker
+     */
     protected $recursiveInvoker;
 
     /**
@@ -41,12 +55,13 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
 
     /**
      * @param $path
-     * @param AdapterInterface $filesystem
+     * @param FilesystemInterface $filesystem
      * @param RecursiveInvoker $recursiveInvoker
      */
-    public function __construct($path, AdapterInterface $filesystem, RecursiveInvoker $recursiveInvoker = null)
+    public function __construct($path, FilesystemInterface $filesystem, RecursiveInvoker $recursiveInvoker = null)
     {
         $this->filesystem = $filesystem;
+        $this->adapter = $filesystem->getAdapter();
 
         $this->createNameNParentFromFilename($path);
         $this->recursiveInvoker = $recursiveInvoker;
@@ -65,7 +80,7 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
      */
     public function lsStreaming()
     {
-        return $this->filesystem->ls($this->path);
+        return $this->adapter->ls($this->path);
     }
 
     /**
@@ -125,14 +140,14 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
      */
     public function create($mode = AdapterInterface::CREATION_MODE)
     {
-        return $this->filesystem->mkdir($this->path, $mode)->then(function () {
+        return $this->adapter->mkdir($this->path, $mode)->then(function () {
             $deferred = new Deferred();
 
             $check = function () use (&$check, $deferred) {
                 $this->stat()->then(function () use ($deferred) {
                     $deferred->resolve();
                 }, function () use (&$check) {
-                    $this->filesystem->getLoop()->addTimer(0.1, $check);
+                    $this->adapter->getLoop()->addTimer(0.1, $check);
                 });
             };
 
@@ -147,7 +162,7 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
      */
     public function remove()
     {
-        return $this->filesystem->rmdir($this->path);
+        return $this->adapter->rmdir($this->path);
     }
 
     /**
@@ -159,7 +174,7 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
         array_pop($parentPath);
         $parentPath = implode(DIRECTORY_SEPARATOR, $parentPath);
 
-        $parentDirectory = new Directory($parentPath, $this->filesystem);
+        $parentDirectory = $this->filesystem->dir($parentPath);
         return $parentDirectory->stat()->then(null, function () use ($parentDirectory, $mode) {
             return $parentDirectory->createRecursive($mode);
         })->then(function () use ($mode) {
@@ -209,6 +224,9 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
         return ObjectStreamSink::promise($this->lsRecursiveStreaming());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function lsRecursiveStreaming()
     {
         return $this->processLsRecursiveContents($this->lsStreaming());
@@ -232,7 +250,7 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
         });
 
         $sourceStream->on('end', function () use (&$closeCount, $stream) {
-            $this->filesystem->getLoop()->addPeriodicTimer(0.01, function (TimerInterface $timer) use (&$closeCount, $stream) {
+            $this->adapter->getLoop()->addPeriodicTimer(0.01, function (TimerInterface $timer) use (&$closeCount, $stream) {
                 if ($closeCount === 0) {
                     $timer->cancel();
                     $stream->close();
@@ -260,6 +278,10 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
         ]);
     }
 
+    /**
+     * @param NodeInterface $node
+     * @return \React\Promise\Promise
+     */
     public function copy(NodeInterface $node)
     {
         return ObjectStreamSink::promise($this->copyStreaming($node));
@@ -278,6 +300,10 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
         throw new \UnexpectedValueException('Unsupported node type');
     }
 
+    /**
+     * @param DirectoryInterface $targetNode
+     * @return ObjectStream
+     */
     protected function copyToDirectory(DirectoryInterface $targetNode)
     {
         $promises = [];
@@ -305,6 +331,11 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
         return $objectStream;
     }
 
+    /**
+     * @param NodeInterface $node
+     * @param DirectoryInterface $targetNode
+     * @return ObjectStream
+     */
     protected function handleStreamingCopyNode(NodeInterface $node, DirectoryInterface $targetNode)
     {
         if ($node instanceof FileInterface) {
@@ -313,7 +344,7 @@ class Directory implements NodeInterface, DirectoryInterface, GenericOperationIn
 
         if ($node instanceof DirectoryInterface) {
             $stream = new ObjectStream();
-            $newDir = new Directory($targetNode->getPath() . $node->getName(), $this->filesystem);
+            $newDir = $targetNode->getFilesystem()->dir($targetNode->getPath() . $node->getName());
 
             $newDir->stat()->then(null, function () use ($newDir) {
                 return $newDir->createRecursive();

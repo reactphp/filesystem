@@ -32,7 +32,7 @@ trait GenericOperationTrait
         $this->name = array_pop($pathBits);
 
         if (count($pathBits) > 0) {
-            $this->parent = new Directory(implode(NodeInterface::DS, $pathBits), $this->getFilesystem());
+            $this->parent = $this->filesystem->dir(implode(NodeInterface::DS, $pathBits));
         }
     }
 
@@ -81,7 +81,7 @@ trait GenericOperationTrait
      */
     public function stat()
     {
-        return $this->filesystem->stat($this->getPath());
+        return $this->adapter->stat($this->getPath());
     }
 
     /**
@@ -89,7 +89,7 @@ trait GenericOperationTrait
      */
     public function chmod($mode)
     {
-        return $this->filesystem->chmod($this->getPath(), $mode);
+        return $this->adapter->chmod($this->getPath(), $mode);
     }
 
     /**
@@ -97,6 +97,6 @@ trait GenericOperationTrait
      */
     public function chown($uid = -1, $gid = -1)
     {
-        return $this->filesystem->chown($this->getPath(), $uid, $gid);
+        return $this->adapter->chown($this->getPath(), $uid, $gid);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace React\Tests\Filesystem\Node;
 
+use React\Filesystem\Filesystem;
 use React\Filesystem\Node\RecursiveInvoker;
 use React\Promise\FulfilledPromise;
 
@@ -19,7 +20,7 @@ class RecursiveInvokerTest extends \PHPUnit_Framework_TestCase
             'chmod',
         ], [
             'foo.bar',
-            $filesystem,
+            Filesystem::createFromAdapter($filesystem),
         ]);
 
         $promise = $this->getMock('React\Promise\PromiseInterface');
@@ -35,7 +36,7 @@ class RecursiveInvokerTest extends \PHPUnit_Framework_TestCase
             'chmod',
         ], [
             'foo',
-            $filesystem,
+            Filesystem::createFromAdapter($filesystem),
         ]);
 
         $node
@@ -49,7 +50,7 @@ class RecursiveInvokerTest extends \PHPUnit_Framework_TestCase
             'chmodRecursive',
         ], [
             'foo',
-            $filesystem,
+            Filesystem::createFromAdapter($filesystem),
         ]);
 
         $directoryDent

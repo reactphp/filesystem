@@ -2,6 +2,7 @@
 
 namespace React\Tests\Filesystem\Node;
 
+use React\Filesystem\Filesystem;
 use React\Filesystem\Node\File;
 use React\Promise\FulfilledPromise;
 
@@ -12,11 +13,14 @@ class GenericOperationTraitTest extends \PHPUnit_Framework_TestCase
     {
         $got = $this->getMockForTrait('React\Filesystem\Node\GenericOperationTrait');
 
-        $got->filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+        $got->adapter = $this->getMock('React\Filesystem\EioAdapter', [], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
+        $got->filesystem = Filesystem::createFromAdapter($got->adapter);
+
         $this->assertSame($got->filesystem, $got->getFilesystem());
+        $this->assertSame($got->adapter, $got->getFilesystem()->getAdapter());
     }
 
     public function testStat()
@@ -30,15 +34,17 @@ class GenericOperationTraitTest extends \PHPUnit_Framework_TestCase
 
         $promise = new FulfilledPromise();
 
-        $got->filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $got->adapter = $this->getMock('React\Filesystem\EioAdapter', [
             'stat',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
-        $got->filesystem->expects($this->once())
+        $got->adapter->expects($this->once())
             ->method('stat')
             ->with('foo.bar')
             ->will($this->returnValue($promise));
+
+        $got->filesystem = Filesystem::createFromAdapter($got->adapter);
 
         $this->assertSame($promise, $got->stat());
     }
@@ -54,15 +60,17 @@ class GenericOperationTraitTest extends \PHPUnit_Framework_TestCase
 
         $promise = new FulfilledPromise();
 
-        $got->filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $got->adapter = $this->getMock('React\Filesystem\EioAdapter', [
             'chmod',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
-        $got->filesystem->expects($this->once())
+        $got->adapter->expects($this->once())
             ->method('chmod')
             ->with('foo.bar', 'abc')
             ->will($this->returnValue($promise));
+
+        $got->filesystem = Filesystem::createFromAdapter($got->adapter);
 
         $this->assertSame($promise, $got->chmod('abc'));
     }
@@ -78,15 +86,17 @@ class GenericOperationTraitTest extends \PHPUnit_Framework_TestCase
 
         $promise = new FulfilledPromise();
 
-        $got->filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $got->adapter = $this->getMock('React\Filesystem\EioAdapter', [
             'chown',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
-        $got->filesystem->expects($this->once())
+        $got->adapter->expects($this->once())
             ->method('chown')
             ->with('foo.bar', 1, 2)
             ->will($this->returnValue($promise));
+
+        $got->filesystem = Filesystem::createFromAdapter($got->adapter);
 
         $this->assertSame($promise, $got->chown(1, 2));
     }
@@ -102,24 +112,26 @@ class GenericOperationTraitTest extends \PHPUnit_Framework_TestCase
 
         $promise = new FulfilledPromise();
 
-        $got->filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $got->adapter = $this->getMock('React\Filesystem\EioAdapter', [
             'chown',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
-        $got->filesystem->expects($this->once())
+        $got->adapter->expects($this->once())
             ->method('chown')
             ->with('foo.bar', -1, -1)
             ->will($this->returnValue($promise));
+
+        $got->filesystem = Filesystem::createFromAdapter($got->adapter);
 
         $this->assertSame($promise, $got->chown());
     }
 
     public function testCreateNameNParentFromFilename()
     {
-        $node = new File('/foo/bar/baz/rabbit/kitten/index.php', $this->getMock('React\Filesystem\EioAdapter', [], [
+        $node = new File('/foo/bar/baz/rabbit/kitten/index.php', Filesystem::createFromAdapter($this->getMock('React\Filesystem\EioAdapter', [], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
-        ]));
+        ])));
 
         foreach ([
             [

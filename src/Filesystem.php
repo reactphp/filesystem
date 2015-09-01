@@ -7,7 +7,10 @@ use React\Filesystem\Node;
 
 class Filesystem implements FilesystemInterface
 {
-    protected $filesystem;
+    /**
+     * @var AdapterInterface
+     */
+    protected $adapter;
 
     /**
      * @param LoopInterface $loop
@@ -17,7 +20,7 @@ class Filesystem implements FilesystemInterface
     public static function create(LoopInterface $loop)
     {
         if (extension_loaded('eio')) {
-            return static::createFromAdapter(new EioAdapter($loop));
+            return static::setFilesystemOnAdapter(static::createFromAdapter(new EioAdapter($loop)));
         }
 
         throw new NoAdapterException();
@@ -29,15 +32,25 @@ class Filesystem implements FilesystemInterface
      */
     public static function createFromAdapter(AdapterInterface $adapter)
     {
-        return new static($adapter);
+        return static::setFilesystemOnAdapter(new static($adapter));
+    }
+
+    /**
+     * @param FilesystemInterface $filesystem
+     * @return FilesystemInterface
+     */
+    protected static function setFilesystemOnAdapter(FilesystemInterface $filesystem)
+    {
+        $filesystem->getAdapter()->setFilesystem($filesystem);
+        return $filesystem;
     }
 
     /**
      * @param AdapterInterface $filesystem
      */
-    private function __construct(AdapterInterface $filesystem)
+    private function __construct(AdapterInterface $adapter)
     {
-        $this->filesystem = $filesystem;
+        $this->adapter = $adapter;
     }
 
     /**
@@ -45,7 +58,7 @@ class Filesystem implements FilesystemInterface
      */
     public function getAdapter()
     {
-        return $this->filesystem;
+        return $this->adapter;
     }
 
     /**
@@ -54,7 +67,7 @@ class Filesystem implements FilesystemInterface
      */
     public function file($filename)
     {
-        return new Node\File($filename, $this->filesystem);
+        return new Node\File($filename, $this);
     }
 
     /**
@@ -63,7 +76,7 @@ class Filesystem implements FilesystemInterface
      */
     public function dir($path)
     {
-        return new Node\Directory($path, $this->filesystem);
+        return new Node\Directory($path, $this);
     }
 
     /**
@@ -80,6 +93,6 @@ class Filesystem implements FilesystemInterface
      */
     public function setInvoker(CallInvokerInterface $invoker)
     {
-        $this->filesystem->setInvoker($invoker);
+        $this->adapter->setInvoker($invoker);
     }
 }

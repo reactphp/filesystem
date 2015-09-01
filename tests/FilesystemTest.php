@@ -54,7 +54,7 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testSetInvoker()
+    public function testSetFilesystemAndInvoker()
     {
         $loop = $this->getMock('React\EventLoop\StreamSelectLoop');
         $adapter = $this->getMock('React\Filesystem\EioAdapter', [], [
@@ -63,6 +63,11 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
         $invoker = new InstantInvoker($adapter);
         $adapter
             ->expects($this->at(0))
+            ->method('setFilesystem')
+            ->with($this->isInstanceOf('React\Filesystem\Filesystem'))
+        ;
+        $adapter
+            ->expects($this->at(1))
             ->method('setInvoker')
             ->with($invoker)
         ;

@@ -9,20 +9,49 @@ use React\Filesystem\Node\File;
 use React\Filesystem\Node\NodeInterface;
 use React\Promise\Deferred;
 use React\Filesystem\Eio;
+use React\Promise\RejectedPromise;
 
 class EioAdapter implements AdapterInterface
 {
-    protected $typeClassMapping = [
-        EIO_DT_DIR => '\React\Filesystem\Node\Directory',
-        EIO_DT_REG => '\React\Filesystem\Node\File',
-    ];
-
+    /**
+     * @var bool
+     */
     protected $active = false;
+
+    /**
+     * @var LoopInterface
+     */
     protected $loop;
+
+    /**
+     * @var Eio\OpenFlagResolver
+     */
     protected $openFlagResolver;
+
+    /**
+     * @var Eio\PermissionFlagResolver
+     */
     protected $permissionFlagResolver;
+
+    /**
+     * @var PooledInvoker
+     */
     protected $invoker;
+
+    /**
+     * @var QueuedInvoker
+     */
     protected $readDirInvoker;
+
+    /**
+     * @var FilesystemInterface
+     */
+    protected $filesystem;
+
+    /**
+     * @var TypeDetectorInterface[]
+     */
+    protected $typeDetectors;
 
     public function __construct(LoopInterface $loop)
     {
@@ -49,6 +78,19 @@ class EioAdapter implements AdapterInterface
     public function setInvoker(CallInvokerInterface $invoker)
     {
         $this->invoker = $invoker;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setFilesystem(FilesystemInterface $filesystem)
+    {
+        $this->filesystem = $filesystem;
+
+        $this->typeDetectors = [
+            new Eio\ConstTypeDetector($this->filesystem),
+            new ModeTypeDetector($this->filesystem),
+        ];
     }
 
     /**
@@ -116,48 +158,50 @@ class EioAdapter implements AdapterInterface
     /**
      * @param $basePath
      * @param $result
-     * @param $deferred
-     * @return \React\Promise\Promise
+     * @param ObjectStream $stream
      */
     protected function processLsContents($basePath, $result, ObjectStream $stream)
     {
-        $statCount = 0;
-        if (isset($result['dents'])) {
-            foreach ($result['dents'] as $entry) {
-                $path = $basePath . DIRECTORY_SEPARATOR . $entry['name'];
-                if (isset($this->typeClassMapping[$entry['type']])) {
-                    $node = new $this->typeClassMapping[$entry['type']]($path, $this);
-                    $stream->emit('data', [$node]);
-                    continue;
-                }
-
-                if ($entry['type'] === EIO_DT_UNKNOWN) {
-                    $statCount++;
-                    $this->stat($path)->then(function ($stat) use ($path) {
-                        switch (true) {
-                            case ($stat['mode'] & 0x4000) == 0x4000:
-                                return \React\Promise\resolve(new Directory($path, $this));
-                                break;
-                            case ($stat['mode'] & 0x8000) == 0x8000:
-                                return \React\Promise\resolve(new File($path, $this));
-                                break;
-                        }
-                    })->then(function (NodeInterface $node) use ($stream, &$statCount) {
-                        $statCount++;
-                        $stream->emit('data', [$node]);
-                    });
-                }
-            }
+        if (!isset($result['dents'])) {
+            return;
         }
 
-        $this->getLoop()->addPeriodicTimer(0.01, function (TimerInterface $timer) use (&$statCount, $stream) {
-            if ($statCount === 0) {
-                $timer->cancel();
-                $stream->close();
-            }
+        $promises = [];
+
+        foreach ($result['dents'] as $entry) {
+            $path = $basePath . DIRECTORY_SEPARATOR . $entry['name'];
+            $node = [
+                'path' => $path,
+                'type' => $entry['type'],
+            ];
+            $promises[] = $this->processLsDent($node, $stream);
+        }
+
+        \React\Promise\all($promises)->then(function () use ($stream) {
+            $stream->close();
         });
     }
 
+    /**
+     * @param array $node
+     * @param ObjectStream $stream
+     * @return PromiseInterface
+     */
+    protected function processLsDent(array $node, ObjectStream $stream)
+    {
+        $promiseChain = new RejectedPromise();
+        foreach ($this->typeDetectors as $detector) {
+            $promiseChain = $promiseChain->otherwise(function () use ($node, $detector) {
+                return $detector->detect($node);
+            });
+        }
+
+        return $promiseChain->then(function ($callable) use ($node, $stream) {
+            $stream->emit('data', [
+                $callable($node['path']),
+            ]);
+        });
+    }
 
     /**
      * {@inheritDoc}

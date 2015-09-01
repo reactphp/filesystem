@@ -4,10 +4,8 @@ namespace React\Filesystem\Node;
 
 use React\Filesystem\AdapterInterface;
 
-interface FileInterface
+interface FileInterface extends NodeInterface
 {
-    public function __construct($filename, AdapterInterface $filesystem);
-
     /**
      * @return \React\Promise\PromiseInterface
      */
@@ -21,7 +19,6 @@ interface FileInterface
     /**
      * @param $flags
      * @param string $mode
-     * @param null $time
      * @return mixed
      */
     public function open($flags, $mode = AdapterInterface::CREATION_MODE);
@@ -43,11 +40,15 @@ interface FileInterface
     public function size();
 
     /**
+     * @param string $mode
+     * @param null $time
      * @return \React\Promise\PromiseInterface
      */
     public function create($mode = AdapterInterface::CREATION_MODE, $time = null);
 
     /**
+     * @param string $mode
+     * @param null $time
      * @return \React\Promise\PromiseInterface
      */
     public function touch($mode = AdapterInterface::CREATION_MODE, $time = null);
