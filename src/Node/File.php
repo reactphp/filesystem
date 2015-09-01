@@ -169,6 +169,10 @@ class File implements FileInterface
         return ObjectStreamSink::promise($this->copyStreaming($node));
     }
 
+    /**
+     * @param NodeInterface $node
+     * @return ObjectStream
+     */
     public function copyStreaming(NodeInterface $node)
     {
         if ($node instanceof FileInterface) {
@@ -182,6 +186,10 @@ class File implements FileInterface
         throw new \UnexpectedValueException('Unsupported node type');
     }
 
+    /**
+     * @param FileInterface $node
+     * @return ObjectStream
+     */
     protected function copyToFile(FileInterface $node)
     {
         $stream = new ObjectStream();
@@ -197,6 +205,10 @@ class File implements FileInterface
         return $stream;
     }
 
+    /**
+     * @param DirectoryInterface $node
+     * @return ObjectStream
+     */
     protected function copyToDirectory(DirectoryInterface $node)
     {
         return $this->copyToFile($node->getFilesystem()->file($node->getPath() . $this->getName()));
