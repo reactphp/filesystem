@@ -30,5 +30,11 @@ interface NodeInterface extends GenericOperationInterface
      * @param NodeInterface $node
      * @return \React\Promise\PromiseInterface
      */
-    //public function copy(NodeInterface $node);
+    public function copy(NodeInterface $node);
+
+    /**
+     * @param NodeInterface $node
+     * @return ObjectStream
+     */
+    public function copyStreaming(NodeInterface $node);
 }
