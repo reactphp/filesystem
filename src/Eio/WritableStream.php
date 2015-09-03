@@ -6,7 +6,7 @@ use Evenement\EventEmitter;
 use React\Filesystem\EioAdapter;
 use React\Filesystem\Stream\GenericStreamInterface;
 use React\Filesystem\Stream\GenericStreamTrait;
-use React\Filesystem\Stream\WritableStreamInterface;
+use React\Stream\WritableStreamInterface;
 
 class WritableStream extends EventEmitter implements GenericStreamInterface, WritableStreamInterface
 {

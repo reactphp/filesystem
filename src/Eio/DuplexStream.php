@@ -4,7 +4,7 @@ namespace React\Filesystem\Eio;
 
 use Evenement\EventEmitter;
 use React\Filesystem\AdapterInterface;
-use React\Filesystem\Stream\DuplexStreamInterface;
+use React\Stream\DuplexStreamInterface;
 use React\Filesystem\Stream\GenericStreamInterface;
 use React\Filesystem\Stream\GenericStreamTrait;
 use React\Filesystem\ThrottledQueuedInvoker;

@@ -524,7 +524,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
             Filesystem::createFromAdapter($filesystem),
         ]);
 
-        $streamFrom = $this->getMock('React\Filesystem\Stream\ReadableStreamInterface', [
+        $streamFrom = $this->getMock('React\Stream\ReadableStreamInterface', [
             'pipe',
 
             // Must define these...
@@ -547,7 +547,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
             Filesystem::createFromAdapter($filesystem),
         ]);
 
-        $streamTo = $this->getMock('React\Filesystem\Stream\WritableStreamInterface', [
+        $streamTo = $this->getMock('React\Stream\WritableStreamInterface', [
             'on',
 
             // Must define these...
