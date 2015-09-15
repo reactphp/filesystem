@@ -167,6 +167,7 @@ class EioAdapter implements AdapterInterface
     protected function processLsContents($basePath, $result, ObjectStream $stream)
     {
         if (!isset($result['dents'])) {
+            $stream->close();
             return;
         }
 
