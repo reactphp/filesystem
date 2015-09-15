@@ -9,6 +9,7 @@ use React\Filesystem\Node\File;
 use React\Filesystem\Node\NodeInterface;
 use React\Promise\Deferred;
 use React\Filesystem\Eio;
+use React\Promise\FulfilledPromise;
 use React\Promise\RejectedPromise;
 
 class EioAdapter implements AdapterInterface
@@ -53,6 +54,8 @@ class EioAdapter implements AdapterInterface
      */
     protected $typeDetectors;
 
+    protected $openFileLimiter;
+
     public function __construct(LoopInterface $loop)
     {
         eio_init();
@@ -62,6 +65,7 @@ class EioAdapter implements AdapterInterface
         $this->permissionFlagResolver = new Eio\PermissionFlagResolver();
         $this->invoker = new PooledInvoker($this);
         $this->readDirInvoker = new QueuedInvoker($this);
+        $this->openFileLimiter = new OpenFileLimiter();
     }
 
     /**
@@ -228,12 +232,18 @@ class EioAdapter implements AdapterInterface
     public function open($path, $flags, $mode = self::CREATION_MODE)
     {
         $flags = $this->openFlagResolver->resolve($flags);
-        return $this->invoker->invokeCall('eio_open', [
-            $path,
-            $flags,
-            $this->permissionFlagResolver->resolve($mode),
-        ])->then(function ($fileDescriptor) use ($path, $flags) {
+        $mode = $this->permissionFlagResolver->resolve($mode);
+        return $this->openFileLimiter->open()->then(function () use ($path, $flags, $mode) {
+            return $this->invoker->invokeCall('eio_open', [
+                $path,
+                $flags,
+                $mode,
+            ]);
+        })->then(function ($fileDescriptor) use ($path, $flags) {
             return Eio\StreamFactory::create($path, $fileDescriptor, $flags, $this);
+        }, function ($error) {
+            $this->openFileLimiter->close();
+            return \React\Promise\reject($error);
         });
     }
 
@@ -242,7 +252,13 @@ class EioAdapter implements AdapterInterface
      */
     public function close($fd)
     {
-        return $this->invoker->invokeCall('eio_close', [$fd]);
+        return $this->invoker->invokeCall('eio_close', [$fd])->then(function ($result) {
+            $this->openFileLimiter->close();
+            return \React\Promise\resolve($result);
+        }, function ($error) {
+            $this->openFileLimiter->close();
+            return \React\Promise\reject($error);
+        });
     }
 
     /**
