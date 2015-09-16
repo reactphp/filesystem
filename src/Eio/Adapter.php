@@ -7,9 +7,12 @@ use React\Filesystem\AdapterInterface;
 use React\Filesystem\CallInvokerInterface;
 use React\Filesystem\FilesystemInterface;
 use React\Filesystem\ModeTypeDetector;
+use React\Filesystem\ObjectStream;
 use React\Filesystem\OpenFileLimiter;
+use React\Filesystem\TypeDetectorInterface;
 use React\Promise\Deferred;
 use React\Filesystem\Eio;
+use React\Promise\PromiseInterface;
 use React\Promise\RejectedPromise;
 
 class Adapter implements AdapterInterface
@@ -35,12 +38,12 @@ class Adapter implements AdapterInterface
     protected $permissionFlagResolver;
 
     /**
-     * @var PooledInvoker
+     * @var CallInvokerInterface
      */
     protected $invoker;
 
     /**
-     * @var QueuedInvoker
+     * @var CallInvokerInterface
      */
     protected $readDirInvoker;
 
@@ -379,7 +382,7 @@ class Adapter implements AdapterInterface
         $args[] = EIO_PRI_DEFAULT;
         $args[] = function ($data, $result, $req) use ($deferred, $errorResultCode, $function, $args) {
             if ($result == $errorResultCode) {
-                $exception = new Eio\UnexpectedValueException(@eio_get_last_error($req));
+                $exception = new UnexpectedValueException(@eio_get_last_error($req));
                 $exception->setArgs($args);
                 $deferred->reject($exception);
                 return;
@@ -393,7 +396,7 @@ class Adapter implements AdapterInterface
             if (!is_string($function)) {
                 $name = get_class($function);
             }
-            $exception = new Eio\RuntimeException('Unknown error calling "' . $name . '"');
+            $exception = new RuntimeException('Unknown error calling "' . $name . '"');
             $exception->setArgs($args);
             $deferred->reject($exception);
         };
