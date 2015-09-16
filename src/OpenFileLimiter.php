@@ -10,6 +10,11 @@ class OpenFileLimiter
     /**
      * @var int
      */
+    const DEFAULT_LIMIT = 512;
+
+    /**
+     * @var int
+     */
     protected $limit = 0;
 
     /**
@@ -25,7 +30,7 @@ class OpenFileLimiter
     /**
      * @param int $limit
      */
-    public function __construct($limit = 512)
+    public function __construct($limit = self::DEFAULT_LIMIT)
     {
         $this->limit = $limit;
         $this->promises = new \SplQueue();
