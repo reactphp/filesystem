@@ -26,7 +26,7 @@ class WritableStreamTest extends \PHPUnit_Framework_TestCase
     {
         $path = 'foo.bar';
         $fd = '0123456789abcdef';
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'write',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
@@ -66,7 +66,7 @@ class WritableStreamTest extends \PHPUnit_Framework_TestCase
     {
         $path = 'foo.bar';
         $fd = '0123456789abcdef';
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
@@ -80,7 +80,7 @@ class WritableStreamTest extends \PHPUnit_Framework_TestCase
     {
         $path = 'foo.bar';
         $fd = '0123456789abcdef';
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'close',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
@@ -112,7 +112,7 @@ class WritableStreamTest extends \PHPUnit_Framework_TestCase
         ], [
             'foo.bar',
             '0123456789abcdef',
-            $this->getMock('React\Filesystem\EioAdapter', [
+            $this->getMock('React\Filesystem\Eio\Adapter', [
                 'close',
             ], [
                 $this->getMock('React\EventLoop\StreamSelectLoop'),
@@ -145,7 +145,7 @@ class WritableStreamTest extends \PHPUnit_Framework_TestCase
         ], [
             'foo.bar',
             '0123456789abcdef',
-            $this->getMock('React\Filesystem\EioAdapter', [
+            $this->getMock('React\Filesystem\Eio\Adapter', [
                 'close',
             ], [
                 $this->getMock('React\EventLoop\StreamSelectLoop'),
@@ -175,7 +175,7 @@ class WritableStreamTest extends \PHPUnit_Framework_TestCase
         $path = 'foo.bar';
         $fd = '0123456789abcdef';
 
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'close',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
@@ -239,7 +239,7 @@ class WritableStreamTest extends \PHPUnit_Framework_TestCase
     {
         $path = 'foo.bar';
         $fd = '0123456789abcdef';
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'close',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),

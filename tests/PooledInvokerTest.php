@@ -38,7 +38,7 @@ class PooledInvokerTest extends \PHPUnit_Framework_TestCase
             42,
         ];
 
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'callFilesystem',
         ], [
             $loop,

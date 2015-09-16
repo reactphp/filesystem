@@ -2,18 +2,16 @@
 
 namespace React\Filesystem\Eio;
 
-use React\Filesystem\EioAdapter;
-
 class StreamFactory
 {
     /**
      * @param string $path
      * @param resource $fileDescriptor
      * @param int $flags
-     * @param EioAdapter $filesystem
+     * @param Adapter $filesystem
      * @return DuplexStream|ReadableStream|WritableStream
      */
-    public static function create($path, $fileDescriptor, $flags, EioAdapter $filesystem)
+    public static function create($path, $fileDescriptor, $flags, Adapter $filesystem)
     {
         if ($flags == EIO_O_RDONLY) {
             return new ReadableStream($path, $fileDescriptor, $filesystem);

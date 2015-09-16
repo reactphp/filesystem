@@ -4,10 +4,10 @@ namespace React\Tests\Filesystem;
 
 use React\EventLoop\Factory;
 use React\Filesystem\Eio\PermissionFlagResolver;
-use React\Filesystem\EioAdapter;
+use React\Filesystem\Eio\Adapter;
 use React\Promise\FulfilledPromise;
 
-class EioAdapterTest extends \PHPUnit_Framework_TestCase
+class AdapterTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testEioExtensionInstalled()
@@ -19,14 +19,14 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
             'React\Filesystem\AdapterInterface',
-            new EioAdapter($this->getMock('React\EventLoop\LoopInterface'))
+            new Adapter($this->getMock('React\EventLoop\LoopInterface'))
         );
     }
 
     public function testGetLoop()
     {
         $loop = $this->getMock('React\EventLoop\LoopInterface');
-        $filesystem = new EioAdapter($loop);
+        $filesystem = new Adapter($loop);
         $this->assertSame($loop, $filesystem->getLoop());
     }
 
@@ -90,7 +90,7 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
                 ],
                 [
                     $pathName,
-                    (new PermissionFlagResolver())->resolve(EioAdapter::CREATION_MODE),
+                    (new PermissionFlagResolver())->resolve(Adapter::CREATION_MODE),
                 ],
             ],
             [
@@ -167,7 +167,7 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
 
         $loop = Factory::create();
 
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'callFilesystem',
         ], [
             $loop,
@@ -187,7 +187,7 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
 
     public function testHandleEvent()
     {
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'workPendingCount',
             'unregister',
         ], [
@@ -219,7 +219,7 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
 
     public function testHandleEventNothingToDo()
     {
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'workPendingCount',
             'unregister',
         ], [
@@ -285,7 +285,7 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($promise))
         ;
 
-        $this->assertInstanceOf('React\Promise\PromiseInterface', $adapter->touch($filename, EioAdapter::CREATION_MODE, $time));
+        $this->assertInstanceOf('React\Promise\PromiseInterface', $adapter->touch($filename, Adapter::CREATION_MODE, $time));
 
         $loop->run();
     }
@@ -387,7 +387,7 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
             ->with('eio_open', [
                 $filename,
                 EIO_O_CREAT,
-                (new PermissionFlagResolver())->resolve(EioAdapter::CREATION_MODE),
+                (new PermissionFlagResolver())->resolve(Adapter::CREATION_MODE),
             ])
             ->will($this->returnValue($promiseB))
         ;
@@ -399,7 +399,7 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(new FulfilledPromise()))
         ;
 
-        $this->assertInstanceOf('React\Promise\PromiseInterface', $adapter->touch($filename, EioAdapter::CREATION_MODE, $time));
+        $this->assertInstanceOf('React\Promise\PromiseInterface', $adapter->touch($filename, Adapter::CREATION_MODE, $time));
 
         $loop->run();
     }
@@ -431,7 +431,7 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
             ->with('eio_open', [
                 $filename,
                 2,
-                (new PermissionFlagResolver())->resolve(EioAdapter::CREATION_MODE),
+                (new PermissionFlagResolver())->resolve(Adapter::CREATION_MODE),
             ])
             ->will($this->returnValue($promise))
         ;
@@ -450,7 +450,7 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
             'addReadStream',
         ]);
 
-        $filesystem = new EioAdapter($loop);
+        $filesystem = new Adapter($loop);
 
         $loop
             ->expects($this->exactly(2))
@@ -495,7 +495,7 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
             'addReadStream',
         ]);
 
-        $filesystem = new EioAdapter($loop);
+        $filesystem = new Adapter($loop);
 
         $loop
             ->expects($this->once())
@@ -538,7 +538,7 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
             'addReadStream',
         ]);
 
-        $filesystem = new EioAdapter($loop);
+        $filesystem = new Adapter($loop);
 
         $loop
             ->expects($this->once())
@@ -581,7 +581,7 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
             'removeReadStream',
         ]);
 
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'workPendingCount',
         ], [
             $loop,
@@ -633,7 +633,7 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
             'removeReadStream',
         ]);
 
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'workPendingCount',
         ], [
             $loop,
@@ -668,6 +668,6 @@ class EioAdapterTest extends \PHPUnit_Framework_TestCase
 
     public function testWorkPendingCount()
     {
-        $this->assertInternalType('int', (new EioAdapter($this->getMock('React\EventLoop\LoopInterface')))->workPendingCount());
+        $this->assertInternalType('int', (new Adapter($this->getMock('React\EventLoop\LoopInterface')))->workPendingCount());
     }
 }

@@ -9,7 +9,7 @@ class StreamFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testCreateRead()
     {
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'stat',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
@@ -29,7 +29,7 @@ class StreamFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testCreateWrite()
     {
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
@@ -41,7 +41,7 @@ class StreamFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testCreateDuplex()
     {
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 

@@ -14,7 +14,7 @@ trait NodeTestTrait
     public function test__toString($in, $out)
     {
         $nodeClass = $this->getNodeClass();
-        $this->assertSame($out, (string) (new $nodeClass($in, Filesystem::createFromAdapter($this->getMock('React\Filesystem\EioAdapter', [], [
+        $this->assertSame($out, (string) (new $nodeClass($in, Filesystem::createFromAdapter($this->getMock('React\Filesystem\Eio\Adapter', [], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ])))));
     }

@@ -1,18 +1,18 @@
 <?php
 
-namespace React\Filesystem;
+namespace React\Filesystem\Eio;
 
 use React\EventLoop\LoopInterface;
-use React\EventLoop\Timer\TimerInterface;
-use React\Filesystem\Node\Directory;
-use React\Filesystem\Node\File;
-use React\Filesystem\Node\NodeInterface;
+use React\Filesystem\AdapterInterface;
+use React\Filesystem\CallInvokerInterface;
+use React\Filesystem\FilesystemInterface;
+use React\Filesystem\ModeTypeDetector;
+use React\Filesystem\OpenFileLimiter;
 use React\Promise\Deferred;
 use React\Filesystem\Eio;
-use React\Promise\FulfilledPromise;
 use React\Promise\RejectedPromise;
 
-class EioAdapter implements AdapterInterface
+class Adapter implements AdapterInterface
 {
     /**
      * @var bool
@@ -135,7 +135,7 @@ class EioAdapter implements AdapterInterface
         $this->filesystem = $filesystem;
 
         $this->typeDetectors = [
-            new Eio\ConstTypeDetector($this->filesystem),
+            new ConstTypeDetector($this->filesystem),
             new ModeTypeDetector($this->filesystem),
         ];
     }

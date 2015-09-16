@@ -15,7 +15,7 @@ class InstantInvokerTest extends \PHPUnit_Framework_TestCase
         ];
         $errorResultCode = 13;
 
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'callFilesystem',
         ], [
             $this->getMock('React\EventLoop\LoopInterface'),

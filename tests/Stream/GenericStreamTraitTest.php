@@ -9,7 +9,7 @@ class GenericStreamTraitTest extends \PHPUnit_Framework_TestCase
         $gst = $this->getMockForTrait('React\Filesystem\Stream\GenericStreamTrait', [
             'foo.bar',
             'abc',
-            $this->getMock('React\Filesystem\EioAdapter', [], [
+            $this->getMock('React\Filesystem\Eio\Adapter', [], [
                 $this->getMock('React\EventLoop\StreamSelectLoop'),
             ]),
         ]);

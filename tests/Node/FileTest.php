@@ -33,7 +33,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
     public function testGetPath()
     {
         $path = 'foo.bar';
-        $this->assertSame($path, (new File($path, Filesystem::createFromAdapter($this->getMock('React\Filesystem\EioAdapter', [], [
+        $this->assertSame($path, (new File($path, Filesystem::createFromAdapter($this->getMock('React\Filesystem\Eio\Adapter', [], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]))))->getPath());
     }
@@ -41,7 +41,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
     public function testRemove()
     {
         $path = 'foo.bar';
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'unlink',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
@@ -62,7 +62,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
     {
         $pathFrom = 'foo.bar';
         $pathTo = 'bar.foo';
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'rename',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
@@ -82,7 +82,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
     public function testExists()
     {
         $path = 'foo.bar';
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
@@ -117,7 +117,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
     public function testDoesntExists()
     {
         $path = 'foo.bar';
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
@@ -153,7 +153,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
     {
         $size = 1337;
         $path = 'foo.bar';
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'stat',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
@@ -190,7 +190,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
             'mtime' => 3,
         ];
         $path = 'foo.bar';
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'stat',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
@@ -220,7 +220,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
     public function testCreate()
     {
         $path = 'foo.bar';
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'stat',
             'touch',
         ], [
@@ -252,7 +252,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
     public function testCreateFail()
     {
         $path = 'foo.bar';
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'stat',
             'touch',
         ], [
@@ -279,7 +279,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
     public function testOpen()
     {
         $path = 'foo.bar';
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'open',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
@@ -308,7 +308,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
     public function testOpenTwice()
     {
         $path = 'foo.bar';
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'open',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
@@ -333,7 +333,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
     {
         $path = 'foo.bar';
         $fd = '0123456789abcdef';
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'open',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
@@ -380,7 +380,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
     {
         $path = 'foo.bar';
         $fd = '0123456789abcdef';
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'close',
             'open',
         ], [
@@ -448,7 +448,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
     public function testCloseNeverOpened()
     {
         $path = 'foo.bar';
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
         $this->assertInstanceOf('React\Promise\RejectedPromise', (new File($path, Filesystem::createFromAdapter($filesystem)))->close());
@@ -457,7 +457,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
     public function testTouch()
     {
         $path = 'foo.bar';
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'touch',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
@@ -475,7 +475,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     public function testCopy()
     {
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
@@ -504,7 +504,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
      */
     public function testCopyUnknownNode()
     {
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
@@ -513,7 +513,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     public function testCopyFile()
     {
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
@@ -624,7 +624,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     public function testCopyDirectory()
     {
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
@@ -653,7 +653,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
      */
     public function testCopyStreamingUnknownNode()
     {
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 

@@ -33,7 +33,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
     public function testGetPath()
     {
         $path = 'foo.bar';
-        $this->assertSame($path . NodeInterface::DS, (new Directory($path, Filesystem::createFromAdapter($this->getMock('React\Filesystem\EioAdapter', [], [
+        $this->assertSame($path . NodeInterface::DS, (new Directory($path, Filesystem::createFromAdapter($this->getMock('React\Filesystem\Eio\Adapter', [], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]))))->getPath());
     }
@@ -43,7 +43,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
         $path = '/home/foo/bar';
         $loop = $this->getMock('React\EventLoop\StreamSelectLoop');
 
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'ls',
         ], [
             $loop,
@@ -66,7 +66,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
     public function testCreate()
     {
         $path = 'foo.bar';
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'mkdir',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
@@ -86,7 +86,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
     public function testRemove()
     {
         $path = 'foo.bar';
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'rmdir',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
@@ -107,7 +107,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
         $path = '/home/foo/bar';
         $loop = $this->getMock('React\EventLoop\StreamSelectLoop');
 
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [], [
             $loop,
         ]);
 
@@ -151,7 +151,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
 
     public function testChmodRecursive()
     {
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
@@ -178,7 +178,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
 
     public function testChownRecursive()
     {
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
@@ -205,7 +205,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
 
     public function testRemoveRecursive()
     {
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
@@ -232,7 +232,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
 
     public function testCopy()
     {
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]);
 
@@ -263,7 +263,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
                 new UnknownNodeType(),
             ],
             [
-                new File('foo.bar', Filesystem::createFromAdapter($this->getMock('React\Filesystem\EioAdapter', [], [
+                new File('foo.bar', Filesystem::createFromAdapter($this->getMock('React\Filesystem\Eio\Adapter', [], [
                     $this->getMock('React\EventLoop\StreamSelectLoop'),
                 ]))),
             ],
@@ -276,7 +276,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testCopyStreamingUnknownNode($type)
     {
-        $filesystem = Filesystem::createFromAdapter($this->getMock('React\Filesystem\EioAdapter', [], [
+        $filesystem = Filesystem::createFromAdapter($this->getMock('React\Filesystem\Eio\Adapter', [], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
         ]));
 
@@ -286,7 +286,7 @@ class DirectoryTest extends \PHPUnit_Framework_TestCase
     public function testCopyStreamingABC()
     {
 
-        $adapter = $this->getMock('React\Filesystem\EioAdapter', [
+        $adapter = $this->getMock('React\Filesystem\Eio\Adapter', [
             'stat',
             'mkdir',
         ], [

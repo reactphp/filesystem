@@ -11,7 +11,7 @@ class RecursiveInvokerTest extends \PHPUnit_Framework_TestCase
 
     public function testExecute()
     {
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [], [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [], [
             $this->getMock('React\EventLoop\LoopInterface'),
         ]);
 

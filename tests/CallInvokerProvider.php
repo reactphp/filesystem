@@ -29,7 +29,7 @@ class CallInvokerProvider extends \PHPUnit_Framework_TestCase
     protected function pooled()
     {
         $loop = Factory::create();
-        $adapter = $this->getMock('React\Filesystem\EioAdapter', $this->mockedMethods, [
+        $adapter = $this->getMock('React\Filesystem\Eio\Adapter', $this->mockedMethods, [
             $loop,
         ]);
         $invoker = new PooledInvoker($adapter);
@@ -41,7 +41,7 @@ class CallInvokerProvider extends \PHPUnit_Framework_TestCase
     protected function instant()
     {
         $loop = Factory::create();
-        $adapter = $this->getMock('React\Filesystem\EioAdapter', $this->mockedMethods, [
+        $adapter = $this->getMock('React\Filesystem\Eio\Adapter', $this->mockedMethods, [
             $loop,
         ]);
         $invoker = new InstantInvoker($adapter);
@@ -53,7 +53,7 @@ class CallInvokerProvider extends \PHPUnit_Framework_TestCase
     protected function queued()
     {
         $loop = Factory::create();
-        $adapter = $this->getMock('React\Filesystem\EioAdapter', $this->mockedMethods, [
+        $adapter = $this->getMock('React\Filesystem\Eio\Adapter', $this->mockedMethods, [
             $loop,
         ]);
         $invoker = new QueuedInvoker($adapter);
@@ -65,7 +65,7 @@ class CallInvokerProvider extends \PHPUnit_Framework_TestCase
     protected function throttledqueued()
     {
         $loop = Factory::create();
-        $adapter = $this->getMock('React\Filesystem\EioAdapter', $this->mockedMethods, [
+        $adapter = $this->getMock('React\Filesystem\Eio\Adapter', $this->mockedMethods, [
             $loop,
         ]);
         $invoker = new ThrottledQueuedInvoker($adapter);

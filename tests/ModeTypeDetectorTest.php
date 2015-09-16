@@ -30,7 +30,7 @@ class ModeTypeDetectorTest extends \PHPUnit_Framework_TestCase
     {
         $callbackFired = false;
 
-        $adapter = $this->getMock('React\Filesystem\EioAdapter', [
+        $adapter = $this->getMock('React\Filesystem\Eio\Adapter', [
             'stat'
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop')
@@ -61,7 +61,7 @@ class ModeTypeDetectorTest extends \PHPUnit_Framework_TestCase
     {
         $callbackFired = false;
 
-        $adapter = $this->getMock('React\Filesystem\EioAdapter', [
+        $adapter = $this->getMock('React\Filesystem\Eio\Adapter', [
             'stat'
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop')

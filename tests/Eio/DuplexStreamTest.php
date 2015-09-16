@@ -14,7 +14,7 @@ class DuplexStreamTest extends \PHPUnit_Framework_TestCase
         $path = 'foo.bar';
         $fileDescriptor = '0123456789abcdef';
 
-        $filesystem = $this->getMock('React\Filesystem\EioAdapter', [
+        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
             'read',
         ], [
             $this->getMock('React\EventLoop\StreamSelectLoop'),
