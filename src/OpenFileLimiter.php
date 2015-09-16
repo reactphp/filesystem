@@ -36,17 +36,8 @@ class OpenFileLimiter
      */
     public function open()
     {
-        return $this->decidePromise()->then(function () {
-            $this->current++;
-            return new FulfilledPromise();
-        });
-    }
+        $this->current++;
 
-    /**
-     * @return \React\Promise\PromiseInterface
-     */
-    protected function decidePromise()
-    {
         if ($this->current <= $this->limit) {
             return new FulfilledPromise();
         }
