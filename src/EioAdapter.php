@@ -54,8 +54,15 @@ class EioAdapter implements AdapterInterface
      */
     protected $typeDetectors;
 
+    /**
+     * @var OpenFileLimiter
+     */
     protected $openFileLimiter;
 
+    /**
+     * @param LoopInterface $loop
+     * @param array $options
+     */
     public function __construct(LoopInterface $loop, array $options = [])
     {
         eio_init();
