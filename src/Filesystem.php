@@ -14,13 +14,14 @@ class Filesystem implements FilesystemInterface
 
     /**
      * @param LoopInterface $loop
+     * @param array $options
      * @return static
      * @throws NoAdapterException
      */
-    public static function create(LoopInterface $loop)
+    public static function create(LoopInterface $loop, array $options = [])
     {
         if (extension_loaded('eio')) {
-            return static::setFilesystemOnAdapter(static::createFromAdapter(new Eio\Adapter($loop)));
+            return static::setFilesystemOnAdapter(static::createFromAdapter(new Eio\Adapter($loop, $options)));
         }
 
         throw new NoAdapterException();

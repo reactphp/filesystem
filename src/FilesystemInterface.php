@@ -9,10 +9,11 @@ interface FilesystemInterface
 {
     /**
      * @param LoopInterface $loop
+     * @param array $options
      * @return static
      * @throws NoAdapterException
      */
-    public static function create(LoopInterface $loop);
+    public static function create(LoopInterface $loop, array $options = []);
 
     /**
      * @param AdapterInterface $adapter
