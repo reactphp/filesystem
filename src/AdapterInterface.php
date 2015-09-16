@@ -10,8 +10,9 @@ interface AdapterInterface
 
     /**
      * @param LoopInterface $loop
+     * @param array $options
      */
-    public function __construct(LoopInterface $loop);
+    public function __construct(LoopInterface $loop, array $options = []);
 
     /**
      * @return LoopInterface
