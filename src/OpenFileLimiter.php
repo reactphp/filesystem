@@ -41,9 +41,8 @@ class OpenFileLimiter
      */
     public function open()
     {
-        $this->current++;
-
-        if ($this->current <= $this->limit) {
+        if ($this->current < $this->limit) {
+            $this->current++;
             return new FulfilledPromise();
         }
 
@@ -54,9 +53,10 @@ class OpenFileLimiter
 
     public function close()
     {
-        $this->current--;
         if (!$this->promises->isEmpty()) {
             $this->promises->dequeue()->resolve();
+        } else {
+            $this->current--;
         }
     }
 

@@ -28,7 +28,7 @@ class OpenFileLimiterTest extends \PHPUnit_Framework_TestCase
         $promise2->then(function () use (&$promiseCallbackCalled2) {
             $promiseCallbackCalled2 = true;
         });
-        $this->assertSame(2, $limiter->getOutstanding());
+        $this->assertSame(1, $limiter->getOutstanding());
         $this->assertSame(1, $limiter->getQueueSize());
 
         $limiter->close();
