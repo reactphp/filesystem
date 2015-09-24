@@ -299,12 +299,8 @@ class Adapter implements AdapterInterface
      */
     public function close($fd)
     {
-        return $this->invoker->invokeCall('eio_close', [$fd])->then(function ($result) {
+        return $this->invoker->invokeCall('eio_close', [$fd])->always(function () {
             $this->openFileLimiter->close();
-            return \React\Promise\resolve($result);
-        }, function ($error) {
-            $this->openFileLimiter->close();
-            return \React\Promise\reject($error);
         });
     }
 
@@ -323,11 +319,13 @@ class Adapter implements AdapterInterface
                 $time,
             ]);
         }, function () use ($path, $mode) {
-            return $this->invoker->invokeCall('eio_open', [
-                $path,
-                EIO_O_CREAT,
-                $this->permissionFlagResolver->resolve($mode),
-            ])->then(function ($fd) use ($path) {
+            return $this->openFileLimiter->open()->then(function () use ($path, $mode) {
+                return $this->invoker->invokeCall('eio_open', [
+                    $path,
+                    EIO_O_CREAT,
+                    $this->permissionFlagResolver->resolve($mode),
+                ]);
+            })->then(function ($fd) use ($path) {
                 return $this->close($fd);
             });
         });
