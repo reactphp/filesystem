@@ -147,7 +147,9 @@ class File implements FileInterface
     public function getContents()
     {
         return $this->open('r')->then(function ($stream) {
-            return BufferedSink::createPromise($stream);
+            return BufferedSink::createPromise($stream)->always(function () {
+                $this->close();
+            });
         });
     }
 
