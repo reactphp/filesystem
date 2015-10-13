@@ -163,7 +163,7 @@ class AdapterTest extends \PHPUnit_Framework_TestCase
      */
     public function testCallFilesystemCalls($externalMethod, $internalMethod, $externalCallArgs, $internalCallArgs, $errorResultCode = -1)
     {
-        $promise = $this->getMock('React\Promise\PromiseInterface');
+        $promise = new FulfilledPromise();
 
         $loop = Factory::create();
 
@@ -180,7 +180,7 @@ class AdapterTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($promise))
         ;
 
-        $this->assertInstanceOf('React\Promise\PromiseInterface', call_user_func_array([$filesystem, $externalMethod], $externalCallArgs));
+        $this->assertInstanceOf('React\Promise\ExtendedPromiseInterface', call_user_func_array([$filesystem, $externalMethod], $externalCallArgs));
 
         $loop->run();
     }
