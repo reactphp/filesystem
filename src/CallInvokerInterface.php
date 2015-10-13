@@ -13,7 +13,7 @@ interface CallInvokerInterface
      * @param string $function
      * @param array $args
      * @param int $errorResultCode
-     * @return \React\Promise\PromiseInterface
+     * @return \React\Promise\ExtendedPromiseInterface
      */
     public function invokeCall($function, $args, $errorResultCode = -1);
 
