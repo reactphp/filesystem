@@ -1,7 +1,7 @@
 {
   "name": "react/filesystem",
   "description": "Asynchronous filesystem abstraction.",
-  "keywords": ["filesystem", "asynchronous"],
+  "keywords": ["filesystem", "asynchronous", "eio"],
   "license": "MIT",
   "authors": [
     {
