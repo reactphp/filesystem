@@ -82,36 +82,9 @@ class Adapter implements AdapterInterface
      */
     protected function applyConfiguration(array $options)
     {
-        $this->invoker = $this->getInvoker($options, 'invoker', 'React\Filesystem\PooledInvoker');
-        $this->readDirInvoker = $this->getInvoker($options, 'read_dir_invoker', 'React\Filesystem\QueuedInvoker');
-        $this->openFileLimiter = new OpenFileLimiter($this->getOpenFileLimit($options));
-    }
-
-    /**
-     * @param array $options
-     * @param string $fallback
-     * @return CallInvokerInterface
-     */
-    protected function getInvoker(array $options, $key, $fallback)
-    {
-        if (isset($options[$key]) && $options[$key] instanceof CallInvokerInterface) {
-            return $options[$key];
-        }
-
-        return new $fallback($this);
-    }
-
-    /**
-     * @param array $options
-     * @return int
-     */
-    protected function getOpenFileLimit(array $options)
-    {
-        if (isset($options['open_file_limit'])) {
-            return (int)$options['open_file_limit'];
-        }
-
-        return OpenFileLimiter::DEFAULT_LIMIT;
+        $this->invoker = \React\Filesystem\getInvoker($this, $options, 'invoker', 'React\Filesystem\InstantInvoker');
+        $this->readDirInvoker = \React\Filesystem\getInvoker($this, $options, 'read_dir_invoker', 'React\Filesystem\InstantInvoker');
+        $this->openFileLimiter = new OpenFileLimiter(\React\Filesystem\getOpenFileLimit($options));
     }
 
     /**
