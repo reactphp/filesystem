@@ -1,0 +1,20 @@
+#!/usr/bin/env php
+<?php
+
+use React\EventLoop\Factory as LoopFactory;
+use React\Filesystem\ChildProcess\Process;
+use WyriHaximus\React\ChildProcess\Messenger\Factory as MessengerFactory;
+
+foreach (array(__DIR__ . '/../../autoload.php', __DIR__ . '/vendor/autoload.php') as $file) {
+    if (file_exists($file)) {
+        require $file;
+        break;
+    }
+}
+
+$loop = LoopFactory::create();
+
+$recipient = MessengerFactory::child($loop);
+$process = new Process($recipient);
+
+$loop->run();
