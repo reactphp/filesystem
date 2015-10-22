@@ -21,7 +21,7 @@ class Filesystem implements FilesystemInterface
     public static function create(LoopInterface $loop, array $options = [])
     {
         if (extension_loaded('eio')) {
-            return static::setFilesystemOnAdapter(static::createFromAdapter(new Eio\Adapter($loop, $options)));
+            //return static::setFilesystemOnAdapter(static::createFromAdapter(new Eio\Adapter($loop, $options)));
         }
 
         return static::setFilesystemOnAdapter(static::createFromAdapter(new ChildProcess\Adapter($loop, $options)));
@@ -49,7 +49,8 @@ class Filesystem implements FilesystemInterface
     }
 
     /**
-     * @param AdapterInterface $filesystem
+     * Filesystem constructor.
+     * @param AdapterInterface $adapter
      */
     private function __construct(AdapterInterface $adapter)
     {
