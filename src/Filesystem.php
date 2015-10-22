@@ -24,6 +24,8 @@ class Filesystem implements FilesystemInterface
             return static::setFilesystemOnAdapter(static::createFromAdapter(new Eio\Adapter($loop, $options)));
         }
 
+        return static::setFilesystemOnAdapter(static::createFromAdapter(new ChildProcess\Adapter($loop, $options)));
+
         throw new NoAdapterException();
     }
 
