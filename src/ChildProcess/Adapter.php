@@ -74,7 +74,7 @@ class Adapter implements AdapterInterface
     public function callFilesystem($function, $args, $errorResultCode = -1)
     {
         return $this->pool->rpc(Factory::rpc($function, $args))->then(function (Payload $payload) {
-            return \React\Promise\resolve(json_decode(json_encode($payload)));
+            return \React\Promise\resolve($payload->getPayload());
         });
     }
 
