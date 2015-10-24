@@ -9,6 +9,7 @@ use React\Filesystem\CallInvokerInterface;
 use React\Filesystem\FilesystemInterface;
 use React\Filesystem\OpenFileLimiter;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Pool\FlexiblePool;
 
 class Adapter implements AdapterInterface
@@ -72,7 +73,9 @@ class Adapter implements AdapterInterface
      */
     public function callFilesystem($function, $args, $errorResultCode = -1)
     {
-        return $this->pool->rpc(Factory::rpc($function, $args));
+        return $this->pool->rpc(Factory::rpc($function, $args))->then(function (Payload $payload) {
+            return \React\Promise\resolve(json_decode(json_encode($payload)));
+        });
     }
 
     /**
