@@ -20,7 +20,7 @@ class Process
         $messenger->registerRpc('chmod', [$this, 'chmod']);
         $messenger->registerRpc('chown', [$this, 'chown']);
         $messenger->registerRpc('stat', [$this, 'stat']);
-        $messenger->registerRpc('ls', [$this, 'ls']);
+        $messenger->registerRpc('readdir', [$this, 'readdir']);
         $messenger->registerRpc('rename', [$this, 'rename']);
     }
 
@@ -120,9 +120,21 @@ class Process
      * @param Messenger $messenger
      * @return PromiseInterface
      */
-    public function ls(Payload $payload, Messenger $messenger)
+    public function readdir(Payload $payload, Messenger $messenger)
     {
-        return \React\Promise\resolve([]);
+        $list = [];
+        foreach (scandir($payload['path']) as $node) {
+            $path = $payload['path'] . DIRECTORY_SEPARATOR . $node;
+            if ($node == '.' || $node == '..' || (!is_dir($path) && !is_file($path))) {
+                continue;
+            }
+
+            $list[] = [
+                'type' => is_dir($path) ? 'dir' : 'file',
+                'name' => $node,
+            ];
+        }
+        return \React\Promise\resolve($list);
     }
 
     /**

@@ -7,7 +7,10 @@ use React\EventLoop\LoopInterface;
 use React\Filesystem\AdapterInterface;
 use React\Filesystem\CallInvokerInterface;
 use React\Filesystem\FilesystemInterface;
+use React\Filesystem\ModeTypeDetector;
+use React\Filesystem\ObjectStream;
 use React\Filesystem\OpenFileLimiter;
+use React\Promise\RejectedPromise;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Pool\FlexiblePool;
@@ -25,6 +28,11 @@ class Adapter implements AdapterInterface
     protected $filesystem;
 
     protected $pool;
+
+    /**
+     * @var TypeDetectorInterface[]
+     */
+    protected $typeDetectors;
 
     public function __construct(LoopInterface $loop, array $options = [])
     {
@@ -48,12 +56,16 @@ class Adapter implements AdapterInterface
     }
 
     /**
-     * @param FilesystemInterface $filesystem
-     * @return void
+     * {@inheritDoc}
      */
     public function setFilesystem(FilesystemInterface $filesystem)
     {
         $this->filesystem = $filesystem;
+
+        $this->typeDetectors = [
+            new StringTypeDetector($this->filesystem),
+            new ModeTypeDetector($this->filesystem),
+        ];
     }
 
     /**
@@ -159,9 +171,55 @@ class Adapter implements AdapterInterface
      */
     public function ls($path, $flags = EIO_READDIR_DIRS_FIRST)
     {
-        return $this->invoker->invokeCall('ls', [
+        $stream = new ObjectStream();
+
+        $this->invoker->invokeCall('readdir', [
             'path' => $path,
-        ]);
+            'flags' => $flags,
+        ])->then(function ($result) use ($path, $stream) {
+            $this->processLsContents($path, $result, $stream);
+        });
+
+        return $stream;
+    }
+
+    protected function processLsContents($basePath, $result, ObjectStream $stream)
+    {
+        $promises = [];
+
+        foreach ($result as $entry) {
+            $path = $basePath . DIRECTORY_SEPARATOR . $entry['name'];
+            $node = [
+                'path' => $path,
+                'type' => $entry['type'],
+            ];
+            $promises[] = $this->processLsNode($node, $stream);
+        }
+
+        \React\Promise\all($promises)->then(function () use ($stream) {
+            $stream->close();
+        });
+    }
+
+    /**
+     * @param array $node
+     * @param ObjectStream $stream
+     * @return PromiseInterface
+     */
+    protected function processLsNode(array $node, ObjectStream $stream)
+    {
+        $promiseChain = new RejectedPromise();
+        foreach ($this->typeDetectors as $detector) {
+            $promiseChain = $promiseChain->otherwise(function () use ($node, $detector) {
+                return $detector->detect($node);
+            });
+        }
+
+        return $promiseChain->then(function ($callable) use ($node, $stream) {
+            $stream->emit('data', [
+                $callable($node['path']),
+            ]);
+        });
     }
 
     /**
