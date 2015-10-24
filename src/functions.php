@@ -2,6 +2,8 @@
 
 namespace React\Filesystem;
 
+use React\Promise\RejectedPromise;
+
 /**
  * @param AdapterInterface $adapter
  * @param array $options
@@ -28,4 +30,26 @@ function getOpenFileLimit(array $options)
     }
 
     return OpenFileLimiter::DEFAULT_LIMIT;
+}
+
+/**
+ * @param array $typeDetectors
+ * @param array $node
+ * @param ObjectStream $stream
+ * @return \React\Promise\PromiseInterface
+ */
+function detectType(array $typeDetectors, array $node, ObjectStream $stream)
+{
+    $promiseChain = new RejectedPromise();
+    foreach ($typeDetectors as $detector) {
+        $promiseChain = $promiseChain->otherwise(function () use ($node, $detector) {
+            return $detector->detect($node);
+        });
+    }
+
+    return $promiseChain->then(function ($callable) use ($node, $stream) {
+        $stream->emit('data', [
+            $callable($node['path']),
+        ]);
+    });
 }

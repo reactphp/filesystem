@@ -198,32 +198,11 @@ class Adapter implements AdapterInterface
                 'path' => $path,
                 'type' => $entry['type'],
             ];
-            $promises[] = $this->processLsDent($node, $stream);
+            $promises[] = \React\Filesystem\detectType($this->typeDetectors, $node, $stream);
         }
 
         \React\Promise\all($promises)->then(function () use ($stream) {
             $stream->close();
-        });
-    }
-
-    /**
-     * @param array $node
-     * @param ObjectStream $stream
-     * @return PromiseInterface
-     */
-    protected function processLsDent(array $node, ObjectStream $stream)
-    {
-        $promiseChain = new RejectedPromise();
-        foreach ($this->typeDetectors as $detector) {
-            $promiseChain = $promiseChain->otherwise(function () use ($node, $detector) {
-                return $detector->detect($node);
-            });
-        }
-
-        return $promiseChain->then(function ($callable) use ($node, $stream) {
-            $stream->emit('data', [
-                $callable($node['path']),
-            ]);
         });
     }
 
