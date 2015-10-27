@@ -18,7 +18,8 @@
     "wyrihaximus/react-child-process-pool": "^1.0.0-alpha7"
   },
   "suggest": {
-    "ext-eio": "^1.2"
+    "ext-eio": "^1.2",
+    "ext-pthreads": "^2.0"
   },
   "require-dev": {
     "ext-eio": "^1.2"
