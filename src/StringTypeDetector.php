@@ -1,9 +1,7 @@
 <?php
 
-namespace React\Filesystem\ChildProcess;
+namespace React\Filesystem;
 
-use React\Filesystem\FilesystemInterface;
-use React\Filesystem\TypeDetectorInterface;
 use React\Promise\RejectedPromise;
 
 class StringTypeDetector implements TypeDetectorInterface
