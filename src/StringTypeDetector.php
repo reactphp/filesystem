@@ -9,22 +9,37 @@ class StringTypeDetector implements TypeDetectorInterface
     /**
      * @var array
      */
-    protected $mapping = [
+    protected static $defaultMapping = [
         'dir' => 'dir',
         'file' => 'file',
     ];
+
+    /**
+     * @var array
+     */
+    protected $mapping = [];
 
     /**
      * @var FilesystemInterface
      */
     protected $filesystem;
 
+    public static function createDefault(FilesystemInterface $filesystem)
+    {
+        return new static($filesystem, static::$defaultMapping);
+    }
+
     /**
      * @param FilesystemInterface $filesystem
+     * @param array $options
      */
-    public function __construct(FilesystemInterface $filesystem)
+    public function __construct(FilesystemInterface $filesystem, $options = [])
     {
         $this->filesystem = $filesystem;
+
+        if (isset($options['mapping']) && is_array($options['mapping']) && count($options['mapping']) > 0) {
+            $this->mapping = $options['mapping'];
+        }
     }
 
     /**
