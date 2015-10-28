@@ -4,7 +4,7 @@ namespace React\Filesystem;
 
 use React\Promise\RejectedPromise;
 
-class StringTypeDetector implements TypeDetectorInterface
+class MappedTypeDetector implements TypeDetectorInterface
 {
     /**
      * @var array
