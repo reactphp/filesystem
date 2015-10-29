@@ -67,7 +67,7 @@ class Filesystem implements FilesystemInterface
 
     /**
      * @param string $filename
-     * @return Node\File
+     * @return Node\FileInterface
      */
     public function file($filename)
     {
@@ -76,7 +76,7 @@ class Filesystem implements FilesystemInterface
 
     /**
      * @param string $path
-     * @return Node\Directory
+     * @return Node\DirectoryInterface
      */
     public function dir($path)
     {
@@ -86,7 +86,7 @@ class Filesystem implements FilesystemInterface
     /**
      * @param string $path
      * @param Node\NodeInterface $destination
-     * @return Node\Link
+     * @return Node\LinkInterface
      */
     public function link($path, Node\NodeInterface $destination)
     {
