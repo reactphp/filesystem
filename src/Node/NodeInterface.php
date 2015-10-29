@@ -2,6 +2,9 @@
 
 namespace React\Filesystem\Node;
 
+use React\Filesystem\ObjectStream;
+use React\Promise\PromiseInterface;
+
 interface NodeInterface extends GenericOperationInterface
 {
     const DS = DIRECTORY_SEPARATOR;
@@ -28,7 +31,7 @@ interface NodeInterface extends GenericOperationInterface
 
     /**
      * @param NodeInterface $node
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
     public function copy(NodeInterface $node);
 
