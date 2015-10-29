@@ -39,6 +39,13 @@ interface FilesystemInterface
     public function dir($path);
 
     /**
+     * @param string $path
+     * @param Node\NodeInterface $destination
+     * @return Node\NodeInterface
+     */
+    public function link($path, Node\NodeInterface $destination);
+
+    /**
      * @param string $filename
      * @return \React\Promise\PromiseInterface
      */
