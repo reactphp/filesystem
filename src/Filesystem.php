@@ -90,7 +90,7 @@ class Filesystem implements FilesystemInterface
      */
     public function link($path, Node\NodeInterface $destination)
     {
-        return new Node\Link($path, $this);
+        return new Node\Link($path, $destination, $this);
     }
 
     /**
