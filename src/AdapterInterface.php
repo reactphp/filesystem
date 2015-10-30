@@ -138,8 +138,9 @@ interface AdapterInterface
     public function readlink($path);
 
     /**
-     * @param string $path
+     * @param string $fromPath
+     * @param string $toPath
      * @return \React\Promise\PromiseInterface
      */
-    public function symlink($path);
+    public function symlink($fromPath, $toPath);
 }
