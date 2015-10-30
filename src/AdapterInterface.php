@@ -130,4 +130,16 @@ interface AdapterInterface
      * @return \React\Promise\PromiseInterface
      */
     public function rename($fromPath, $toPath);
+
+    /**
+     * @param string $path
+     * @return \React\Promise\PromiseInterface
+     */
+    public function readlink($path);
+
+    /**
+     * @param string $path
+     * @return \React\Promise\PromiseInterface
+     */
+    public function symlink($path);
 }
