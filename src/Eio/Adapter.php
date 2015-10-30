@@ -309,6 +309,27 @@ class Adapter implements AdapterInterface
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function readlink($path)
+    {
+        return $this->invoker->invokeCall('eio_readlink', [
+            $path,
+        ]);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function symlink($fromPath, $toPath)
+    {
+        return $this->invoker->invokeCall('eio_symlink', [
+            $fromPath,
+            $toPath,
+        ]);
+    }
+
+    /**
      * @param string $function
      * @param array $args
      * @param int $errorResultCode
