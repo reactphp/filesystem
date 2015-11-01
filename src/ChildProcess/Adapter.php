@@ -7,10 +7,10 @@ use React\EventLoop\LoopInterface;
 use React\Filesystem\AdapterInterface;
 use React\Filesystem\CallInvokerInterface;
 use React\Filesystem\FilesystemInterface;
+use React\Filesystem\MappedTypeDetector;
 use React\Filesystem\ModeTypeDetector;
 use React\Filesystem\ObjectStream;
 use React\Filesystem\OpenFileLimiter;
-use React\Promise\RejectedPromise;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Pool\FlexiblePool;
@@ -63,7 +63,7 @@ class Adapter implements AdapterInterface
         $this->filesystem = $filesystem;
 
         $this->typeDetectors = [
-            new StringTypeDetector($this->filesystem),
+            MappedTypeDetector::createDefault($this->filesystem),
             new ModeTypeDetector($this->filesystem),
         ];
     }
@@ -265,5 +265,33 @@ class Adapter implements AdapterInterface
             'from' => $fromPath,
             'to' => $toPath,
         ]);
+    }
+
+    /**
+     * @param string $path
+     * @return \React\Promise\PromiseInterface
+     */
+    public function readlink($path)
+    {
+        return $this->invoker->invokeCall('readlink', [
+            'path' => $path,
+        ])->then(function ($result) {
+            return \React\Promise\resolve($result['path']);
+        });
+    }
+
+    /**
+     * @param string $fromPath
+     * @param string $toPath
+     * @return \React\Promise\PromiseInterface
+     */
+    public function symlink($fromPath, $toPath)
+    {
+        return $this->invoker->invokeCall('symlink', [
+            'from' => $fromPath,
+            'to' => $toPath,
+        ])->then(function ($result) {
+            return \React\Promise\resolve($result['result']);
+        });
     }
 }
