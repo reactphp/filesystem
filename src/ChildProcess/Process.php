@@ -22,6 +22,8 @@ class Process
         $messenger->registerRpc('stat', [$this, 'stat']);
         $messenger->registerRpc('readdir', [$this, 'readdir']);
         $messenger->registerRpc('rename', [$this, 'rename']);
+        $messenger->registerRpc('readlink', [$this, 'readlink']);
+        $messenger->registerRpc('symlink', [$this, 'symlink']);
     }
 
     /**
@@ -149,5 +151,29 @@ class Process
         }
 
         return \React\Promise\reject([]);
+    }
+
+    /**
+     * @param Payload $payload
+     * @param Messenger $messenger
+     * @return PromiseInterface
+     */
+    public function readlink(Payload $payload, Messenger $messenger)
+    {
+        return \React\Promise\resolve([
+            'path' => readlink($payload['path']),
+        ]);
+    }
+
+    /**
+     * @param Payload $payload
+     * @param Messenger $messenger
+     * @return PromiseInterface
+     */
+    public function symlink(Payload $payload, Messenger $messenger)
+    {
+        return \React\Promise\resolve([
+            'result' => symlink($payload['from'], $payload['to']),
+        ]);
     }
 }
