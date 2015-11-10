@@ -23,6 +23,11 @@ class Adapter implements AdapterInterface
     protected $active = false;
 
     /**
+     * @var bool
+     */
+    protected $loopRunning = true;
+
+    /**
      * @var LoopInterface
      */
     protected $loop;
@@ -339,8 +344,14 @@ class Adapter implements AdapterInterface
     {
         $deferred = new Deferred();
 
+        if ($this->loopRunning) {
+            $this->executeDelayedCall($function, $args, $errorResultCode, $deferred);
+            return $deferred->promise();
+        }
+
         // Run this in a future tick to make sure all EIO calls are run within the loop
         $this->loop->futureTick(function () use ($function, $args, $errorResultCode, $deferred) {
+            $this->loopRunning = true;
             $this->executeDelayedCall($function, $args, $errorResultCode, $deferred);
         });
 
