@@ -8,6 +8,8 @@ use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
 class Process
 {
+    protected $fd;
+
     /**
      * Process constructor.
      * @param Messenger $messenger
@@ -21,6 +23,11 @@ class Process
         $messenger->registerRpc('chown', [$this, 'chown']);
         $messenger->registerRpc('stat', [$this, 'stat']);
         $messenger->registerRpc('readdir', [$this, 'readdir']);
+        //$messenger->registerRpc('touch', [$this, 'touch']);
+        $messenger->registerRpc('open', [$this, 'open']);
+        $messenger->registerRpc('read', [$this, 'read']);
+        //$messenger->registerRpc('write', [$this, 'write']);
+        $messenger->registerRpc('close', [$this, 'close']);
         $messenger->registerRpc('rename', [$this, 'rename']);
         $messenger->registerRpc('readlink', [$this, 'readlink']);
         $messenger->registerRpc('symlink', [$this, 'symlink']);
@@ -137,6 +144,43 @@ class Process
             ];
         }
         return \React\Promise\resolve($list);
+    }
+
+    /**
+     * @param Payload $payload
+     * @param Messenger $messenger
+     * @return PromiseInterface
+     */
+    public function open(Payload $payload, Messenger $messenger)
+    {
+        $this->fd = fopen($payload['path'], $payload['flags']);
+        return \React\Promise\resolve([]);
+    }
+
+    /**
+     * @param Payload $payload
+     * @param Messenger $messenger
+     * @return PromiseInterface
+     */
+    public function read(Payload $payload, Messenger $messenger)
+    {
+        return \React\Promise\resolve([
+            fread($this->fd, $payload['length']),
+        ]);
+    }
+
+    /**
+     * @param Payload $payload
+     * @param Messenger $messenger
+     * @return PromiseInterface
+     */
+    public function close(Payload $payload, Messenger $messenger)
+    {
+        $closed = fclose($this->fd);
+        $this->fd = null;
+        return \React\Promise\resolve([
+            $closed,
+        ]);
     }
 
     /**
