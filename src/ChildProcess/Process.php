@@ -164,8 +164,9 @@ class Process
      */
     public function read(Payload $payload, Messenger $messenger)
     {
+        fseek($this->fd, $payload['offset']);
         return \React\Promise\resolve([
-            fread($this->fd, $payload['length']),
+            'chunk' => fread($this->fd, $payload['length']),
         ]);
     }
 
