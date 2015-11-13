@@ -9,11 +9,9 @@ use React\Filesystem\FilesystemInterface;
 use React\Filesystem\ModeTypeDetector;
 use React\Filesystem\ObjectStream;
 use React\Filesystem\OpenFileLimiter;
+use React\Filesystem\Stream\StreamFactory;
 use React\Filesystem\TypeDetectorInterface;
 use React\Promise\Deferred;
-use React\Filesystem\Eio;
-use React\Promise\PromiseInterface;
-use React\Promise\RejectedPromise;
 
 class Adapter implements AdapterInterface
 {
@@ -33,12 +31,12 @@ class Adapter implements AdapterInterface
     protected $loop;
 
     /**
-     * @var Eio\OpenFlagResolver
+     * @var OpenFlagResolver
      */
     protected $openFlagResolver;
 
     /**
-     * @var Eio\PermissionFlagResolver
+     * @var PermissionFlagResolver
      */
     protected $permissionFlagResolver;
 
@@ -76,8 +74,8 @@ class Adapter implements AdapterInterface
         eio_init();
         $this->loop = $loop;
         $this->fd = eio_get_event_stream();
-        $this->openFlagResolver = new Eio\OpenFlagResolver();
-        $this->permissionFlagResolver = new Eio\PermissionFlagResolver();
+        $this->openFlagResolver = new OpenFlagResolver();
+        $this->permissionFlagResolver = new PermissionFlagResolver();
 
         $this->applyConfiguration($options);
     }
@@ -244,7 +242,7 @@ class Adapter implements AdapterInterface
                 $mode,
             ]);
         })->then(function ($fileDescriptor) use ($path, $flags) {
-            return Eio\StreamFactory::create($path, $fileDescriptor, $flags, $this);
+            return StreamFactory::create($path, $fileDescriptor, $flags, $this);
         }, function ($error) {
             $this->openFileLimiter->close();
             return \React\Promise\reject($error);

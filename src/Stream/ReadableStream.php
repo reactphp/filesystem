@@ -1,10 +1,9 @@
 <?php
 
-namespace React\Filesystem\Eio;
+namespace React\Filesystem\Stream;
 
 use Evenement\EventEmitter;
-use React\Filesystem\Stream\GenericStreamInterface;
-use React\Filesystem\Stream\GenericStreamTrait;
+use React\Filesystem\AdapterInterface;
 use React\Stream\ReadableStreamInterface;
 
 class ReadableStream extends EventEmitter implements GenericStreamInterface, ReadableStreamInterface
@@ -15,9 +14,9 @@ class ReadableStream extends EventEmitter implements GenericStreamInterface, Rea
     /**
      * @param string $path
      * @param resource $fileDescriptor
-     * @param EioAdapter $filesystem
+     * @param AdapterInterface $filesystem
      */
-    public function __construct($path, $fileDescriptor, Adapter $filesystem)
+    public function __construct($path, $fileDescriptor, AdapterInterface $filesystem)
     {
         $this->path = $path;
         $this->filesystem = $filesystem;

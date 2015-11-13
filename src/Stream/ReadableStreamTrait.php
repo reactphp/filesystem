@@ -1,8 +1,7 @@
 <?php
 
-namespace React\Filesystem\Eio;
+namespace React\Filesystem\Stream;
 
-use React\Filesystem\AdapterInterface;
 use React\Stream\Util;
 use React\Stream\WritableStreamInterface;
 

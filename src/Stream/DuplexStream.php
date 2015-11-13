@@ -1,12 +1,10 @@
 <?php
 
-namespace React\Filesystem\Eio;
+namespace React\Filesystem\Stream;
 
 use Evenement\EventEmitter;
 use React\Filesystem\AdapterInterface;
 use React\Stream\DuplexStreamInterface;
-use React\Filesystem\Stream\GenericStreamInterface;
-use React\Filesystem\Stream\GenericStreamTrait;
 use React\Filesystem\ThrottledQueuedInvoker;
 use React\Promise\FulfilledPromise;
 

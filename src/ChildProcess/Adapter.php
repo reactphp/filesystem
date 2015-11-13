@@ -6,6 +6,7 @@ use React\ChildProcess\Process;
 use React\EventLoop\LoopInterface;
 use React\Filesystem\AdapterInterface;
 use React\Filesystem\CallInvokerInterface;
+use React\Filesystem\Stream\StreamFactory;
 use React\Filesystem\FilesystemInterface;
 use React\Filesystem\MappedTypeDetector;
 use React\Filesystem\ModeTypeDetector;
@@ -13,6 +14,7 @@ use React\Filesystem\ObjectStream;
 use React\Filesystem\OpenFileLimiter;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
+use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 use WyriHaximus\React\ChildProcess\Pool\FlexiblePool;
 
 class Adapter implements AdapterInterface
@@ -27,7 +29,20 @@ class Adapter implements AdapterInterface
      */
     protected $filesystem;
 
+    /**
+     * @var FlexiblePool
+     */
     protected $pool;
+
+    /**
+     * @var Process
+     */
+    protected $process;
+
+    /**
+     * @var array
+     */
+    protected $fileDescriptors = [];
 
     /**
      * @var TypeDetectorInterface[]
@@ -41,7 +56,8 @@ class Adapter implements AdapterInterface
         $this->invoker = \React\Filesystem\getInvoker($this, $options, 'invoker', 'React\Filesystem\InstantInvoker');
         $this->openFileLimiter = new OpenFileLimiter(\React\Filesystem\getOpenFileLimit($options));
 
-        $this->pool = new FlexiblePool(new Process('exec ' . dirname(dirname(__DIR__)) . '/child-process-adapter'), $loop, [
+        $this->process = new Process('exec ' . dirname(dirname(__DIR__)) . '/child-process-adapter');
+        $this->pool = new FlexiblePool($this->process, $loop, [
             'min_size' => 0,
             'max_size' => 50,
         ]);
@@ -219,7 +235,18 @@ class Adapter implements AdapterInterface
      */
     public function open($path, $flags, $mode = self::CREATION_MODE)
     {
-        // TODO: Implement open() method.
+        $id = null;
+        return \WyriHaximus\React\ChildProcess\Messenger\Factory::parent(clone $this->process, $this->loop)->then(function (Messenger $messenger) use (&$id, $path, $flags, $mode) {
+            $id = count($this->fileDescriptors);
+            $this->fileDescriptors[$id] = $messenger;
+            return $this->fileDescriptors[$id]->rpc(Factory::rpc('open', [
+                'path' => $path,
+                'flags' => $flags,
+                'mode' => $mode,
+            ]));
+        })->then(function () use ($path, $flags, &$id) {
+            return StreamFactory::create($path, $id, $flags, $this);
+        });
     }
 
     /**
@@ -230,7 +257,12 @@ class Adapter implements AdapterInterface
      */
     public function read($fileDescriptor, $length, $offset)
     {
-        // TODO: Implement read() method.
+        return $this->fileDescriptors[$fileDescriptor]->rpc(Factory::rpc('read', [
+            'length' => $length,
+            'offset' => $offset,
+        ]))->then(function ($payload) {
+            return $payload['chunk'];
+        });
     }
 
     /**
@@ -251,7 +283,13 @@ class Adapter implements AdapterInterface
      */
     public function close($fd)
     {
-        // TODO: Implement close() method.
+        $fileDescriptor = $this->fileDescriptors[$fd];
+        unset($this->fileDescriptors[$fd]);
+        return $fileDescriptor->rpc(Factory::rpc('close'))->then(function () use ($fileDescriptor) {
+            return $fileDescriptor->softTerminate();
+        }, function () use ($fileDescriptor) {
+            return $fileDescriptor->softTerminate();
+        });
     }
 
     /**
