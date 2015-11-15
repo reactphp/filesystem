@@ -12,6 +12,7 @@ class ModeTypeDetector implements TypeDetectorInterface
      * @var array
      */
     protected $mapping = [
+        0xa000 => 'link',
         0x4000 => 'dir',
         0x8000 => 'file',
     ];

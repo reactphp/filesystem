@@ -106,7 +106,7 @@ class Process
      */
     public function stat(Payload $payload, Messenger $messenger)
     {
-        $stat = stat($payload['path']);
+        $stat = lstat($payload['path']);
         return \React\Promise\resolve([
             'dev' => $stat['dev'],
             'ino' => $stat['ino'],

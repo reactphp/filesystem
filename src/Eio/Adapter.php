@@ -132,7 +132,7 @@ class Adapter implements AdapterInterface
      */
     public function stat($filename)
     {
-        return $this->invoker->invokeCall('eio_stat', [$filename]);
+        return $this->invoker->invokeCall('eio_lstat', [$filename]);
     }
 
     /**
