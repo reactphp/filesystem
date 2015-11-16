@@ -274,7 +274,13 @@ class Adapter implements AdapterInterface
      */
     public function write($fileDescriptor, $data, $length, $offset)
     {
-        // TODO: Implement write() method.
+        return $this->fileDescriptors[$fileDescriptor]->rpc(Factory::rpc('write', [
+            'chunk' => $data,
+            'length' => $length,
+            'offset' => $offset,
+        ]))->then(function ($payload) {
+            return $payload['chunk'];
+        });
     }
 
     /**

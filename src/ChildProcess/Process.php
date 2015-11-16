@@ -26,7 +26,7 @@ class Process
         //$messenger->registerRpc('touch', [$this, 'touch']);
         $messenger->registerRpc('open', [$this, 'open']);
         $messenger->registerRpc('read', [$this, 'read']);
-        //$messenger->registerRpc('write', [$this, 'write']);
+        $messenger->registerRpc('write', [$this, 'write']);
         $messenger->registerRpc('close', [$this, 'close']);
         $messenger->registerRpc('rename', [$this, 'rename']);
         $messenger->registerRpc('readlink', [$this, 'readlink']);
@@ -167,6 +167,19 @@ class Process
         fseek($this->fd, $payload['offset']);
         return \React\Promise\resolve([
             'chunk' => fread($this->fd, $payload['length']),
+        ]);
+    }
+
+    /**
+     * @param Payload $payload
+     * @param Messenger $messenger
+     * @return PromiseInterface
+     */
+    public function write(Payload $payload, Messenger $messenger)
+    {
+        fseek($this->fd, $payload['offset']);
+        return \React\Promise\resolve([
+            'written' => fwrite($this->fd, $payload['chunk']),
         ]);
     }
 
