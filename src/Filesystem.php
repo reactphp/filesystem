@@ -98,6 +98,19 @@ class Filesystem implements FilesystemInterface
     }
 
     /**
+     * @param string $path
+     * @return \React\Promise\PromiseInterface
+     */
+    public function constructLink($path)
+    {
+        return $this->adapter->readlink($path)->then(function ($linkPath) {
+            return $this->adapter->detectType($linkPath);
+        })->then(function (Node\NodeInterface $destination) use ($path) {
+            return \React\Promise\resolve($this->link($path, $destination));
+        });
+    }
+
+    /**
      * @param string $filename
      * @return \React\Promise\PromiseInterface
      */

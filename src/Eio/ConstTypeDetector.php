@@ -14,7 +14,7 @@ class ConstTypeDetector implements TypeDetectorInterface
     protected $mapping = [
         EIO_DT_DIR => 'dir',
         EIO_DT_REG => 'file',
-        EIO_DT_LNK => 'link',
+        EIO_DT_LNK => 'constructLink',
     ];
 
     /**

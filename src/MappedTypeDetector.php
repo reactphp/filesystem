@@ -12,7 +12,7 @@ class MappedTypeDetector implements TypeDetectorInterface
     protected static $defaultMapping = [
         'dir' => 'dir',
         'file' => 'file',
-        'link' => 'link',
+        'link' => 'constructLink',
     ];
 
     /**

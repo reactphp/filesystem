@@ -143,4 +143,10 @@ interface AdapterInterface
      * @return \React\Promise\PromiseInterface
      */
     public function symlink($fromPath, $toPath);
+
+    /**
+     * @param string $path
+     * @return \React\Promise\PromiseInterface
+     */
+    public function detectType($path);
 }
