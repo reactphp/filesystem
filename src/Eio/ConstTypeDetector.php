@@ -36,13 +36,13 @@ class ConstTypeDetector implements TypeDetectorInterface
      */
     public function detect(array $node)
     {
-        if (isset($this->mapping[$node['type']])) {
-            return \React\Promise\resolve([
-                $this->filesystem,
-                $this->mapping[$node['type']],
-            ]);
+        if (!isset($node['type']) || !isset($this->mapping[$node['type']])) {
+            return new RejectedPromise();
         }
 
-        return new RejectedPromise();
+        return \React\Promise\resolve([
+            $this->filesystem,
+            $this->mapping[$node['type']],
+        ]);
     }
 }
