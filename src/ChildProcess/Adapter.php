@@ -6,12 +6,14 @@ use React\ChildProcess\Process;
 use React\EventLoop\LoopInterface;
 use React\Filesystem\AdapterInterface;
 use React\Filesystem\CallInvokerInterface;
+use React\Filesystem\Node\NodeInterface;
 use React\Filesystem\Stream\StreamFactory;
 use React\Filesystem\FilesystemInterface;
 use React\Filesystem\MappedTypeDetector;
 use React\Filesystem\ModeTypeDetector;
 use React\Filesystem\ObjectStream;
 use React\Filesystem\OpenFileLimiter;
+use React\Promise\FulfilledPromise;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
@@ -209,7 +211,13 @@ class Adapter implements AdapterInterface
                 'path' => $path,
                 'type' => $entry['type'],
             ];
-            $promises[] = \React\Filesystem\detectType($this->typeDetectors, $node, $stream);
+            $promises[] = \React\Filesystem\detectType($this->typeDetectors, $node)->then(function (NodeInterface $node) use ($stream) {
+                $stream->emit('data', [
+                    $node,
+                ]);
+
+                return new FulfilledPromise();
+            });
         }
 
         \React\Promise\all($promises)->then(function () use ($stream) {
@@ -337,5 +345,15 @@ class Adapter implements AdapterInterface
         ])->then(function ($result) {
             return \React\Promise\resolve($result['result']);
         });
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function detectType($path)
+    {
+        return \React\Filesystem\detectType($this->typeDetectors, [
+            'path' => $path,
+        ]);
     }
 }

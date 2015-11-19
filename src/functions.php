@@ -35,10 +35,9 @@ function getOpenFileLimit(array $options)
 /**
  * @param array $typeDetectors
  * @param array $node
- * @param ObjectStream $stream
  * @return \React\Promise\PromiseInterface
  */
-function detectType(array $typeDetectors, array $node, ObjectStream $stream)
+function detectType(array $typeDetectors, array $node)
 {
     $promiseChain = new RejectedPromise();
     foreach ($typeDetectors as $detector) {
@@ -47,9 +46,7 @@ function detectType(array $typeDetectors, array $node, ObjectStream $stream)
         });
     }
 
-    return $promiseChain->then(function ($callable) use ($node, $stream) {
-        $stream->emit('data', [
-            $callable($node['path']),
-        ]);
+    return $promiseChain->then(function ($callable) use ($node) {
+        return \React\Promise\resolve($callable($node['path']));
     });
 }

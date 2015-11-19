@@ -7,11 +7,13 @@ use React\Filesystem\AdapterInterface;
 use React\Filesystem\CallInvokerInterface;
 use React\Filesystem\FilesystemInterface;
 use React\Filesystem\ModeTypeDetector;
+use React\Filesystem\Node\NodeInterface;
 use React\Filesystem\ObjectStream;
 use React\Filesystem\OpenFileLimiter;
 use React\Filesystem\Stream\StreamFactory;
 use React\Filesystem\TypeDetectorInterface;
 use React\Promise\Deferred;
+use React\Promise\FulfilledPromise;
 
 class Adapter implements AdapterInterface
 {
@@ -201,7 +203,11 @@ class Adapter implements AdapterInterface
                 'path' => $path,
                 'type' => $entry['type'],
             ];
-            $promises[] = \React\Filesystem\detectType($this->typeDetectors, $node, $stream);
+            $promises[] = \React\Filesystem\detectType($this->typeDetectors, $node)->then(function (NodeInterface $node) use ($stream) {
+                $stream->write($node);
+
+                return new FulfilledPromise();
+            });
         }
 
         \React\Promise\all($promises)->then(function () use ($stream) {
@@ -329,6 +335,16 @@ class Adapter implements AdapterInterface
         return $this->invoker->invokeCall('eio_symlink', [
             $fromPath,
             $toPath,
+        ]);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function detectType($path)
+    {
+        return \React\Filesystem\detectType($this->typeDetectors, [
+            'path' => $path,
         ]);
     }
 
