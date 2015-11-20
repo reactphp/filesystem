@@ -212,9 +212,7 @@ class Adapter implements AdapterInterface
                 'type' => $entry['type'],
             ];
             $promises[] = \React\Filesystem\detectType($this->typeDetectors, $node)->then(function (NodeInterface $node) use ($stream) {
-                $stream->emit('data', [
-                    $node,
-                ]);
+                $stream->write($node);
 
                 return new FulfilledPromise();
             });
