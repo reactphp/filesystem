@@ -68,6 +68,13 @@ class Adapter implements AdapterInterface
     protected $openFileLimiter;
 
     /**
+     * @var array
+     */
+    protected $options = [
+        'lsFlags' => EIO_READDIR_STAT_ORDER,
+    ];
+
+    /**
      * @param LoopInterface $loop
      * @param array $options
      */
@@ -90,6 +97,7 @@ class Adapter implements AdapterInterface
         $this->invoker = \React\Filesystem\getInvoker($this, $options, 'invoker', 'React\Filesystem\InstantInvoker');
         $this->readDirInvoker = \React\Filesystem\getInvoker($this, $options, 'read_dir_invoker', 'React\Filesystem\InstantInvoker');
         $this->openFileLimiter = new OpenFileLimiter(\React\Filesystem\getOpenFileLimit($options));
+        $this->options = array_merge_recursive($this->options, $options);
     }
 
     /**
@@ -172,11 +180,11 @@ class Adapter implements AdapterInterface
     /**
      * {@inheritDoc}
      */
-    public function ls($path, $flags = EIO_READDIR_STAT_ORDER)
+    public function ls($path)
     {
         $stream = new ObjectStream();
 
-        $this->readDirInvoker->invokeCall('eio_readdir', [$path, $flags], false)->then(function ($result) use ($path, $stream) {
+        $this->readDirInvoker->invokeCall('eio_readdir', [$path, $this->options['lsFlags']], false)->then(function ($result) use ($path, $stream) {
             $this->processLsContents($path, $result, $stream);
         });
 

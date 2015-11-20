@@ -51,6 +51,14 @@ class Adapter implements AdapterInterface
      */
     protected $typeDetectors;
 
+    /**
+     * @var array
+     */
+    protected $options = [
+        'lsFlags' => SCANDIR_SORT_NONE,
+    ];
+
+
     public function __construct(LoopInterface $loop, array $options = [])
     {
         $this->loop = $loop;
@@ -63,6 +71,8 @@ class Adapter implements AdapterInterface
             'min_size' => 0,
             'max_size' => 50,
         ]);
+
+        $this->options = array_merge_recursive($this->options, $options);
     }
 
     /**
@@ -184,16 +194,15 @@ class Adapter implements AdapterInterface
 
     /**
      * @param string $path
-     * @param int $flags
      * @return \React\Promise\PromiseInterface
      */
-    public function ls($path, $flags = EIO_READDIR_DIRS_FIRST)
+    public function ls($path)
     {
         $stream = new ObjectStream();
 
         $this->invoker->invokeCall('readdir', [
             'path' => $path,
-            'flags' => $flags,
+            'flags' => $this->options['lsFlags'],
         ])->then(function ($result) use ($path, $stream) {
             $this->processLsContents($path, $result, $stream);
         });

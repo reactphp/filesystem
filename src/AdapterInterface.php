@@ -81,10 +81,9 @@ interface AdapterInterface
 
     /**
      * @param string $path
-     * @param int $flags
      * @return \React\Promise\PromiseInterface
      */
-    public function ls($path, $flags = EIO_READDIR_DIRS_FIRST);
+    public function ls($path);
 
     /**
      * @param string $path

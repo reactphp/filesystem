@@ -132,7 +132,7 @@ class Process
     public function readdir(Payload $payload, Messenger $messenger)
     {
         $list = [];
-        foreach (scandir($payload['path']) as $node) {
+        foreach (scandir($payload['path'], $payload['flags']) as $node) {
             $path = $payload['path'] . DIRECTORY_SEPARATOR . $node;
             if ($node == '.' || $node == '..' || (!is_dir($path) && !is_file($path))) {
                 continue;
