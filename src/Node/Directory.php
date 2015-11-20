@@ -241,9 +241,7 @@ class Directory implements DirectoryInterface
         $stream = new ObjectStream();
         $closeCount = 0;
         $sourceStream->on('data', function (NodeInterface $node) use (&$closeCount, $stream) {
-            if ($node instanceof Directory || $node instanceof File) {
-                $stream->emit('data', [$node]);
-            }
+            $stream->write($node);
             if ($node instanceof Directory) {
                 $this->streamLsIntoStream($node, $stream, $closeCount);
             }
