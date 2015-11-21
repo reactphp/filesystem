@@ -59,6 +59,11 @@ class Adapter implements AdapterInterface
     ];
 
 
+    /**
+     * Adapter constructor.
+     * @param LoopInterface $loop
+     * @param array $options
+     */
     public function __construct(LoopInterface $loop, array $options = [])
     {
         $this->loop = $loop;
