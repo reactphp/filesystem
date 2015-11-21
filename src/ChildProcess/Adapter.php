@@ -58,7 +58,6 @@ class Adapter implements AdapterInterface
         'lsFlags' => SCANDIR_SORT_NONE,
     ];
 
-
     /**
      * Adapter constructor.
      * @param LoopInterface $loop
