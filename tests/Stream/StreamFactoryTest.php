@@ -1,8 +1,8 @@
 <?php
 
-namespace React\Tests\Filesystem\Eio;
+namespace React\Tests\Filesystem\Stream;
 
-use React\Filesystem\Eio\StreamFactory;
+use React\Filesystem\Stream\StreamFactory;
 
 class StreamFactoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -22,8 +22,8 @@ class StreamFactoryTest extends \PHPUnit_Framework_TestCase
         ;
 
         $this->assertInstanceOf(
-            'React\Filesystem\Eio\ReadableStream',
-            StreamFactory::create('foo.bar', null, EIO_O_RDONLY, $filesystem)
+            'React\Filesystem\Stream\ReadableStream',
+            StreamFactory::create('foo.bar', null, Stream_O_RDONLY, $filesystem)
         );
     }
 
@@ -34,8 +34,8 @@ class StreamFactoryTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $this->assertInstanceOf(
-            'React\Filesystem\Eio\WritableStream',
-            StreamFactory::create('foo.bar', null, EIO_O_WRONLY, $filesystem)
+            'React\Filesystem\Stream\WritableStream',
+            StreamFactory::create('foo.bar', null, Stream_O_WRONLY, $filesystem)
         );
     }
 
@@ -46,8 +46,8 @@ class StreamFactoryTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $this->assertInstanceOf(
-            'React\Filesystem\Eio\DuplexStream',
-            StreamFactory::create('foo.bar', null, EIO_O_RDWR, $filesystem)
+            'React\Filesystem\Stream\DuplexStream',
+            StreamFactory::create('foo.bar', null, Stream_O_RDWR, $filesystem)
         );
     }
 }

@@ -2,8 +2,7 @@
 
 namespace React\Tests\Filesystem\Stream;
 
-use React\Filesystem\Eio\ReadableStream;
-use React\Filesystem\Eio\WritableStream;
+use React\Filesystem\Stream\WritableStream;
 use React\Promise\RejectedPromise;
 
 class ReadableStreamTest extends \PHPUnit_Framework_TestCase
@@ -12,10 +11,10 @@ class ReadableStreamTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [
-                'React\Filesystem\Eio\ReadableStream',
+                'React\Filesystem\Stream\ReadableStream',
             ],
             [
-                'React\Filesystem\Eio\DuplexStream',
+                'React\Filesystem\Stream\DuplexStream',
             ],
         ];
     }
@@ -62,7 +61,7 @@ class ReadableStreamTest extends \PHPUnit_Framework_TestCase
             $filesystem,
         ]);
 
-        if ($className == 'React\Filesystem\Eio\DuplexStream') {
+        if ($className == 'React\Filesystem\Stream\DuplexStream') {
             $mock->resume();
         }
     }
@@ -109,7 +108,7 @@ class ReadableStreamTest extends \PHPUnit_Framework_TestCase
             $filesystem,
         ]);
 
-        if ($className == 'React\Filesystem\Eio\DuplexStream') {
+        if ($className == 'React\Filesystem\Stream\DuplexStream') {
             $mock->resume();
         }
     }
@@ -299,7 +298,7 @@ class ReadableStreamTest extends \PHPUnit_Framework_TestCase
             $filesystem,
         ]);
 
-        if ($className == 'React\Filesystem\Eio\DuplexStream') {
+        if ($className == 'React\Filesystem\Stream\DuplexStream') {
             $mock->resume();
         }
     }

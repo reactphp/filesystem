@@ -1,8 +1,7 @@
 <?php
 
-namespace React\Tests\Filesystem\Eio;
+namespace React\Tests\Filesystem\Stream;
 
-use React\Filesystem\Eio\WritableStream;
 use React\Promise\RejectedPromise;
 
 class WritableStreamTest extends \PHPUnit_Framework_TestCase
@@ -11,10 +10,10 @@ class WritableStreamTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [
-                'React\Filesystem\Eio\WritableStream',
+                'React\Filesystem\Stream\WritableStream',
             ],
             [
-                'React\Filesystem\Eio\DuplexStream',
+                'React\Filesystem\Stream\DuplexStream',
             ],
         ];
     }

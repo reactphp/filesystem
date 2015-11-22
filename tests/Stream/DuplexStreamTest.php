@@ -2,7 +2,7 @@
 
 namespace React\Tests\Filesystem\Stream;
 
-use React\Filesystem\Eio\DuplexStream;
+use React\Filesystem\Stream\DuplexStream;
 
 class DuplexStreamTest extends \PHPUnit_Framework_TestCase
 {
