@@ -316,7 +316,7 @@ class AdapterTest extends \PHPUnit_Framework_TestCase
         $adapter
             ->expects($this->at(0))
             ->method('callFilesystem')
-            ->with('eio_stat', [
+            ->with('eio_lstat', [
                 $filename,
             ])
             ->will($this->returnValue($promise))
@@ -373,7 +373,7 @@ class AdapterTest extends \PHPUnit_Framework_TestCase
         $adapter
             ->expects($this->at(0))
             ->method('callFilesystem')
-            ->with('eio_stat', [
+            ->with('eio_lstat', [
                 $filename,
             ])
             ->will($this->returnValue($promiseA))
