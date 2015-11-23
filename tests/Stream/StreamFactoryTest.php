@@ -23,7 +23,7 @@ class StreamFactoryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf(
             'React\Filesystem\Stream\ReadableStream',
-            StreamFactory::create('foo.bar', null, Stream_O_RDONLY, $filesystem)
+            StreamFactory::create('foo.bar', null, EIO_O_RDONLY, $filesystem)
         );
     }
 
@@ -35,7 +35,7 @@ class StreamFactoryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf(
             'React\Filesystem\Stream\WritableStream',
-            StreamFactory::create('foo.bar', null, Stream_O_WRONLY, $filesystem)
+            StreamFactory::create('foo.bar', null, EIO_O_WRONLY, $filesystem)
         );
     }
 
@@ -47,7 +47,7 @@ class StreamFactoryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf(
             'React\Filesystem\Stream\DuplexStream',
-            StreamFactory::create('foo.bar', null, Stream_O_RDWR, $filesystem)
+            StreamFactory::create('foo.bar', null, EIO_O_RDWR, $filesystem)
         );
     }
 }
