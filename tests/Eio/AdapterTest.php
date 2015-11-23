@@ -1,6 +1,6 @@
 <?php
 
-namespace React\Tests\Filesystem;
+namespace React\Tests\Filesystem\Eio;
 
 use React\EventLoop\Factory;
 use React\Filesystem\Eio\PermissionFlagResolver;
