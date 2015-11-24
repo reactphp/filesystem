@@ -15,8 +15,7 @@ class Filesystem implements FilesystemInterface
     /**
      * @param LoopInterface $loop
      * @param array $options
-     * @return static
-     * @throws NoAdapterException
+     * @return FilesystemInterface
      */
     public static function create(LoopInterface $loop, array $options = [])
     {
@@ -29,8 +28,6 @@ class Filesystem implements FilesystemInterface
         }
 
         return static::setFilesystemOnAdapter(static::createFromAdapter(new ChildProcess\Adapter($loop, $options)));
-
-        throw new NoAdapterException();
     }
 
     /**
