@@ -23,7 +23,7 @@ class Process
         $messenger->registerRpc('chown', [$this, 'chown']);
         $messenger->registerRpc('stat', [$this, 'stat']);
         $messenger->registerRpc('readdir', [$this, 'readdir']);
-        //$messenger->registerRpc('touch', [$this, 'touch']);
+        $messenger->registerRpc('touch', [$this, 'touch']);
         $messenger->registerRpc('open', [$this, 'open']);
         $messenger->registerRpc('read', [$this, 'read']);
         $messenger->registerRpc('write', [$this, 'write']);
@@ -155,6 +155,18 @@ class Process
     {
         $this->fd = fopen($payload['path'], $payload['flags']);
         return \React\Promise\resolve([]);
+    }
+
+    /**
+     * @param Payload $payload
+     * @param Messenger $messenger
+     * @return PromiseInterface
+     */
+    public function touch(Payload $payload, Messenger $messenger)
+    {
+        return \React\Promise\resolve([
+            touch($payload['path']),
+        ]);
     }
 
     /**

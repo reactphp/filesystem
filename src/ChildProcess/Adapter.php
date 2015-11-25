@@ -243,7 +243,9 @@ class Adapter implements AdapterInterface
      */
     public function touch($path, $mode = self::CREATION_MODE)
     {
-        // TODO: Implement touch() method.
+        return $this->invoker->invokeCall('touch', [
+            'path' => $path,
+        ]);
     }
 
     /**
