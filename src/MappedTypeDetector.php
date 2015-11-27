@@ -27,7 +27,9 @@ class MappedTypeDetector implements TypeDetectorInterface
 
     public static function createDefault(FilesystemInterface $filesystem)
     {
-        return new static($filesystem, static::$defaultMapping);
+        return new static($filesystem, [
+            'mapping' => static::$defaultMapping,
+        ]);
     }
 
     /**
