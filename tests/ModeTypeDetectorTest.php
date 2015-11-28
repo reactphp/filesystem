@@ -2,7 +2,6 @@
 
 namespace React\Tests\Filesystem\Stream;
 
-use React\Filesystem\Eio\ConstTypeDetector;
 use React\Filesystem\Filesystem;
 use React\Filesystem\ModeTypeDetector;
 use React\Promise\FulfilledPromise;
