@@ -1,12 +1,12 @@
 <?php
 
-namespace React\Tests\Filesystem\Stream;
+namespace React\Tests\Filesystem;
 
 use React\Filesystem\Filesystem;
 use React\Filesystem\ModeTypeDetector;
 use React\Promise\FulfilledPromise;
 
-class ModeTypeDetectorTest extends \PHPUnit_Framework_TestCase
+class ModeTypeDetectorTest extends TestCase
 {
     public function providerDetect()
     {
@@ -29,11 +29,7 @@ class ModeTypeDetectorTest extends \PHPUnit_Framework_TestCase
     {
         $callbackFired = false;
 
-        $adapter = $this->getMock('React\Filesystem\Eio\Adapter', [
-            'stat'
-        ], [
-            $this->getMock('React\EventLoop\StreamSelectLoop')
-        ]);
+        $adapter = $this->mockAdapter();
         $adapter
             ->expects($this->any())
             ->method('stat')
@@ -60,11 +56,7 @@ class ModeTypeDetectorTest extends \PHPUnit_Framework_TestCase
     {
         $callbackFired = false;
 
-        $adapter = $this->getMock('React\Filesystem\Eio\Adapter', [
-            'stat'
-        ], [
-            $this->getMock('React\EventLoop\StreamSelectLoop')
-        ]);
+        $adapter = $this->mockAdapter();
         $adapter
             ->expects($this->any())
             ->method('stat')
