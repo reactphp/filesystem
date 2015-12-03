@@ -4,7 +4,7 @@ namespace React\Tests\Filesystem;
 
 use React\Filesystem\OpenFileLimiter;
 
-class OpenFileLimiterTest extends \PHPUnit_Framework_TestCase
+class OpenFileLimiterTest extends TestCase
 {
     public function testBasic()
     {

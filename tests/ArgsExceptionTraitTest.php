@@ -2,7 +2,7 @@
 
 namespace React\Tests\Filesystem;
 
-class ArgsExceptionTraitTest extends \PHPUnit_Framework_TestCase
+class ArgsExceptionTraitTest extends TestCase
 {
     public function testArgs()
     {

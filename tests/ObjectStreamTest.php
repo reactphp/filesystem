@@ -5,7 +5,7 @@ namespace React\Tests\Filesystem;
 use React\Filesystem\Node\NodeInterface;
 use React\Filesystem\ObjectStream;
 
-class ObjectStreamTest extends \PHPUnit_Framework_TestCase
+class ObjectStreamTest extends TestCase
 {
     public function testObjectStream()
     {

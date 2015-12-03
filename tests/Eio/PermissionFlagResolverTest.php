@@ -3,8 +3,12 @@
 namespace React\Tests\Filesystem\Eio;
 
 use React\Filesystem\Eio\PermissionFlagResolver;
+use React\Tests\Filesystem\TestCase;
 
-class PermissionFlagResolverTest extends \PHPUnit_Framework_TestCase
+/**
+ * @requires extension eio
+ */
+class PermissionFlagResolverTest extends TestCase
 {
     public function testResolveProvider()
     {

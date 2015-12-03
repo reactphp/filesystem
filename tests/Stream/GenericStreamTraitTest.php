@@ -2,16 +2,16 @@
 
 namespace React\Tests\Filesystem\Stream;
 
-class GenericStreamTraitTest extends \PHPUnit_Framework_TestCase
+use React\Tests\Filesystem\TestCase;
+
+class GenericStreamTraitTest extends TestCase
 {
     public function testGetFilesystem()
     {
         $gst = $this->getMockForTrait('React\Filesystem\Stream\GenericStreamTrait', [
             'foo.bar',
             'abc',
-            $this->getMock('React\Filesystem\Eio\Adapter', [], [
-                $this->getMock('React\EventLoop\StreamSelectLoop'),
-            ]),
+            $this->mockAdapter(),
         ]);
 
         $this->assertSame('abc', $gst->getFiledescriptor());

@@ -4,7 +4,7 @@ namespace React\Tests\Filesystem;
 
 use React\Filesystem\InstantInvoker;
 
-class InstantInvokerTest extends \PHPUnit_Framework_TestCase
+class InstantInvokerTest extends TestCase
 {
     public function testInvokeCall()
     {
@@ -15,11 +15,7 @@ class InstantInvokerTest extends \PHPUnit_Framework_TestCase
         ];
         $errorResultCode = 13;
 
-        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
-            'callFilesystem',
-        ], [
-            $this->getMock('React\EventLoop\LoopInterface'),
-        ]);
+        $filesystem = $this->mockAdapter();
 
 
         $filesystem

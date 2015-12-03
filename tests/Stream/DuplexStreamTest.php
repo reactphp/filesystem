@@ -3,8 +3,9 @@
 namespace React\Tests\Filesystem\Stream;
 
 use React\Filesystem\Stream\DuplexStream;
+use React\Tests\Filesystem\TestCase;
 
-class DuplexStreamTest extends \PHPUnit_Framework_TestCase
+class DuplexStreamTest extends TestCase
 {
     /**
      * @expectedException Exception
@@ -14,11 +15,7 @@ class DuplexStreamTest extends \PHPUnit_Framework_TestCase
         $path = 'foo.bar';
         $fileDescriptor = '0123456789abcdef';
 
-        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
-            'read',
-        ], [
-            $this->getMock('React\EventLoop\StreamSelectLoop'),
-        ]);
+        $filesystem = $this->mockAdapter();
 
         $stream = new DuplexStream($path, $fileDescriptor, $filesystem);
 

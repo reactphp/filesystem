@@ -2,7 +2,7 @@
 
 namespace React\Tests\Filesystem;
 
-abstract class AbstractFlagResolverTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractFlagResolverTest extends TestCase
 {
     public function testInheritance()
     {

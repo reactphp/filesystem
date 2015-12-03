@@ -1,11 +1,15 @@
 <?php
 
-namespace React\Tests\Filesystem\Stream;
+namespace React\Tests\Filesystem\Eio;
 
 use React\Filesystem\Eio\ConstTypeDetector;
 use React\Filesystem\Filesystem;
+use React\Tests\Filesystem\TestCase;
 
-class ConstTypeDetectorTest extends \PHPUnit_Framework_TestCase
+/**
+ * @requires extension eio
+ */
+class ConstTypeDetectorTest extends TestCase
 {
     public function providerDetect()
     {

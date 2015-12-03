@@ -3,8 +3,9 @@
 namespace React\Tests\Filesystem\Stream;
 
 use React\Promise\RejectedPromise;
+use React\Tests\Filesystem\TestCase;
 
-class WritableStreamTest extends \PHPUnit_Framework_TestCase
+class WritableStreamTest extends TestCase
 {
     public function classNamesProvider()
     {
@@ -25,11 +26,7 @@ class WritableStreamTest extends \PHPUnit_Framework_TestCase
     {
         $path = 'foo.bar';
         $fd = '0123456789abcdef';
-        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
-            'write',
-        ], [
-            $this->getMock('React\EventLoop\StreamSelectLoop'),
-        ]);
+        $filesystem = $this->mockAdapter();
 
         $filesystem
             ->expects($this->at(0))
@@ -65,9 +62,7 @@ class WritableStreamTest extends \PHPUnit_Framework_TestCase
     {
         $path = 'foo.bar';
         $fd = '0123456789abcdef';
-        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [], [
-            $this->getMock('React\EventLoop\StreamSelectLoop'),
-        ]);
+        $filesystem = $this->mockAdapter();
 
         $this->assertTrue((new $className($path, $fd, $filesystem))->isWritable());
     }
@@ -79,11 +74,7 @@ class WritableStreamTest extends \PHPUnit_Framework_TestCase
     {
         $path = 'foo.bar';
         $fd = '0123456789abcdef';
-        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
-            'close',
-        ], [
-            $this->getMock('React\EventLoop\StreamSelectLoop'),
-        ]);
+        $filesystem = $this->mockAdapter();
 
 
         $filesystem
@@ -111,11 +102,7 @@ class WritableStreamTest extends \PHPUnit_Framework_TestCase
         ], [
             'foo.bar',
             '0123456789abcdef',
-            $this->getMock('React\Filesystem\Eio\Adapter', [
-                'close',
-            ], [
-                $this->getMock('React\EventLoop\StreamSelectLoop'),
-            ]),
+            $this->mockAdapter(),
         ]);
 
         $stream
@@ -144,11 +131,7 @@ class WritableStreamTest extends \PHPUnit_Framework_TestCase
         ], [
             'foo.bar',
             '0123456789abcdef',
-            $this->getMock('React\Filesystem\Eio\Adapter', [
-                'close',
-            ], [
-                $this->getMock('React\EventLoop\StreamSelectLoop'),
-            ]),
+            $this->mockAdapter(),
         ]);
 
         $stream
@@ -174,11 +157,7 @@ class WritableStreamTest extends \PHPUnit_Framework_TestCase
         $path = 'foo.bar';
         $fd = '0123456789abcdef';
 
-        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
-            'close',
-        ], [
-            $this->getMock('React\EventLoop\StreamSelectLoop'),
-        ]);
+        $filesystem = $this->mockAdapter();
 
 
         $promise = $this->getMock('React\Promise\PromiseInterface', [
@@ -238,11 +217,7 @@ class WritableStreamTest extends \PHPUnit_Framework_TestCase
     {
         $path = 'foo.bar';
         $fd = '0123456789abcdef';
-        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
-            'close',
-        ], [
-            $this->getMock('React\EventLoop\StreamSelectLoop'),
-        ]);
+        $filesystem = $this->mockAdapter();
 
 
         $filesystem

@@ -8,14 +8,8 @@ use React\Filesystem\PooledInvoker;
 use React\Filesystem\QueuedInvoker;
 use React\Filesystem\ThrottledQueuedInvoker;
 
-class CallInvokerProvider extends \PHPUnit_Framework_TestCase
+class CallInvokerProvider extends TestCase
 {
-    protected $mockedMethods = [
-        'executeDelayedCall',
-        'callFilesystem',
-        'close',
-    ];
-
     public function callInvokerProvider()
     {
         return [
@@ -29,9 +23,7 @@ class CallInvokerProvider extends \PHPUnit_Framework_TestCase
     protected function pooled()
     {
         $loop = Factory::create();
-        $adapter = $this->getMock('React\Filesystem\Eio\Adapter', $this->mockedMethods, [
-            $loop,
-        ]);
+        $adapter = $this->mockAdapter($loop);
         $invoker = new PooledInvoker($adapter);
         $adapter->setInvoker($invoker);
 
@@ -41,9 +33,7 @@ class CallInvokerProvider extends \PHPUnit_Framework_TestCase
     protected function instant()
     {
         $loop = Factory::create();
-        $adapter = $this->getMock('React\Filesystem\Eio\Adapter', $this->mockedMethods, [
-            $loop,
-        ]);
+        $adapter = $this->mockAdapter($loop);
         $invoker = new InstantInvoker($adapter);
         $adapter->setInvoker($invoker);
 
@@ -53,9 +43,7 @@ class CallInvokerProvider extends \PHPUnit_Framework_TestCase
     protected function queued()
     {
         $loop = Factory::create();
-        $adapter = $this->getMock('React\Filesystem\Eio\Adapter', $this->mockedMethods, [
-            $loop,
-        ]);
+        $adapter = $this->mockAdapter($loop);
         $invoker = new QueuedInvoker($adapter);
         $adapter->setInvoker($invoker);
 
@@ -65,9 +53,7 @@ class CallInvokerProvider extends \PHPUnit_Framework_TestCase
     protected function throttledqueued()
     {
         $loop = Factory::create();
-        $adapter = $this->getMock('React\Filesystem\Eio\Adapter', $this->mockedMethods, [
-            $loop,
-        ]);
+        $adapter = $this->mockAdapter($loop);
         $invoker = new ThrottledQueuedInvoker($adapter);
         $adapter->setInvoker($invoker);
 

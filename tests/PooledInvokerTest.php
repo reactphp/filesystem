@@ -7,7 +7,7 @@ use React\Filesystem\PooledInvoker;
 use React\Filesystem\QueuedInvoker;
 use React\Promise\FulfilledPromise;
 
-class PooledInvokerTest extends \PHPUnit_Framework_TestCase
+class PooledInvokerTest extends TestCase
 {
     public function testInvokeCall()
     {
@@ -38,11 +38,7 @@ class PooledInvokerTest extends \PHPUnit_Framework_TestCase
             42,
         ];
 
-        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
-            'callFilesystem',
-        ], [
-            $loop,
-        ]);
+        $filesystem = $this->mockAdapter($loop);
 
         foreach ($function as $key => $value) {
             $filesystem

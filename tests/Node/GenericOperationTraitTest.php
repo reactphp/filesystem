@@ -5,17 +5,16 @@ namespace React\Tests\Filesystem\Node;
 use React\Filesystem\Filesystem;
 use React\Filesystem\Node\File;
 use React\Promise\FulfilledPromise;
+use React\Tests\Filesystem\TestCase;
 
-class GenericOperationTraitTest extends \PHPUnit_Framework_TestCase
+class GenericOperationTraitTest extends TestCase
 {
 
     public function testGetFilesystem()
     {
         $got = $this->getMockForTrait('React\Filesystem\Node\GenericOperationTrait');
 
-        $got->adapter = $this->getMock('React\Filesystem\Eio\Adapter', [], [
-            $this->getMock('React\EventLoop\StreamSelectLoop'),
-        ]);
+        $got->adapter = $this->mockAdapter();
 
         $got->filesystem = Filesystem::createFromAdapter($got->adapter);
 
@@ -34,11 +33,7 @@ class GenericOperationTraitTest extends \PHPUnit_Framework_TestCase
 
         $promise = new FulfilledPromise();
 
-        $got->adapter = $this->getMock('React\Filesystem\Eio\Adapter', [
-            'stat',
-        ], [
-            $this->getMock('React\EventLoop\StreamSelectLoop'),
-        ]);
+        $got->adapter = $this->mockAdapter();
         $got->adapter->expects($this->once())
             ->method('stat')
             ->with('foo.bar')
@@ -60,11 +55,7 @@ class GenericOperationTraitTest extends \PHPUnit_Framework_TestCase
 
         $promise = new FulfilledPromise();
 
-        $got->adapter = $this->getMock('React\Filesystem\Eio\Adapter', [
-            'chmod',
-        ], [
-            $this->getMock('React\EventLoop\StreamSelectLoop'),
-        ]);
+        $got->adapter = $this->mockAdapter();
         $got->adapter->expects($this->once())
             ->method('chmod')
             ->with('foo.bar', 'abc')
@@ -86,11 +77,7 @@ class GenericOperationTraitTest extends \PHPUnit_Framework_TestCase
 
         $promise = new FulfilledPromise();
 
-        $got->adapter = $this->getMock('React\Filesystem\Eio\Adapter', [
-            'chown',
-        ], [
-            $this->getMock('React\EventLoop\StreamSelectLoop'),
-        ]);
+        $got->adapter = $this->mockAdapter();
         $got->adapter->expects($this->once())
             ->method('chown')
             ->with('foo.bar', 1, 2)
@@ -112,11 +99,7 @@ class GenericOperationTraitTest extends \PHPUnit_Framework_TestCase
 
         $promise = new FulfilledPromise();
 
-        $got->adapter = $this->getMock('React\Filesystem\Eio\Adapter', [
-            'chown',
-        ], [
-            $this->getMock('React\EventLoop\StreamSelectLoop'),
-        ]);
+        $got->adapter = $this->mockAdapter();
         $got->adapter->expects($this->once())
             ->method('chown')
             ->with('foo.bar', -1, -1)
@@ -129,9 +112,7 @@ class GenericOperationTraitTest extends \PHPUnit_Framework_TestCase
 
     public function testCreateNameNParentFromFilename()
     {
-        $node = new File('/foo/bar/baz/rabbit/kitten/index.php', Filesystem::createFromAdapter($this->getMock('React\Filesystem\Eio\Adapter', [], [
-            $this->getMock('React\EventLoop\StreamSelectLoop'),
-        ])));
+        $node = new File('/foo/bar/baz/rabbit/kitten/index.php', Filesystem::createFromAdapter($this->mockAdapter()));
 
         foreach ([
             [

@@ -2,7 +2,7 @@
 
 namespace React\Tests\Filesystem;
 
-class FlagResolverTest extends \PHPUnit_Framework_TestCase
+class FlagResolverTest extends TestCase
 {
 
     public function testResolve()

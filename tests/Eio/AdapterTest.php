@@ -6,10 +6,13 @@ use React\EventLoop\Factory;
 use React\Filesystem\Eio\PermissionFlagResolver;
 use React\Filesystem\Eio\Adapter;
 use React\Promise\FulfilledPromise;
+use React\Tests\Filesystem\TestCase;
 
-class AdapterTest extends \PHPUnit_Framework_TestCase
+/**
+ * @requires extension eio
+ */
+class AdapterTest extends TestCase
 {
-
     public function testEioExtensionInstalled()
     {
         $this->assertTrue(function_exists('eio_init'));

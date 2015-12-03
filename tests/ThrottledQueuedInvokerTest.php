@@ -6,7 +6,7 @@ use React\EventLoop\Factory;
 use React\Filesystem\ThrottledQueuedInvoker;
 use React\Promise\FulfilledPromise;
 
-class ThrottledQueuedInvokerTest extends \PHPUnit_Framework_TestCase
+class ThrottledQueuedInvokerTest extends TestCase
 {
     public function testInvokeCall()
     {
@@ -37,11 +37,7 @@ class ThrottledQueuedInvokerTest extends \PHPUnit_Framework_TestCase
             42,
         ];
 
-        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
-            'callFilesystem',
-        ], [
-            $loop,
-        ]);
+        $filesystem = $this->mockAdapter($loop);
 
         foreach ($function as $key => $value) {
             $filesystem
@@ -65,13 +61,9 @@ class ThrottledQueuedInvokerTest extends \PHPUnit_Framework_TestCase
 
     public function testInterval()
     {
-        $invoker = new ThrottledQueuedInvoker($this->getMock('React\Filesystem\Eio\Adapter', [], [
-            Factory::create(),
-        ]));
+        $invoker = new ThrottledQueuedInvoker($this->mockAdapter(Factory::create()));
         $this->assertSame(ThrottledQueuedInvoker::DEFAULT_INTERVAL, $invoker->getInterval());
-        $invoker = new ThrottledQueuedInvoker($this->getMock('React\Filesystem\Eio\Adapter', [], [
-            Factory::create(),
-        ]), 1.3);
+        $invoker = new ThrottledQueuedInvoker($this->mockAdapter(Factory::create()), 1.3);
         $this->assertSame(1.3, $invoker->getInterval());
         $invoker->setInterval(3.2);
         $this->assertSame(3.2, $invoker->getInterval());

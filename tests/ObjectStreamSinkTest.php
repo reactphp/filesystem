@@ -5,7 +5,7 @@ namespace React\Tests\Filesystem;
 use React\Filesystem\ObjectStream;
 use React\Filesystem\ObjectStreamSink;
 
-class ObjectStreamSinkTest extends \PHPUnit_Framework_TestCase
+class ObjectStreamSinkTest extends TestCase
 {
     public function testSink()
     {

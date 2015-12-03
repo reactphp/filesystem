@@ -3,17 +3,14 @@
 namespace React\Tests\Filesystem\Stream;
 
 use React\Filesystem\Stream\StreamFactory;
+use React\Tests\Filesystem\TestCase;
 
-class StreamFactoryTest extends \PHPUnit_Framework_TestCase
+class StreamFactoryTest extends TestCase
 {
 
     public function testCreateRead()
     {
-        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
-            'stat',
-        ], [
-            $this->getMock('React\EventLoop\StreamSelectLoop'),
-        ]);
+        $filesystem = $this->mockAdapter();
         $filesystem
             ->expects($this->once())
             ->method('stat')
@@ -29,9 +26,7 @@ class StreamFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testCreateWrite()
     {
-        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [], [
-            $this->getMock('React\EventLoop\StreamSelectLoop'),
-        ]);
+        $filesystem = $this->mockAdapter();
 
         $this->assertInstanceOf(
             'React\Filesystem\Stream\WritableStream',
@@ -41,9 +36,7 @@ class StreamFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testCreateDuplex()
     {
-        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [], [
-            $this->getMock('React\EventLoop\StreamSelectLoop'),
-        ]);
+        $filesystem = $this->mockAdapter();
 
         $this->assertInstanceOf(
             'React\Filesystem\Stream\DuplexStream',

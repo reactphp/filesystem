@@ -5,15 +5,14 @@ namespace React\Tests\Filesystem\Node;
 use React\Filesystem\Filesystem;
 use React\Filesystem\Node\RecursiveInvoker;
 use React\Promise\FulfilledPromise;
+use React\Tests\Filesystem\TestCase;
 
-class RecursiveInvokerTest extends \PHPUnit_Framework_TestCase
+class RecursiveInvokerTest extends TestCase
 {
 
     public function testExecute()
     {
-        $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [], [
-            $this->getMock('React\EventLoop\LoopInterface'),
-        ]);
+        $filesystem = $this->mockAdapter();
 
         $node = $this->getMock('React\Filesystem\Node\Directory', [
             'ls',
