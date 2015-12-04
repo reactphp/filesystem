@@ -71,6 +71,13 @@ class DirectoryTest extends TestCase
             ->will($this->returnValue($promise))
         ;
 
+        $filesystem
+            ->expects($this->once())
+            ->method('stat')
+            ->with($path . NodeInterface::DS)
+            ->will($this->returnValue(new FulfilledPromise()))
+        ;
+
         $this->assertInstanceOf('React\Promise\PromiseInterface', (new Directory($path, Filesystem::createFromAdapter($filesystem)))->create());
     }
 
