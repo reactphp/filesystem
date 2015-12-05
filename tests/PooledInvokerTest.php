@@ -42,13 +42,12 @@ class PooledInvokerTest extends TestCase
 
         foreach ($function as $key => $value) {
             $filesystem
-                ->expects($this->at($key))
+                ->expects($this->at($key + 1))
                 ->method('callFilesystem')
                 ->with($function[$key], $args[$key], $errorResultCode[$key])
                 ->will($this->returnValue(new FulfilledPromise()))
             ;
         }
-
 
         $invoker = new PooledInvoker($filesystem);
         $this->assertTrue($invoker->isEmpty());
