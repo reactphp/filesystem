@@ -12,7 +12,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
             $loop = $this->getMock('React\EventLoop\StreamSelectLoop');
         }
 
-        return $this->getMock('React\Filesystem\AdapterInterface', [
+        $mock = $this->getMock('React\Filesystem\AdapterInterface', [
             '__construct',
             'getLoop',
             'setFilesystem',
@@ -37,5 +37,14 @@ class TestCase extends \PHPUnit_Framework_TestCase
         ], [
             $loop,
         ]);
+
+        $mock
+            ->expects($this->any())
+            ->method('getLoop')
+            ->with()
+            ->will($this->returnValue($loop))
+        ;
+
+        return $mock;
     }
 }
