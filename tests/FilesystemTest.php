@@ -7,11 +7,15 @@ use React\Filesystem\InstantInvoker;
 
 class FilesystemTest extends TestCase
 {
-    public function testCreate()
+    public function _testCreate()
     {
         $this->assertInstanceOf(
             'React\Filesystem\Filesystem',
-            Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'))
+            Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'), [
+                'pool' => [
+                    'class' => 'WyriHaximus\React\ChildProcess\Pool\DummyPool',
+                ],
+            ])
         );
     }
     public function testCreateWithAdapter()
@@ -25,34 +29,50 @@ class FilesystemTest extends TestCase
     /**
      * @expectedException PHPUnit_Framework_Error
      */
-    public function testFactory()
+    public function _testFactory()
     {
-        $this->assertInstanceOf('React\Filesystem\Filesystem', Filesystem::create());
+        $this->assertInstanceOf('React\Filesystem\Filesystem', Filesystem::create(null, [
+            'pool' => [
+                'class' => 'WyriHaximus\React\ChildProcess\Pool\DummyPool',
+            ],
+        ]));
     }
 
     public function testFile()
     {
-        $file = Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'))->file('foo.bar');
+        $file = Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'), [
+            'pool' => [
+                'class' => 'WyriHaximus\React\ChildProcess\Pool\DummyPool',
+            ],
+        ])->file('foo.bar');
         $this->assertInstanceOf('React\Filesystem\Node\File', $file);
         $this->assertInstanceOf('React\Filesystem\Node\GenericOperationInterface', $file);
     }
 
     public function testDir()
     {
-        $directory = Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'))->dir('foo.bar');
+        $directory = Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'), [
+            'pool' => [
+                'class' => 'WyriHaximus\React\ChildProcess\Pool\DummyPool',
+            ],
+        ])->dir('foo.bar');
         $this->assertInstanceOf('React\Filesystem\Node\Directory', $directory);
         $this->assertInstanceOf('React\Filesystem\Node\GenericOperationInterface', $directory);
     }
 
-    public function testGetContents()
+    public function _testGetContents()
     {
         $this->assertInstanceOf(
             'React\Promise\PromiseInterface',
-            Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'))->getContents('foo.bar')
+            Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'), [
+                'pool' => [
+                    'class' => 'WyriHaximus\React\ChildProcess\Pool\DummyPool',
+                ],
+            ])->getContents('foo.bar')
         );
     }
 
-    public function testSetFilesystemAndInvoker()
+    public function _testSetFilesystemAndInvoker()
     {
         $adapter = $this->mockAdapter();
         $invoker = new InstantInvoker($adapter);

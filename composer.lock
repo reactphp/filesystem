@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "7e067da50ce7ce4d0a7498ffec8b6529",
-    "content-hash": "ad92b2d86d476e35ee60ce60c7626c7b",
+    "hash": "978498914f5664815e14690c72e16a85",
+    "content-hash": "e4bfb60e47b8ecbe53b51e91eab24115",
     "packages": [
         {
             "name": "doctrine/inflector",
-            "version": "v1.0.1",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/inflector.git",
-                "reference": "0bcb2e79d8571787f18b7eb036ed3d004908e604"
+                "reference": "90b2128806bfde671b6952ab8bea493942c1fdae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/inflector/zipball/0bcb2e79d8571787f18b7eb036ed3d004908e604",
-                "reference": "0bcb2e79d8571787f18b7eb036ed3d004908e604",
+                "url": "https://api.github.com/repos/doctrine/inflector/zipball/90b2128806bfde671b6952ab8bea493942c1fdae",
+                "reference": "90b2128806bfde671b6952ab8bea493942c1fdae",
                 "shasum": ""
             },
             "require": {
@@ -30,7 +30,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.0.x-dev"
+                    "dev-master": "1.1.x-dev"
                 }
             },
             "autoload": {
@@ -72,7 +72,7 @@
                 "singularize",
                 "string"
             ],
-            "time": "2014-12-20 21:24:13"
+            "time": "2015-11-06 14:35:42"
         },
         {
             "name": "evenement/evenement",
@@ -349,28 +349,28 @@
         },
         {
             "name": "wyrihaximus/react-child-process-messenger",
-            "version": "2.2.0",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/WyriHaximus/reactphp-child-process-messenger.git",
-                "reference": "a8d31276b9a1f33d99ef07f294fc19e152210ed4"
+                "reference": "154e26526cd139859a247c51382d24b56578dbeb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WyriHaximus/reactphp-child-process-messenger/zipball/a8d31276b9a1f33d99ef07f294fc19e152210ed4",
-                "reference": "a8d31276b9a1f33d99ef07f294fc19e152210ed4",
+                "url": "https://api.github.com/repos/WyriHaximus/reactphp-child-process-messenger/zipball/154e26526cd139859a247c51382d24b56578dbeb",
+                "reference": "154e26526cd139859a247c51382d24b56578dbeb",
                 "shasum": ""
             },
             "require": {
                 "doctrine/inflector": "^1.0",
                 "indigophp/hash-compat": "^1.0",
-                "php": ">=5.5.0",
+                "php": "^5.4|^7.0",
                 "react/child-process": "^0.4",
                 "wyrihaximus/ticking-promise": "^1.4"
             },
             "require-dev": {
                 "phake/phake": "^1.0.6",
-                "phpunit/phpunit": "~4.0.0",
+                "phpunit/phpunit": "^4.0|^5.0",
                 "squizlabs/php_codesniffer": "^1.5",
                 "vectorface/dunit": "^2.0"
             },
@@ -392,31 +392,31 @@
                 }
             ],
             "description": "Messenger decorator for react/child-process",
-            "time": "2015-10-09 06:10:04"
+            "time": "2015-11-21 18:55:43"
         },
         {
             "name": "wyrihaximus/react-child-process-pool",
-            "version": "1.0.0-alpha8",
+            "version": "1.0.0-alpha10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/WyriHaximus/reactphp-child-process-pool.git",
-                "reference": "6d140c3f4b3d4b316ee501f463c93990c0846c1f"
+                "reference": "26e0b0bbed4720768c6e0ed5291fab936523e52b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WyriHaximus/reactphp-child-process-pool/zipball/6d140c3f4b3d4b316ee501f463c93990c0846c1f",
-                "reference": "6d140c3f4b3d4b316ee501f463c93990c0846c1f",
+                "url": "https://api.github.com/repos/WyriHaximus/reactphp-child-process-pool/zipball/26e0b0bbed4720768c6e0ed5291fab936523e52b",
+                "reference": "26e0b0bbed4720768c6e0ed5291fab936523e52b",
                 "shasum": ""
             },
             "require": {
                 "evenement/evenement": "^2.0",
-                "php": ">=5.5.0",
-                "wyrihaximus/react-child-process-messenger": "^2.1",
+                "php": "^5.4|^7.0",
+                "wyrihaximus/react-child-process-messenger": "^2.3",
                 "wyrihaximus/ticking-promise": "^1.5"
             },
             "require-dev": {
                 "phake/phake": "~1.0.6",
-                "phpunit/phpunit": "~4.0.0",
+                "phpunit/phpunit": "^4.0|^5.0",
                 "squizlabs/php_codesniffer": "^1.5.6",
                 "vectorface/dunit": "~2.0"
             },
@@ -436,7 +436,7 @@
                     "email": "ceesjank@gmail.com"
                 }
             ],
-            "time": "2015-11-02 20:05:47"
+            "time": "2015-12-06 21:47:12"
         },
         {
             "name": "wyrihaximus/ticking-promise",
