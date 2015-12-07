@@ -9,19 +9,27 @@ Table of Contents
 -----------------
 
 1. [Introduction](#introduction)
-2. [Examples](#examples)
+2. [Adapters](#adapters)
+3. [Examples](#examples)
    * [Creating filesystem object](#creating-filesystem-object)
    * [File object](#file-object)
      * [Reading files](#reading-files)
      * [Writing files](#writing-files)
    * [Directory object](#directory-object)
      * [List contents](#list-contents)
-3. [License](#license)
+4. [License](#license)
 
 Introduction
 ------------
 
 Filesystem WIP for [EIO](http://php.net/eio), keep in mind that this can be very unstable at times and is not stable by a long shot!
+
+Adapters
+------------
+
+* ChildProcessAdapter - Adapter using child processes to perform IO actions
+* EioAdapter - Adapter using `ext-eio`
+* PthreadsAdapter - Adapter using `ext-pthreads`
 
 Examples
 --------
