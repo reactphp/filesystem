@@ -17,7 +17,6 @@ use React\Promise\FulfilledPromise;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
-use WyriHaximus\React\ChildProcess\Pool\FlexiblePool;
 
 class Adapter implements AdapterInterface
 {
@@ -71,12 +70,25 @@ class Adapter implements AdapterInterface
         $this->openFileLimiter = new OpenFileLimiter(\React\Filesystem\getOpenFileLimit($options));
 
         $this->process = new Process('exec ' . dirname(dirname(__DIR__)) . '/child-process-adapter');
-        $this->pool = new FlexiblePool($this->process, $loop, [
-            'min_size' => 0,
-            'max_size' => 50,
-        ]);
+
+        $this->setUpPool($options);
 
         $this->options = array_merge_recursive($this->options, $options);
+    }
+
+    protected function setUpPool($options)
+    {
+        $poolOptions = [
+            'min_size' => 0,
+            'max_size' => 50,
+        ];
+        $poolClass = 'WyriHaximus\React\ChildProcess\Pool\FlexiblePool';
+
+        if (isset($options['pool']['class']) && is_subclass_of($options['pool']['class'], 'WyriHaximus\React\ChildProcess\Pool\PoolInterface')) {
+            $poolClass = $options['pool']['class'];
+        }
+
+        $this->pool = new $poolClass($this->process, $this->loop, $poolOptions);
     }
 
     /**
