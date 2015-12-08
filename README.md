@@ -27,7 +27,7 @@ Filesystem WIP for [EIO](http://php.net/eio), keep in mind that this can be very
 Adapters
 ------------
 
-* ChildProcessAdapter - Adapter using child processes to perform IO actions
+* ChildProcessAdapter - Adapter using child processes to perform IO actions (default adapter if no extensions are installed)
 * EioAdapter - Adapter using `ext-eio`
 * PthreadsAdapter - Adapter using `ext-pthreads`
 
