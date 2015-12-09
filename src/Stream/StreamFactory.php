@@ -15,11 +15,11 @@ class StreamFactory
      */
     public static function create($path, $fileDescriptor, $flags, AdapterInterface $filesystem)
     {
-        if ($flags == EIO_O_RDONLY) {
+        if (strpos($flags, 'r') !== false) {
             return new ReadableStream($path, $fileDescriptor, $filesystem);
         }
 
-        if ($flags & EIO_O_WRONLY) {
+        if (strpos($flags, 'w') !== false) {
             return new WritableStream($path, $fileDescriptor, $filesystem);
         }
 
