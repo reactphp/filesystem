@@ -247,12 +247,12 @@ class Adapter implements AdapterInterface
      */
     public function open($path, $flags, $mode = self::CREATION_MODE)
     {
-        $flags = $this->openFlagResolver->resolve($flags);
+        $eioFlags = $this->openFlagResolver->resolve($flags);
         $mode = $this->permissionFlagResolver->resolve($mode);
-        return $this->openFileLimiter->open()->then(function () use ($path, $flags, $mode) {
+        return $this->openFileLimiter->open()->then(function () use ($path, $eioFlags, $mode) {
             return $this->invoker->invokeCall('eio_open', [
                 $path,
-                $flags,
+                $eioFlags,
                 $mode,
             ]);
         })->then(function ($fileDescriptor) use ($path, $flags) {
