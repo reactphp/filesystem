@@ -8,11 +8,11 @@ $loop = \React\EventLoop\Factory::create();
     $nextLine = "\r\n\t";
     echo 'File "' . __FILE__ . '":';
     echo $nextLine;
-    echo 'Access timestamp: ' . $times['atime'];
+    echo 'Access timestamp: ' . $times['atime']->format('r');
     echo $nextLine;
-    echo 'Creation timestamp: ' . $times['ctime'];
+    echo 'Creation timestamp: ' . $times['ctime']->format('r');
     echo $nextLine;
-    echo 'Modified timestamp: ' . $times['mtime'];
+    echo 'Modified timestamp: ' . $times['mtime']->format('r');
     echo "\r\n";
 }, function ($e) {
     echo $e->getMessage(), PHP_EOL;

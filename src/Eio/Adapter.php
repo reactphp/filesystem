@@ -142,7 +142,12 @@ class Adapter implements AdapterInterface
      */
     public function stat($filename)
     {
-        return $this->invoker->invokeCall('eio_lstat', [$filename]);
+        return $this->invoker->invokeCall('eio_lstat', [$filename])->then(function ($stat) {
+            $stat['atime'] = new \DateTime('@' .$stat['atime']);
+            $stat['mtime'] = new \DateTime('@' .$stat['mtime']);
+            $stat['ctime'] = new \DateTime('@' .$stat['ctime']);
+            return \React\Promise\resolve($stat);
+        });
     }
 
     /**
