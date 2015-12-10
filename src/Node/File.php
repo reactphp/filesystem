@@ -100,7 +100,6 @@ class File implements FileInterface
         });
     }
 
-
     /**
      * {@inheritDoc}
      */
