@@ -20,7 +20,7 @@ class StreamFactoryTest extends TestCase
 
         $this->assertInstanceOf(
             'React\Filesystem\Stream\ReadableStream',
-            StreamFactory::create('foo.bar', null, EIO_O_RDONLY, $filesystem)
+            StreamFactory::create('foo.bar', null, 'r', $filesystem)
         );
     }
 
@@ -30,7 +30,7 @@ class StreamFactoryTest extends TestCase
 
         $this->assertInstanceOf(
             'React\Filesystem\Stream\WritableStream',
-            StreamFactory::create('foo.bar', null, EIO_O_WRONLY, $filesystem)
+            StreamFactory::create('foo.bar', null, 'w', $filesystem)
         );
     }
 
@@ -40,7 +40,7 @@ class StreamFactoryTest extends TestCase
 
         $this->assertInstanceOf(
             'React\Filesystem\Stream\DuplexStream',
-            StreamFactory::create('foo.bar', null, EIO_O_RDWR, $filesystem)
+            StreamFactory::create('foo.bar', null, '+', $filesystem)
         );
     }
 }
