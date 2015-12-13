@@ -7,7 +7,7 @@ use React\Filesystem\InstantInvoker;
 
 class FilesystemTest extends TestCase
 {
-    public function _testCreate()
+    public function testCreate()
     {
         $this->assertInstanceOf(
             'React\Filesystem\Filesystem',
@@ -29,7 +29,7 @@ class FilesystemTest extends TestCase
     /**
      * @expectedException PHPUnit_Framework_Error
      */
-    public function _testFactory()
+    public function testFactory()
     {
         $this->assertInstanceOf('React\Filesystem\Filesystem', Filesystem::create(null, [
             'pool' => [
@@ -72,7 +72,7 @@ class FilesystemTest extends TestCase
         );
     }
 
-    public function _testSetFilesystemAndInvoker()
+    public function testSetFilesystemAndInvoker()
     {
         $adapter = $this->mockAdapter();
         $invoker = new InstantInvoker($adapter);
