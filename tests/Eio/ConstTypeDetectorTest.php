@@ -32,7 +32,11 @@ class ConstTypeDetectorTest extends TestCase
     {
         $callbackFired = false;
 
-        $filesystem = Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'));
+        $filesystem = Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'), [
+            'pool' => [
+                'class' => 'WyriHaximus\React\ChildProcess\Pool\DummyPool',
+            ],
+        ]);
         (new ConstTypeDetector($filesystem))->detect([
             'type' => $const,
         ])->then(function ($result) use ($filesystem, $method, &$callbackFired) {
@@ -50,7 +54,11 @@ class ConstTypeDetectorTest extends TestCase
     {
         $callbackFired = false;
 
-        $filesystem = Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'));
+        $filesystem = Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'), [
+            'pool' => [
+                'class' => 'WyriHaximus\React\ChildProcess\Pool\DummyPool',
+            ],
+        ]);
         (new ConstTypeDetector($filesystem))->detect([
             'type' => 123,
         ])->otherwise(function ($result) use (&$callbackFired) {
