@@ -13,9 +13,11 @@ class ReadableStreamTest extends TestCase
         return [
             [
                 'React\Filesystem\Stream\ReadableStream',
+                true,
             ],
             [
                 'React\Filesystem\Stream\DuplexStream',
+                false,
             ],
         ];
     }
@@ -113,13 +115,21 @@ class ReadableStreamTest extends TestCase
     /**
      * @dataProvider classNamesProvider
      */
-    public function testClose($className)
+    public function testClose($className, $stat)
     {
         $path = 'foo.bar';
         $fd = '0123456789abcdef';
 
         $filesystem = $this->mockAdapter();
 
+        if ($stat) {
+            $filesystem
+                ->expects($this->once())
+                ->method('stat')
+                ->with($path)
+                ->will($this->returnValue(new RejectedPromise()))
+            ;
+        }
 
         $promise = $this->getMock('React\Promise\PromiseInterface', [
             'then',
@@ -174,12 +184,20 @@ class ReadableStreamTest extends TestCase
     /**
      * @dataProvider classNamesProvider
      */
-    public function testAlreadyClosed($className)
+    public function testAlreadyClosed($className, $stat)
     {
         $path = 'foo.bar';
         $fd = '0123456789abcdef';
         $filesystem = $this->mockAdapter();
 
+        if ($stat) {
+            $filesystem
+                ->expects($this->once())
+                ->method('stat')
+                ->with($path)
+                ->will($this->returnValue(new RejectedPromise()))
+            ;
+        }
 
         $filesystem
             ->expects($this->once())
@@ -197,12 +215,21 @@ class ReadableStreamTest extends TestCase
     /**
      * @dataProvider classNamesProvider
      */
-    public function testPipe($className)
+    public function testPipe($className, $stat)
     {
         $path = 'foo.bar';
         $fileDescriptor = '0123456789abcdef';
 
         $filesystem = $this->mockAdapter();
+
+        if ($stat) {
+            $filesystem
+                ->expects($this->once())
+                ->method('stat')
+                ->with($path)
+                ->will($this->returnValue(new RejectedPromise()))
+            ;
+        }
 
         $stream = new $className($path, $fileDescriptor, $filesystem);
         $destination = new WritableStream($path, $fileDescriptor, $filesystem);
@@ -213,7 +240,7 @@ class ReadableStreamTest extends TestCase
     /**
      * @dataProvider classNamesProvider
      */
-    public function testReadChunk($className)
+    public function testReadChunk($className, $stat)
     {
         $path = 'foo.bar';
         $fileDescriptor = '0123456789abcdef';
@@ -249,21 +276,21 @@ class ReadableStreamTest extends TestCase
         $filesystem = $this->mockAdapter();
 
         $filesystem
-            ->expects($this->at(0))
+            ->expects($this->at((int)!$stat + 0))
             ->method('stat')
             ->with($path)
             ->will($this->returnValue($statPromise))
         ;
 
         $filesystem
-            ->expects($this->at(1))
+            ->expects($this->at((int)!$stat + 1))
             ->method('read')
             ->with($fileDescriptor, 8192, 0)
             ->will($this->returnValue($readPromise))
         ;
 
         $filesystem
-            ->expects($this->at(2))
+            ->expects($this->at((int)!$stat + 2))
             ->method('read')
             ->with($fileDescriptor, 8192, 8192)
             ->will($this->returnValue($readPromise))
