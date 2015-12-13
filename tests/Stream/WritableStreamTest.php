@@ -12,9 +12,11 @@ class WritableStreamTest extends TestCase
         return [
             [
                 'React\Filesystem\Stream\WritableStream',
+                0
             ],
             [
                 'React\Filesystem\Stream\DuplexStream',
+                1
             ],
         ];
     }
@@ -22,28 +24,28 @@ class WritableStreamTest extends TestCase
     /**
      * @dataProvider classNamesProvider
      */
-    public function testWrite($className)
+    public function testWrite($className, $offset)
     {
         $path = 'foo.bar';
         $fd = '0123456789abcdef';
         $filesystem = $this->mockAdapter();
 
         $filesystem
-            ->expects($this->at(0))
+            ->expects($this->at($offset + 0))
             ->method('write')
             ->with($fd, 'abc', 3, 0)
             ->will($this->returnValue($fd))
         ;
 
         $filesystem
-            ->expects($this->at(1))
+            ->expects($this->at($offset + 1))
             ->method('write')
             ->with($fd, 'def', 3, 3)
             ->will($this->returnValue($fd))
         ;
 
         $filesystem
-            ->expects($this->at(2))
+            ->expects($this->at($offset + 2))
             ->method('write')
             ->with($fd, 'ghijklmnopqrstuvwxyz', 20, 6)
             ->will($this->returnValue($fd))
