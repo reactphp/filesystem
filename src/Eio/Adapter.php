@@ -25,7 +25,7 @@ class Adapter implements AdapterInterface
     /**
      * @var bool
      */
-    protected $loopRunning = true;
+    protected $loopRunning = false;
 
     /**
      * @var LoopInterface
