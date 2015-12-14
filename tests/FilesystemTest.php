@@ -4,6 +4,7 @@ namespace React\Tests\Filesystem;
 
 use React\Filesystem\Filesystem;
 use React\Filesystem\InstantInvoker;
+use React\Promise\RejectedPromise;
 
 class FilesystemTest extends TestCase
 {
@@ -60,15 +61,17 @@ class FilesystemTest extends TestCase
         $this->assertInstanceOf('React\Filesystem\Node\GenericOperationInterface', $directory);
     }
 
-    public function _testGetContents()
+    public function testGetContents()
     {
+        $adapter = $this->mockAdapter();
+        $adapter
+            ->expects($this->any())
+            ->method('open')
+            ->will($this->returnValue(new RejectedPromise()))
+        ;
         $this->assertInstanceOf(
             'React\Promise\PromiseInterface',
-            Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'), [
-                'pool' => [
-                    'class' => 'WyriHaximus\React\ChildProcess\Pool\DummyPool',
-                ],
-            ])->getContents('foo.bar')
+            Filesystem::createFromAdapter($adapter)->getContents('foo.bar')
         );
     }
 
