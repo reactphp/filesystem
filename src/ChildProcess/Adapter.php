@@ -17,9 +17,13 @@ use React\Promise\FulfilledPromise;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
+use WyriHaximus\React\ChildProcess\Pool\PoolInterface;
 
 class Adapter implements AdapterInterface
 {
+    const DEFAULT_POOL = 'WyriHaximus\React\ChildProcess\Pool\FlexiblePool';
+    const POOL_INTERFACE = 'WyriHaximus\React\ChildProcess\Pool\PoolInterface';
+
     /**
      * @var LoopInterface
      */
@@ -31,7 +35,7 @@ class Adapter implements AdapterInterface
     protected $filesystem;
 
     /**
-     * @var FlexiblePool
+     * @var PoolInterface
      */
     protected $pool;
 
@@ -82,9 +86,9 @@ class Adapter implements AdapterInterface
             'min_size' => 0,
             'max_size' => 50,
         ];
-        $poolClass = 'WyriHaximus\React\ChildProcess\Pool\FlexiblePool';
+        $poolClass = static::DEFAULT_POOL;
 
-        if (isset($options['pool']['class']) && is_subclass_of($options['pool']['class'], 'WyriHaximus\React\ChildProcess\Pool\PoolInterface')) {
+        if (isset($options['pool']['class']) && is_subclass_of($options['pool']['class'], static::POOL_INTERFACE)) {
             $poolClass = $options['pool']['class'];
         }
 
