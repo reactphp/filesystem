@@ -163,10 +163,10 @@ class Adapter implements AdapterInterface
     }
 
     /**
-     * @param string $filename
+     * @param string $path
      * @return \React\Promise\PromiseInterface
      */
-    public function unlink($filename)
+    public function unlink($path)
     {
         return $this->invoker->invokeCall('unlink', [
             'path' => $path,
