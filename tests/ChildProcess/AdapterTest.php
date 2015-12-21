@@ -174,4 +174,35 @@ class AdapterTest extends TestCase
 
         $this->assertSame($promise, call_user_func_array([$filesystem, $method], $arguments));
     }
+
+    public function testReadlink()
+    {
+        $loop = $this->getMock('React\EventLoop\LoopInterface');
+        $filesystem = new Adapter($loop, [
+            'pool' => [
+                'class' => 'WyriHaximus\React\ChildProcess\Pool\DummyPool',
+            ],
+        ]);
+        $invoker = $this->getMock('React\Filesystem\CallInvokerInterface', [
+            '__construct',
+            'invokeCall',
+            'isEmpty',
+        ]);
+        $filesystem->setInvoker($invoker);
+
+        $invoker
+            ->expects($this->once())
+            ->method('invokeCall')
+            ->with(
+                'readlink',
+                [
+                    'path' => 'foo.bar',
+                ]
+            )->will($this->returnValue(new FulfilledPromise([
+                'path' => 'bar.foo',
+            ])))
+        ;
+
+        $filesystem->readlink('foo.bar');
+    }
 }
