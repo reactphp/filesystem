@@ -239,4 +239,36 @@ class AdapterTest extends TestCase
 
         $filesystem->stat('foo.bar');
     }
+
+    public function testSymlink()
+    {
+        $loop = $this->getMock('React\EventLoop\LoopInterface');
+        $filesystem = new Adapter($loop, [
+            'pool' => [
+                'class' => 'WyriHaximus\React\ChildProcess\Pool\DummyPool',
+            ],
+        ]);
+        $invoker = $this->getMock('React\Filesystem\CallInvokerInterface', [
+            '__construct',
+            'invokeCall',
+            'isEmpty',
+        ]);
+        $filesystem->setInvoker($invoker);
+
+        $invoker
+            ->expects($this->once())
+            ->method('invokeCall')
+            ->with(
+                'symlink',
+                [
+                    'from' => 'foo.bar',
+                    'to' => 'bar.foo',
+                ]
+            )->will($this->returnValue(new FulfilledPromise([
+                'result' => true,
+            ])))
+        ;
+
+        $filesystem->symlink('foo.bar', 'bar.foo');
+    }
 }
