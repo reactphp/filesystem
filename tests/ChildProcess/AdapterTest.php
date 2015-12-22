@@ -205,4 +205,38 @@ class AdapterTest extends TestCase
 
         $filesystem->readlink('foo.bar');
     }
+
+    public function testStat()
+    {
+        $loop = $this->getMock('React\EventLoop\LoopInterface');
+        $filesystem = new Adapter($loop, [
+            'pool' => [
+                'class' => 'WyriHaximus\React\ChildProcess\Pool\DummyPool',
+            ],
+        ]);
+        $invoker = $this->getMock('React\Filesystem\CallInvokerInterface', [
+            '__construct',
+            'invokeCall',
+            'isEmpty',
+        ]);
+        $filesystem->setInvoker($invoker);
+
+        $time = time();
+        $invoker
+            ->expects($this->once())
+            ->method('invokeCall')
+            ->with(
+                'stat',
+                [
+                    'path' => 'foo.bar',
+                ]
+            )->will($this->returnValue(new FulfilledPromise([
+                'atime' => $time,
+                'mtime' => $time,
+                'ctime' => $time,
+            ])))
+        ;
+
+        $filesystem->stat('foo.bar');
+    }
 }
