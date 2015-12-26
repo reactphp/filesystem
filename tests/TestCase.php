@@ -6,6 +6,8 @@ use React\EventLoop\LoopInterface;
 
 class TestCase extends \PHPUnit_Framework_TestCase
 {
+    protected $tmpDir;
+
     protected function mockAdapter(LoopInterface $loop = null)
     {
         if ($loop === null) {
@@ -46,5 +48,16 @@ class TestCase extends \PHPUnit_Framework_TestCase
         ;
 
         return $mock;
+    }
+
+    public function setUp()
+    {
+        $this->tmpDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('react-filesystem-tests-') . DIRECTORY_SEPARATOR;
+        mkdir($this->tmpDir, 0777, true);
+    }
+
+    public function tearDown()
+    {
+        rmdir($this->tmpDir);
     }
 }
