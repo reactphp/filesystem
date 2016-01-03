@@ -152,4 +152,28 @@ class Adapter implements AdapterInterface
     {
         // TODO: Implement rename() method.
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function readlink($path)
+    {
+        // TODO: Implement readlink() method.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function symlink($fromPath, $toPath)
+    {
+        // TODO: Implement symlink() method.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function detectType($path)
+    {
+        // TODO: Implement detectType() method.
+    }
 }
