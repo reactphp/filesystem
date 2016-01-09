@@ -7,12 +7,7 @@ class Yarn extends \Thread
     /**
      * @var string
      */
-    protected $function;
-
-    /**
-     * @var array
-     */
-    protected $args;
+    protected $call;
 
     /**
      * @var mixed
@@ -21,20 +16,18 @@ class Yarn extends \Thread
 
     /**
      * Yarn constructor.
-     * @param string $function
-     * @param array $args
+     * @param Call $call
      */
-    public function __construct($function, array $args)
+    public function __construct(Call $call)
     {
-        $this->function = $function;
-        $this->args = $args;
+        $this->call = $call;
         $this->start();
     }
 
     public function run()
     {
         $this->synchronized(function () {
-            $this->result = call_user_func_array($this->function, $this->args);
+            $this->result = call_user_func_array($this->call->getFunction(), $this->call->getArgs());
             $this->notify();
         });
     }
