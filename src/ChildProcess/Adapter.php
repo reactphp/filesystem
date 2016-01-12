@@ -52,7 +52,7 @@ class Adapter implements AdapterInterface
     /**
      * @var TypeDetectorInterface[]
      */
-    protected $typeDetectors;
+    protected $typeDetectors = [];
 
     /**
      * @var array
