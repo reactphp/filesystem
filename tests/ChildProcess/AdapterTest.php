@@ -3,6 +3,9 @@
 namespace React\Tests\Filesystem\ChildProcess;
 
 use React\Filesystem\ChildProcess\Adapter;
+use React\Filesystem\Filesystem;
+use React\Filesystem\Node\NodeInterface;
+use React\Promise\Deferred;
 use React\Promise\FulfilledPromise;
 use React\Tests\Filesystem\TestCase;
 
@@ -275,7 +278,7 @@ class AdapterTest extends TestCase
     public function testLs()
     {
         $loop = $this->getMock('React\EventLoop\LoopInterface');
-        $filesystem = new Adapter($loop, [
+        $adapter = new Adapter($loop, [
             'pool' => [
                 'class' => 'WyriHaximus\React\ChildProcess\Pool\DummyPool',
             ],
@@ -285,7 +288,10 @@ class AdapterTest extends TestCase
             'invokeCall',
             'isEmpty',
         ]);
-        $filesystem->setInvoker($invoker);
+        $adapter->setInvoker($invoker);
+        Filesystem::createFromAdapter($adapter);
+
+        $deferred = new Deferred();
 
         $invoker
             ->expects($this->once())
@@ -296,9 +302,25 @@ class AdapterTest extends TestCase
                     'path' => 'foo.bar',
                     'flags' => 2,
                 ]
-            )->will($this->returnValue(new FulfilledPromise([])))
+            )->will($this->returnValue($deferred->promise()))
         ;
 
-        $this->assertInstanceOf('React\Filesystem\ObjectStream', $filesystem->ls('foo.bar'));
+        $stream = $adapter->ls('foo.bar');
+        $this->assertInstanceOf('React\Filesystem\ObjectStream', $stream);
+
+        $calledOnData = false;
+        $stream->on('data', function (NodeInterface $file) use (&$calledOnData) {
+            $this->assertInstanceOf('React\Filesystem\Node\File', $file);
+            $this->assertSame('foo.bar/bar.foo', $file->getPath());
+            $calledOnData = true;
+        });
+
+        $deferred->resolve([
+            [
+                'type' => 'file',
+                'name' => 'bar.foo',
+            ],
+        ]);
+        $this->assertTrue($calledOnData);
     }
 }
