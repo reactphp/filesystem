@@ -5,7 +5,9 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 
 $loop = \React\EventLoop\Factory::create();
 
-$node = \React\Filesystem\Filesystem::create($loop)->file(__FILE__);
+$filesystem = \React\Filesystem\Filesystem::create($loop);
+echo 'Using ', get_class($filesystem->getAdapter()), PHP_EOL;
+$filesystem->file(__FILE__);
 
 do {
     echo $node->getName(), PHP_EOL;

@@ -9,6 +9,7 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 $loop = \React\EventLoop\Factory::create();
 
 $filesystem = \React\Filesystem\Filesystem::create($loop);
+echo 'Using ', get_class($filesystem->getAdapter()), PHP_EOL;
 $from = $filesystem->file(__FILE__);
 $to = $filesystem->dir(sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'react_filesystem_file_to_file_copy' . DIRECTORY_SEPARATOR . uniqid());
 echo $to->getPath(), PHP_EOL;

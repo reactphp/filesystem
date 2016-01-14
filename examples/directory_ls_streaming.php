@@ -7,7 +7,9 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 $loop = \React\EventLoop\Factory::create();
 
 $i = 0;
-$dir = \React\Filesystem\Filesystem::create($loop)->dir(__DIR__);
+$filesystem = \React\Filesystem\Filesystem::create($loop);
+echo 'Using ', get_class($filesystem->getAdapter()), PHP_EOL;
+$dir = $filesystem->dir(__DIR__);
 $stream = $dir->lsStreaming();
 $stream->on('data', function (NodeInterface $node) use (&$i) {
     echo $node->getPath(), PHP_EOL;

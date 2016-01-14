@@ -16,7 +16,9 @@ $timesFunction = function ($times) {
     echo "\r\n";
 };
 
-$file = \React\Filesystem\Filesystem::create($loop)->file(__FILE__);
+$filesystem = \React\Filesystem\Filesystem::create($loop);
+echo 'Using ', get_class($filesystem->getAdapter()), PHP_EOL;
+$file = $filesystem->file(__FILE__);
 
 $file->time()->then($timesFunction)->then(function () use ($file) {
     return $file->touch();

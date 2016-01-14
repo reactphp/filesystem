@@ -7,6 +7,7 @@ $loop = \React\EventLoop\Factory::create();
 $start = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'react_filesystem_dir_create' . DIRECTORY_SEPARATOR . uniqid();
 $dirName = $start . DIRECTORY_SEPARATOR . uniqid() . DIRECTORY_SEPARATOR . uniqid();
 $filesystem = \React\Filesystem\Filesystem::create($loop);
+echo 'Using ', get_class($filesystem->getAdapter()), PHP_EOL;
 $startDir = $filesystem->dir($start);
 $dir = $filesystem->dir($dirName);
 echo 'Creating directory: ' . $dirName, PHP_EOL;

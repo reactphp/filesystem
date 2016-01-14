@@ -5,7 +5,9 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 $loop = \React\EventLoop\Factory::create();
 
 $fileName = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'react_filesystem_file_touch_' . uniqid();
-$file = \React\Filesystem\Filesystem::create($loop)->file($fileName);
+$filesystem = \React\Filesystem\Filesystem::create($loop);
+echo 'Using ', get_class($filesystem->getAdapter()), PHP_EOL;
+$file = $filesystem->file($fileName);
 $file->create()
 ->then(function () use ($file, $fileName) {
     echo 'File "' . $fileName . '" created.', PHP_EOL;
