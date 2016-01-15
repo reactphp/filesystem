@@ -21,9 +21,11 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 $loop = \React\EventLoop\Factory::create();
 
 $i = 0;
-$dir = \React\Filesystem\Filesystem::create($loop, [
+$filesystem = \React\Filesystem\Filesystem::create($loop, [
     'open_file_limit' => 8,
-])->dir(dirname(__DIR__));
+]);
+echo 'Using ', get_class($filesystem->getAdapter()), PHP_EOL;
+$dir = $filesystem->dir(__DIR__);
 $stream = $dir->lsRecursiveStreaming();
 $stream->on('data', function (NodeInterface $node) use (&$i) {
     if ($node instanceof File) {
