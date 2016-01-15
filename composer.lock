@@ -348,17 +348,65 @@
             "time": "2014-09-10 03:32:31"
         },
         {
-            "name": "wyrihaximus/react-child-process-messenger",
-            "version": "2.3.0",
+            "name": "tivie/php-os-detector",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/WyriHaximus/reactphp-child-process-messenger.git",
-                "reference": "154e26526cd139859a247c51382d24b56578dbeb"
+                "url": "https://github.com/tivie/php-os-detector.git",
+                "reference": "58226a9068323ee0d104f615c99fb97adeb136ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WyriHaximus/reactphp-child-process-messenger/zipball/154e26526cd139859a247c51382d24b56578dbeb",
-                "reference": "154e26526cd139859a247c51382d24b56578dbeb",
+                "url": "https://api.github.com/repos/tivie/php-os-detector/zipball/58226a9068323ee0d104f615c99fb97adeb136ae",
+                "reference": "58226a9068323ee0d104f615c99fb97adeb136ae",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.3.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Tivie\\OS\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "APACHE 2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Estevão Soares dos Santos",
+                    "email": "estevao@soares-dos-santos.com"
+                }
+            ],
+            "description": "A small utility library that detects the OS the server is running on",
+            "homepage": "http://tivie.github.com/php-os-detector/",
+            "keywords": [
+                "detection",
+                "detector",
+                "identification",
+                "operating system",
+                "os",
+                "os detection"
+            ],
+            "time": "2014-12-19 01:17:49"
+        },
+        {
+            "name": "wyrihaximus/react-child-process-messenger",
+            "version": "2.6.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/WyriHaximus/reactphp-child-process-messenger.git",
+                "reference": "1ee9e00c4207265c5ec671abc3bc13e2864af2ab"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/WyriHaximus/reactphp-child-process-messenger/zipball/1ee9e00c4207265c5ec671abc3bc13e2864af2ab",
+                "reference": "1ee9e00c4207265c5ec671abc3bc13e2864af2ab",
                 "shasum": ""
             },
             "require": {
@@ -366,6 +414,7 @@
                 "indigophp/hash-compat": "^1.0",
                 "php": "^5.4|^7.0",
                 "react/child-process": "^0.4",
+                "tivie/php-os-detector": "^1.0",
                 "wyrihaximus/ticking-promise": "^1.4"
             },
             "require-dev": {
@@ -392,7 +441,7 @@
                 }
             ],
             "description": "Messenger decorator for react/child-process",
-            "time": "2015-11-21 18:55:43"
+            "time": "2015-12-26 21:37:10"
         },
         {
             "name": "wyrihaximus/react-child-process-pool",

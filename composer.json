@@ -21,9 +21,6 @@
     "ext-eio": "^1.2",
     "ext-pthreads": "^2.0"
   },
-  "require-dev": {
-    "ext-eio": "^1.2"
-  },
   "autoload": {
     "psr-4": {
       "React\\Filesystem\\": "src/"
