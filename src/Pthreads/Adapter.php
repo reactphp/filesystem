@@ -6,39 +6,82 @@ use React\EventLoop\LoopInterface;
 use React\Filesystem\AdapterInterface;
 use React\Filesystem\CallInvokerInterface;
 use React\Filesystem\FilesystemInterface;
+use React\Filesystem\MappedTypeDetector;
+use React\Filesystem\TypeDetectorInterface;
+use React\Filesystem\ModeTypeDetector;
+use React\Filesystem\OpenFileLimiter;
+use React\Promise\Deferred;
 
 class Adapter implements AdapterInterface
 {
+    /**
+     * @var LoopInterface
+     */
+    protected $loop;
+
+    /**
+     * @var FilesystemInterface
+     */
+    protected $filesystem;
+
+    /**
+     * @var Worker[]
+     */
+    protected $threads = [];
+
+    /**
+     * @var CallInvokerInterface
+     */
+    protected $invoker;
+
+    /**
+     * @var OpenFileLimiter
+     */
+    protected $openFileLimiter;
+
+    /**
+     * @var TypeDetectorInterface[]
+     */
+    protected $typeDetectors = [];
+
     /**
      * @inheritDoc
      */
     public function __construct(LoopInterface $loop, array $options = [])
     {
-        // TODO: Implement __construct() method.
+        $this->loop = $loop;
+        $this->invoker = \React\Filesystem\getInvoker($this, $options, 'invoker', 'React\Filesystem\InstantInvoker');
+        $this->openFileLimiter = new OpenFileLimiter(\React\Filesystem\getOpenFileLimit($options));
     }
 
     /**
-     * @inheritDoc
+     * @return LoopInterface
      */
     public function getLoop()
     {
-        // TODO: Implement getLoop() method.
+        return $this->loop;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function setFilesystem(FilesystemInterface $filesystem)
     {
-        // TODO: Implement setFilesystem() method.
+        $this->filesystem = $filesystem;
+
+        $this->typeDetectors = [
+            MappedTypeDetector::createDefault($this->filesystem),
+            new ModeTypeDetector($this->filesystem),
+        ];
     }
 
     /**
-     * @inheritDoc
+     * @param CallInvokerInterface $invoker
+     * @return void
      */
     public function setInvoker(CallInvokerInterface $invoker)
     {
-        // TODO: Implement setInvoker() method.
+        $this->invoker = $invoker;
     }
 
     /**
@@ -46,7 +89,7 @@ class Adapter implements AdapterInterface
      */
     public function callFilesystem($function, $args, $errorResultCode = -1)
     {
-        // TODO: Implement callFilesystem() method.
+        return (new Yarn(new Call($function, $args)))->call();
     }
 
     /**
@@ -94,7 +137,14 @@ class Adapter implements AdapterInterface
      */
     public function stat($filename)
     {
-        // TODO: Implement stat() method.
+        return $this->invoker->invokeCall('stat', [
+            $filename,
+        ])->then(function ($stat) {
+            $stat['atime'] = new \DateTime('@' .$stat['atime']);
+            $stat['mtime'] = new \DateTime('@' .$stat['mtime']);
+            $stat['ctime'] = new \DateTime('@' .$stat['ctime']);
+            return \React\Promise\resolve($stat);
+        });
     }
 
     /**
@@ -174,6 +224,8 @@ class Adapter implements AdapterInterface
      */
     public function detectType($path)
     {
-        // TODO: Implement detectType() method.
+        return \React\Filesystem\detectType($this->typeDetectors, [
+            'path' => $path,
+        ]);
     }
 }
