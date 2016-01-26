@@ -2,13 +2,14 @@
 
 namespace React\Filesystem\ChildProcess;
 
+use React\Filesystem\WoolTrait;
 use React\Promise\PromiseInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
 class Process
 {
-    protected $fd;
+    use WoolTrait;
 
     /**
      * Process constructor.
@@ -16,234 +17,27 @@ class Process
      */
     public function __construct(Messenger $messenger)
     {
-        $messenger->registerRpc('mkdir', [$this, 'mkdir']);
-        $messenger->registerRpc('rmdir', [$this, 'rmdir']);
-        $messenger->registerRpc('unlink', [$this, 'unlink']);
-        $messenger->registerRpc('chmod', [$this, 'chmod']);
-        $messenger->registerRpc('chown', [$this, 'chown']);
-        $messenger->registerRpc('stat', [$this, 'stat']);
-        $messenger->registerRpc('readdir', [$this, 'readdir']);
-        $messenger->registerRpc('touch', [$this, 'touch']);
-        $messenger->registerRpc('open', [$this, 'open']);
-        $messenger->registerRpc('read', [$this, 'read']);
-        $messenger->registerRpc('write', [$this, 'write']);
-        $messenger->registerRpc('close', [$this, 'close']);
-        $messenger->registerRpc('rename', [$this, 'rename']);
-        $messenger->registerRpc('readlink', [$this, 'readlink']);
-        $messenger->registerRpc('symlink', [$this, 'symlink']);
+        $messenger->registerRpc('mkdir',    $this->wrapper('mkdir'));
+        $messenger->registerRpc('rmdir',    $this->wrapper('rmdir'));
+        $messenger->registerRpc('unlink',   $this->wrapper('unlink'));
+        $messenger->registerRpc('chmod',    $this->wrapper('chmod'));
+        $messenger->registerRpc('chown',    $this->wrapper('chown'));
+        $messenger->registerRpc('stat',     $this->wrapper('stat'));
+        $messenger->registerRpc('readdir',  $this->wrapper('readdir'));
+        $messenger->registerRpc('touch',    $this->wrapper('touch'));
+        $messenger->registerRpc('open',     $this->wrapper('open'));
+        $messenger->registerRpc('read',     $this->wrapper('read'));
+        $messenger->registerRpc('write',    $this->wrapper('write'));
+        $messenger->registerRpc('close',    $this->wrapper('close'));
+        $messenger->registerRpc('rename',   $this->wrapper('rename'));
+        $messenger->registerRpc('readlink', $this->wrapper('readlink'));
+        $messenger->registerRpc('symlink',  $this->wrapper('symlink'));
     }
 
-    /**
-     * @param Payload $payload
-     * @param Messenger $messenger
-     * @return PromiseInterface
-     */
-    public function mkdir(Payload $payload, Messenger $messenger)
+    protected function wrapper($function)
     {
-        if (mkdir($payload['path'], $payload['mode'])) {
-            return \React\Promise\resolve([]);
-        }
-
-        return \React\Promise\reject([]);
-    }
-
-    /**
-     * @param Payload $payload
-     * @param Messenger $messenger
-     * @return PromiseInterface
-     */
-    public function rmdir(Payload $payload, Messenger $messenger)
-    {
-        if (rmdir($payload['path'])) {
-            return \React\Promise\resolve([]);
-        }
-
-        return \React\Promise\reject([]);
-    }
-
-    /**
-     * @param Payload $payload
-     * @param Messenger $messenger
-     * @return PromiseInterface
-     */
-    public function unlink(Payload $payload, Messenger $messenger)
-    {
-        if (unlink($payload['path'])) {
-            return \React\Promise\resolve([]);
-        }
-
-        return \React\Promise\reject([]);
-    }
-
-    /**
-     * @param Payload $payload
-     * @param Messenger $messenger
-     * @return PromiseInterface
-     */
-    public function chmod(Payload $payload, Messenger $messenger)
-    {
-        if (chmod($payload['path'], $payload['mode'])) {
-            return \React\Promise\resolve([]);
-        }
-
-        return \React\Promise\reject([]);
-    }
-
-    /**
-     * @param Payload $payload
-     * @param Messenger $messenger
-     * @return PromiseInterface
-     */
-    public function chown(Payload $payload, Messenger $messenger)
-    {
-        return \React\Promise\resolve([]);
-    }
-
-    /**
-     * @param Payload $payload
-     * @param Messenger $messenger
-     * @return PromiseInterface
-     */
-    public function stat(Payload $payload, Messenger $messenger)
-    {
-        $stat = lstat($payload['path']);
-        return \React\Promise\resolve([
-            'dev' => $stat['dev'],
-            'ino' => $stat['ino'],
-            'mode' => $stat['mode'],
-            'nlink' => $stat['nlink'],
-            'uid' => $stat['uid'],
-            'size' => $stat['size'],
-            'gid' => $stat['gid'],
-            'rdev' => $stat['rdev'],
-            'blksize' => $stat['blksize'],
-            'blocks' => $stat['blocks'],
-            'atime' => $stat['atime'],
-            'mtime' => $stat['mtime'],
-            'ctime' => $stat['ctime'],
-        ]);
-    }
-
-    /**
-     * @param Payload $payload
-     * @param Messenger $messenger
-     * @return PromiseInterface
-     */
-    public function readdir(Payload $payload, Messenger $messenger)
-    {
-        $list = [];
-        foreach (scandir($payload['path'], $payload['flags']) as $node) {
-            $path = $payload['path'] . DIRECTORY_SEPARATOR . $node;
-            if ($node == '.' || $node == '..' || (!is_dir($path) && !is_file($path))) {
-                continue;
-            }
-
-            $list[] = [
-                'type' => is_dir($path) ? 'dir' : 'file',
-                'name' => $node,
-            ];
-        }
-        return \React\Promise\resolve($list);
-    }
-
-    /**
-     * @param Payload $payload
-     * @param Messenger $messenger
-     * @return PromiseInterface
-     */
-    public function open(Payload $payload, Messenger $messenger)
-    {
-        $this->fd = fopen($payload['path'], $payload['flags']);
-        return \React\Promise\resolve([]);
-    }
-
-    /**
-     * @param Payload $payload
-     * @param Messenger $messenger
-     * @return PromiseInterface
-     */
-    public function touch(Payload $payload, Messenger $messenger)
-    {
-        return \React\Promise\resolve([
-            touch($payload['path']),
-        ]);
-    }
-
-    /**
-     * @param Payload $payload
-     * @param Messenger $messenger
-     * @return PromiseInterface
-     */
-    public function read(Payload $payload, Messenger $messenger)
-    {
-        fseek($this->fd, $payload['offset']);
-        return \React\Promise\resolve([
-            'chunk' => fread($this->fd, $payload['length']),
-        ]);
-    }
-
-    /**
-     * @param Payload $payload
-     * @param Messenger $messenger
-     * @return PromiseInterface
-     */
-    public function write(Payload $payload, Messenger $messenger)
-    {
-        fseek($this->fd, $payload['offset']);
-        return \React\Promise\resolve([
-            'written' => fwrite($this->fd, $payload['chunk']),
-        ]);
-    }
-
-    /**
-     * @param Payload $payload
-     * @param Messenger $messenger
-     * @return PromiseInterface
-     */
-    public function close(Payload $payload, Messenger $messenger)
-    {
-        $closed = fclose($this->fd);
-        $this->fd = null;
-        return \React\Promise\resolve([
-            $closed,
-        ]);
-    }
-
-    /**
-     * @param Payload $payload
-     * @param Messenger $messenger
-     * @return PromiseInterface
-     */
-    public function rename(Payload $payload, Messenger $messenger)
-    {
-        if (rename($payload['from'], $payload['to'])) {
-            return \React\Promise\resolve([]);
-        }
-
-        return \React\Promise\reject([]);
-    }
-
-    /**
-     * @param Payload $payload
-     * @param Messenger $messenger
-     * @return PromiseInterface
-     */
-    public function readlink(Payload $payload, Messenger $messenger)
-    {
-        return \React\Promise\resolve([
-            'path' => readlink($payload['path']),
-        ]);
-    }
-
-    /**
-     * @param Payload $payload
-     * @param Messenger $messenger
-     * @return PromiseInterface
-     */
-    public function symlink(Payload $payload, Messenger $messenger)
-    {
-        return \React\Promise\resolve([
-            'result' => symlink($payload['from'], $payload['to']),
-        ]);
+        return function (Payload $payload, Messenger $messenger) use ($function) {
+            return $this->$function($payload->getPayload());
+        };
     }
 }
