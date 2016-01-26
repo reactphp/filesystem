@@ -210,9 +210,9 @@ class Adapter implements AdapterInterface
         return $this->invoker->invokeCall('stat', [
             'path' => $filename,
         ])->then(function ($stat) {
-            $stat['atime'] = new \DateTime('@' .$stat['atime']);
-            $stat['mtime'] = new \DateTime('@' .$stat['mtime']);
-            $stat['ctime'] = new \DateTime('@' .$stat['ctime']);
+            $stat['atime'] = new \DateTime('@' . $stat['atime']);
+            $stat['mtime'] = new \DateTime('@' . $stat['mtime']);
+            $stat['ctime'] = new \DateTime('@' . $stat['ctime']);
             return \React\Promise\resolve($stat);
         });
     }
