@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "963f1c3d35867d96cbc4d685c67106ae",
-    "content-hash": "00122f9d098e9de1976d5a1100799f75",
+    "hash": "5eb4e10da34b0ffa56e00394eabe2295",
+    "content-hash": "6c9665b35696693dae45d7408f1249ee",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -490,16 +490,16 @@
         },
         {
             "name": "wyrihaximus/react-child-process-pool",
-            "version": "1.0.0-beta3",
+            "version": "1.0.0-beta4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/WyriHaximus/reactphp-child-process-pool.git",
-                "reference": "601f01a7d0bfc75dd14c2e8f4869af384d457eca"
+                "reference": "b7289252c409c8fbc4796fd2d0cdc20c001b3824"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WyriHaximus/reactphp-child-process-pool/zipball/601f01a7d0bfc75dd14c2e8f4869af384d457eca",
-                "reference": "601f01a7d0bfc75dd14c2e8f4869af384d457eca",
+                "url": "https://api.github.com/repos/WyriHaximus/reactphp-child-process-pool/zipball/b7289252c409c8fbc4796fd2d0cdc20c001b3824",
+                "reference": "b7289252c409c8fbc4796fd2d0cdc20c001b3824",
                 "shasum": ""
             },
             "require": {
@@ -534,7 +534,7 @@
                     "email": "ceesjank@gmail.com"
                 }
             ],
-            "time": "2016-02-18 16:16:36"
+            "time": "2016-02-18 21:04:02"
         },
         {
             "name": "wyrihaximus/react-child-process-promise",
