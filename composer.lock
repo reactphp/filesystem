@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a7dc6fdf994c000b48dbfa2e10653f9c",
-    "content-hash": "f76f4e778f6307ac1f643bef88c2577f",
+    "hash": "cab78e13f0a7549f4353da6a98f0cb7a",
+    "content-hash": "30f54774027bc4a6dc6e8b84517c71f4",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -396,6 +396,51 @@
             "time": "2014-12-19 01:17:49"
         },
         {
+            "name": "wyrihaximus/cpu-core-detector",
+            "version": "1.0.0-alpha1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/WyriHaximus/php-cpu-core-detector.git",
+                "reference": "59e2edfe0087147b0a6c2556c15f7793a480ffc8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/WyriHaximus/php-cpu-core-detector/zipball/59e2edfe0087147b0a6c2556c15f7793a480ffc8",
+                "reference": "59e2edfe0087147b0a6c2556c15f7793a480ffc8",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.4||^7.0",
+                "react/child-process": "^0.4.0",
+                "tivie/php-os-detector": "^1.0",
+                "wyrihaximus/react-child-process-promise": "^2.0",
+                "wyrihaximus/ticking-promise": "^1.5"
+            },
+            "require-dev": {
+                "phake/phake": "~1.0.6",
+                "phpunit/phpunit": "^4.0||^5.0",
+                "squizlabs/php_codesniffer": "^1.5.6",
+                "vectorface/dunit": "~2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "WyriHaximus\\CpuCoreDetector\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Cees-Jan Kiewiet",
+                    "email": "ceesjank@gmail.com"
+                }
+            ],
+            "time": "2016-01-29 22:03:03"
+        },
+        {
             "name": "wyrihaximus/react-child-process-messenger",
             "version": "2.6.1",
             "source": {
@@ -445,27 +490,28 @@
         },
         {
             "name": "wyrihaximus/react-child-process-pool",
-            "version": "1.0.0-alpha10",
+            "version": "1.0.0-beta1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/WyriHaximus/reactphp-child-process-pool.git",
-                "reference": "26e0b0bbed4720768c6e0ed5291fab936523e52b"
+                "reference": "9e8bc97c9f56a3586a73a88a746575739aa21bfe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WyriHaximus/reactphp-child-process-pool/zipball/26e0b0bbed4720768c6e0ed5291fab936523e52b",
-                "reference": "26e0b0bbed4720768c6e0ed5291fab936523e52b",
+                "url": "https://api.github.com/repos/WyriHaximus/reactphp-child-process-pool/zipball/9e8bc97c9f56a3586a73a88a746575739aa21bfe",
+                "reference": "9e8bc97c9f56a3586a73a88a746575739aa21bfe",
                 "shasum": ""
             },
             "require": {
                 "evenement/evenement": "^2.0",
-                "php": "^5.4|^7.0",
-                "wyrihaximus/react-child-process-messenger": "^2.3",
+                "php": "^5.4||^7.0",
+                "wyrihaximus/cpu-core-detector": "^1.0.0-alpha1",
+                "wyrihaximus/react-child-process-messenger": "^2.6.1||^2.7",
                 "wyrihaximus/ticking-promise": "^1.5"
             },
             "require-dev": {
-                "phake/phake": "~1.0.6",
-                "phpunit/phpunit": "^4.0|^5.0",
+                "phake/phake": "^2.2.1",
+                "phpunit/phpunit": "^4.0||^5.0",
                 "squizlabs/php_codesniffer": "^1.5.6",
                 "vectorface/dunit": "~2.0"
             },
@@ -473,7 +519,10 @@
             "autoload": {
                 "psr-4": {
                     "WyriHaximus\\React\\ChildProcess\\Pool\\": "src/"
-                }
+                },
+                "files": [
+                    "src/functions_include.php"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -485,20 +534,69 @@
                     "email": "ceesjank@gmail.com"
                 }
             ],
-            "time": "2015-12-06 21:47:12"
+            "time": "2016-02-18 15:07:11"
         },
         {
-            "name": "wyrihaximus/ticking-promise",
-            "version": "1.5.1",
+            "name": "wyrihaximus/react-child-process-promise",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/WyriHaximus/TickingPromise.git",
-                "reference": "d7b1d16942bdf2199c5a712205716851683fbb6e"
+                "url": "https://github.com/WyriHaximus/reactphp-child-process-promise.git",
+                "reference": "9adf998f6e864f6126a286e97193fedb768f7938"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WyriHaximus/TickingPromise/zipball/d7b1d16942bdf2199c5a712205716851683fbb6e",
-                "reference": "d7b1d16942bdf2199c5a712205716851683fbb6e",
+                "url": "https://api.github.com/repos/WyriHaximus/reactphp-child-process-promise/zipball/9adf998f6e864f6126a286e97193fedb768f7938",
+                "reference": "9adf998f6e864f6126a286e97193fedb768f7938",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.4||^7.0",
+                "react/child-process": "^0.4.0",
+                "react/promise": "^2.2",
+                "wyrihaximus/ticking-promise": "^1.5.2"
+            },
+            "require-dev": {
+                "phake/phake": "^2.1",
+                "phpunit/phpunit": "^4.4||^5.0",
+                "squizlabs/php_codesniffer": "^1.5.6",
+                "vectorface/dunit": "^2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "WyriHaximus\\React\\": "src/"
+                },
+                "files": [
+                    "src/functions_include.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Cees-Jan Kiewiet",
+                    "email": "ceesjank@gmail.com",
+                    "homepage": "http://wyrihaximus.net/"
+                }
+            ],
+            "description": "Wrapping ticks into a promise",
+            "time": "2016-01-08 23:35:09"
+        },
+        {
+            "name": "wyrihaximus/ticking-promise",
+            "version": "1.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/WyriHaximus/TickingPromise.git",
+                "reference": "000c1d22ab847c618009fb523fbd42823f3a4d3a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/WyriHaximus/TickingPromise/zipball/000c1d22ab847c618009fb523fbd42823f3a4d3a",
+                "reference": "000c1d22ab847c618009fb523fbd42823f3a4d3a",
                 "shasum": ""
             },
             "require": {
@@ -516,7 +614,7 @@
                     "WyriHaximus\\React\\": "src/"
                 },
                 "files": [
-                    "src/functions.php"
+                    "src/functions_include.php"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -531,14 +629,15 @@
                 }
             ],
             "description": "Wrapping ticks into a promise",
-            "time": "2015-10-03 22:55:34"
+            "time": "2016-01-14 07:20:08"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "wyrihaximus/react-child-process-pool": 15
+        "wyrihaximus/react-child-process-pool": 10,
+        "wyrihaximus/cpu-core-detector": 15
     },
     "prefer-stable": false,
     "prefer-lowest": false,

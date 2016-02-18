@@ -1,4 +1,5 @@
 {
+  "minimum-stabilty": "dev",
   "name": "react/filesystem",
   "description": "Asynchronous filesystem abstraction.",
   "keywords": ["filesystem", "asynchronous", "eio"],
@@ -15,7 +16,8 @@
     "react/promise": "~2.2",
     "react/stream": "^0.4",
     "evenement/evenement": "~2.0",
-    "wyrihaximus/react-child-process-pool": "^1.0.0-alpha10"
+    "wyrihaximus/react-child-process-pool": "^1.0.0-beta1",
+    "wyrihaximus/cpu-core-detector": "^1.0.0-alpha1"
   },
   "suggest": {
     "ext-eio": "^1.2",
