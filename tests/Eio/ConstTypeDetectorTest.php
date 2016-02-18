@@ -34,7 +34,7 @@ class ConstTypeDetectorTest extends TestCase
 
         $filesystem = Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'), [
             'pool' => [
-                'class' => 'WyriHaximus\React\ChildProcess\Pool\DummyPool',
+                'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
             ],
         ]);
         (new ConstTypeDetector($filesystem))->detect([
@@ -56,7 +56,7 @@ class ConstTypeDetectorTest extends TestCase
 
         $filesystem = Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'), [
             'pool' => [
-                'class' => 'WyriHaximus\React\ChildProcess\Pool\DummyPool',
+                'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
             ],
         ]);
         (new ConstTypeDetector($filesystem))->detect([

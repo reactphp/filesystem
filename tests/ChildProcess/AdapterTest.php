@@ -17,7 +17,7 @@ class AdapterTest extends TestCase
             'React\Filesystem\AdapterInterface',
             new Adapter($this->getMock('React\EventLoop\LoopInterface'), [
                 'pool' => [
-                    'class' => 'WyriHaximus\React\ChildProcess\Pool\DummyPool',
+                    'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
                 ],
             ])
         );
@@ -28,7 +28,7 @@ class AdapterTest extends TestCase
         $loop = $this->getMock('React\EventLoop\LoopInterface');
         $filesystem = new Adapter($loop, [
             'pool' => [
-                'class' => 'WyriHaximus\React\ChildProcess\Pool\DummyPool',
+                'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
             ],
         ]);
         $this->assertSame($loop, $filesystem->getLoop());
@@ -155,7 +155,7 @@ class AdapterTest extends TestCase
         $loop = $this->getMock('React\EventLoop\LoopInterface');
         $filesystem = new Adapter($loop, [
             'pool' => [
-                'class' => 'WyriHaximus\React\ChildProcess\Pool\DummyPool',
+                'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
             ],
         ]);
         $invoker = $this->getMock('React\Filesystem\CallInvokerInterface', [
@@ -183,7 +183,7 @@ class AdapterTest extends TestCase
         $loop = $this->getMock('React\EventLoop\LoopInterface');
         $filesystem = new Adapter($loop, [
             'pool' => [
-                'class' => 'WyriHaximus\React\ChildProcess\Pool\DummyPool',
+                'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
             ],
         ]);
         $invoker = $this->getMock('React\Filesystem\CallInvokerInterface', [
@@ -214,7 +214,7 @@ class AdapterTest extends TestCase
         $loop = $this->getMock('React\EventLoop\LoopInterface');
         $filesystem = new Adapter($loop, [
             'pool' => [
-                'class' => 'WyriHaximus\React\ChildProcess\Pool\DummyPool',
+                'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
             ],
         ]);
         $invoker = $this->getMock('React\Filesystem\CallInvokerInterface', [
@@ -248,7 +248,7 @@ class AdapterTest extends TestCase
         $loop = $this->getMock('React\EventLoop\LoopInterface');
         $filesystem = new Adapter($loop, [
             'pool' => [
-                'class' => 'WyriHaximus\React\ChildProcess\Pool\DummyPool',
+                'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
             ],
         ]);
         $invoker = $this->getMock('React\Filesystem\CallInvokerInterface', [
@@ -280,7 +280,7 @@ class AdapterTest extends TestCase
         $loop = $this->getMock('React\EventLoop\LoopInterface');
         $adapter = new Adapter($loop, [
             'pool' => [
-                'class' => 'WyriHaximus\React\ChildProcess\Pool\DummyPool',
+                'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
             ],
         ]);
         $invoker = $this->getMock('React\Filesystem\CallInvokerInterface', [
