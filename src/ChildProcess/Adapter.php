@@ -15,6 +15,7 @@ use React\Filesystem\ObjectStream;
 use React\Filesystem\OpenFileLimiter;
 use React\Filesystem\TypeDetectorInterface;
 use React\Promise\FulfilledPromise;
+use React\Promise\PromiseInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
@@ -141,7 +142,7 @@ class Adapter implements AdapterInterface
      * @param string $function
      * @param array $args
      * @param int $errorResultCode
-     * @return \React\Promise\Promise
+     * @return PromiseInterface
      */
     public function callFilesystem($function, $args, $errorResultCode = -1)
     {
@@ -153,7 +154,7 @@ class Adapter implements AdapterInterface
     /**
      * @param string $path
      * @param $mode
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
     public function mkdir($path, $mode = self::CREATION_MODE)
     {
@@ -165,7 +166,7 @@ class Adapter implements AdapterInterface
 
     /**
      * @param string $path
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
     public function rmdir($path)
     {
@@ -176,7 +177,7 @@ class Adapter implements AdapterInterface
 
     /**
      * @param string $path
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
     public function unlink($path)
     {
@@ -188,7 +189,7 @@ class Adapter implements AdapterInterface
     /**
      * @param string $path
      * @param int $mode
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
     public function chmod($path, $mode)
     {
@@ -202,7 +203,7 @@ class Adapter implements AdapterInterface
      * @param string $path
      * @param int $uid
      * @param int $gid
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
     public function chown($path, $uid, $gid)
     {
@@ -215,7 +216,7 @@ class Adapter implements AdapterInterface
 
     /**
      * @param string $filename
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
     public function stat($filename)
     {
@@ -231,7 +232,7 @@ class Adapter implements AdapterInterface
 
     /**
      * @param string $path
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
     public function ls($path)
     {
@@ -272,7 +273,7 @@ class Adapter implements AdapterInterface
     /**
      * @param string $path
      * @param $mode
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
     public function touch($path, $mode = self::CREATION_MODE)
     {
@@ -285,7 +286,7 @@ class Adapter implements AdapterInterface
      * @param string $path
      * @param string $flags
      * @param $mode
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
     public function open($path, $flags, $mode = self::CREATION_MODE)
     {
@@ -307,7 +308,7 @@ class Adapter implements AdapterInterface
      * @param $fileDescriptor
      * @param int $length
      * @param int $offset
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
     public function read($fileDescriptor, $length, $offset)
     {
@@ -324,7 +325,7 @@ class Adapter implements AdapterInterface
      * @param string $data
      * @param int $length
      * @param int $offset
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
     public function write($fileDescriptor, $data, $length, $offset)
     {
@@ -339,7 +340,7 @@ class Adapter implements AdapterInterface
 
     /**
      * @param resource $fd
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
     public function close($fd)
     {
@@ -355,7 +356,7 @@ class Adapter implements AdapterInterface
     /**
      * @param string $fromPath
      * @param string $toPath
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
     public function rename($fromPath, $toPath)
     {
@@ -367,7 +368,7 @@ class Adapter implements AdapterInterface
 
     /**
      * @param string $path
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
     public function readlink($path)
     {
@@ -381,7 +382,7 @@ class Adapter implements AdapterInterface
     /**
      * @param string $fromPath
      * @param string $toPath
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
     public function symlink($fromPath, $toPath)
     {
