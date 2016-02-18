@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "1cef651e2c4e5b932ffd186f08fd1844",
-    "content-hash": "30f54774027bc4a6dc6e8b84517c71f4",
+    "hash": "963f1c3d35867d96cbc4d685c67106ae",
+    "content-hash": "00122f9d098e9de1976d5a1100799f75",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -301,29 +301,29 @@
         },
         {
             "name": "react/stream",
-            "version": "v0.4.2",
+            "version": "v0.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/stream.git",
-                "reference": "acc7a5fec02e0aea674560e1d13c40ed0c8c5465"
+                "reference": "305b2328d2a2e157bc13b61a0f5c6e41b666b188"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/stream/zipball/acc7a5fec02e0aea674560e1d13c40ed0c8c5465",
-                "reference": "acc7a5fec02e0aea674560e1d13c40ed0c8c5465",
+                "url": "https://api.github.com/repos/reactphp/stream/zipball/305b2328d2a2e157bc13b61a0f5c6e41b666b188",
+                "reference": "305b2328d2a2e157bc13b61a0f5c6e41b666b188",
                 "shasum": ""
             },
             "require": {
-                "evenement/evenement": "~2.0",
-                "php": ">=5.4.0"
+                "evenement/evenement": "^2.0|^1.0",
+                "php": ">=5.3.8"
             },
             "require-dev": {
-                "react/event-loop": "0.4.*",
-                "react/promise": "~2.0"
+                "react/event-loop": "^0.4|^0.3",
+                "react/promise": "^2.0|^1.0"
             },
             "suggest": {
-                "react/event-loop": "0.4.*",
-                "react/promise": "~2.0"
+                "react/event-loop": "^0.4",
+                "react/promise": "^2.0"
             },
             "type": "library",
             "extra": {
@@ -345,7 +345,7 @@
                 "pipe",
                 "stream"
             ],
-            "time": "2014-09-10 03:32:31"
+            "time": "2015-10-07 18:32:58"
         },
         {
             "name": "tivie/php-os-detector",
@@ -490,16 +490,16 @@
         },
         {
             "name": "wyrihaximus/react-child-process-pool",
-            "version": "1.0.0-beta1",
+            "version": "1.0.0-beta3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/WyriHaximus/reactphp-child-process-pool.git",
-                "reference": "9e8bc97c9f56a3586a73a88a746575739aa21bfe"
+                "reference": "601f01a7d0bfc75dd14c2e8f4869af384d457eca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WyriHaximus/reactphp-child-process-pool/zipball/9e8bc97c9f56a3586a73a88a746575739aa21bfe",
-                "reference": "9e8bc97c9f56a3586a73a88a746575739aa21bfe",
+                "url": "https://api.github.com/repos/WyriHaximus/reactphp-child-process-pool/zipball/601f01a7d0bfc75dd14c2e8f4869af384d457eca",
+                "reference": "601f01a7d0bfc75dd14c2e8f4869af384d457eca",
                 "shasum": ""
             },
             "require": {
@@ -534,7 +534,7 @@
                     "email": "ceesjank@gmail.com"
                 }
             ],
-            "time": "2016-02-18 15:07:11"
+            "time": "2016-02-18 16:16:36"
         },
         {
             "name": "wyrihaximus/react-child-process-promise",
