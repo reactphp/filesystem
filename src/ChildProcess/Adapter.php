@@ -13,6 +13,7 @@ use React\Filesystem\MappedTypeDetector;
 use React\Filesystem\ModeTypeDetector;
 use React\Filesystem\ObjectStream;
 use React\Filesystem\OpenFileLimiter;
+use React\Filesystem\TypeDetectorInterface;
 use React\Promise\FulfilledPromise;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
