@@ -56,6 +56,11 @@ class Adapter implements AdapterInterface
     protected $typeDetectors = [];
 
     /**
+     * @var CallInvokerInterface
+     */
+    protected $invoker;
+
+    /**
      * @var array
      */
     protected $options = [
