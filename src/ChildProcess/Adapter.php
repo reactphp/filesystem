@@ -92,7 +92,11 @@ class Adapter implements AdapterInterface
             $poolClass = $options['pool']['class'];
         }
 
-        $this->pool = new $poolClass($this->process, $this->loop, $poolOptions);
+        $this->pool = call_user_func_array($poolClass . '::create', [
+            $this->process,
+            $this->loop,
+            $poolOptions,
+        ]);
     }
 
     /**
