@@ -22,7 +22,7 @@ use WyriHaximus\React\ChildProcess\Pool\PoolInterface;
 class Adapter implements AdapterInterface
 {
     const DEFAULT_POOL = 'WyriHaximus\React\ChildProcess\Pool\Pool\Flexible';
-    const POOL_INTERFACE = 'WyriHaximus\React\ChildProcess\Pool\PoolInterface';
+    const POOL_INTERFACE = 'WyriHaximus\React\ChildProcess\Pool\PoolFactoryInterface';
 
     /**
      * @var LoopInterface
