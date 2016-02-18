@@ -1,5 +1,4 @@
 {
-  "minimum-stabilty": "dev",
   "name": "react/filesystem",
   "description": "Asynchronous filesystem abstraction.",
   "keywords": ["filesystem", "asynchronous", "eio"],
