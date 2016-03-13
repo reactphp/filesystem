@@ -32,9 +32,9 @@ class ProcessTest extends TestCase
         ;
 
         $resultCallbackRan = false;
-        (new Process($messenger))->stat(new Payload([
+        (new Process($messenger))->stat([
             'path' => __FILE__,
-        ]), $messenger)->then(function ($result) use (&$resultCallbackRan) {
+        ])->then(function ($result) use (&$resultCallbackRan) {
             foreach ([
                 'dev',
                 'ino',
