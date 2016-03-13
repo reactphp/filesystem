@@ -27,9 +27,6 @@ class FilesystemTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException PHPUnit_Framework_Error
-     */
     public function testFactory()
     {
         try {
@@ -38,6 +35,8 @@ class FilesystemTest extends TestCase
                     'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
                 ],
             ]));
+        } catch (\PHPUnit_Framework_Error $typeError) {
+            $this->assertTrue(true);
         } catch (\TypeError $typeError) {
             $this->assertTrue(true);
         }
