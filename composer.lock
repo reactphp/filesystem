@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "5eb4e10da34b0ffa56e00394eabe2295",
-    "content-hash": "6c9665b35696693dae45d7408f1249ee",
+    "hash": "ae6d61dec74a606ca6fe2661f9cb13da",
+    "content-hash": "3bc71d46568d873f64aa620705bd30ee",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -214,16 +214,16 @@
         },
         {
             "name": "react/event-loop",
-            "version": "v0.4.1",
+            "version": "v0.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/event-loop.git",
-                "reference": "18c5297087ca01de85518e2b55078f444144aa1b"
+                "reference": "164799f73175e1c80bba92a220ea35df6ca371dd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/event-loop/zipball/18c5297087ca01de85518e2b55078f444144aa1b",
-                "reference": "18c5297087ca01de85518e2b55078f444144aa1b",
+                "url": "https://api.github.com/repos/reactphp/event-loop/zipball/164799f73175e1c80bba92a220ea35df6ca371dd",
+                "reference": "164799f73175e1c80bba92a220ea35df6ca371dd",
                 "shasum": ""
             },
             "require": {
@@ -237,12 +237,12 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.4-dev"
+                    "dev-master": "0.5-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "React\\EventLoop\\": ""
+                    "React\\EventLoop\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -251,22 +251,23 @@
             ],
             "description": "Event loop abstraction layer that libraries can use for evented I/O.",
             "keywords": [
+                "asynchronous",
                 "event-loop"
             ],
-            "time": "2014-02-26 17:36:58"
+            "time": "2016-03-08 02:09:32"
         },
         {
             "name": "react/promise",
-            "version": "v2.2.1",
+            "version": "v2.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/promise.git",
-                "reference": "3b6fca09c7d56321057fa8867c8dbe1abf648627"
+                "reference": "3aacad8bf10c7d83e6fa2089d413529888c2bedf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/promise/zipball/3b6fca09c7d56321057fa8867c8dbe1abf648627",
-                "reference": "3b6fca09c7d56321057fa8867c8dbe1abf648627",
+                "url": "https://api.github.com/repos/reactphp/promise/zipball/3aacad8bf10c7d83e6fa2089d413529888c2bedf",
+                "reference": "3aacad8bf10c7d83e6fa2089d413529888c2bedf",
                 "shasum": ""
             },
             "require": {
@@ -297,7 +298,7 @@
                 }
             ],
             "description": "A lightweight implementation of CommonJS Promises/A for PHP",
-            "time": "2015-07-03 13:48:55"
+            "time": "2016-02-26 19:09:02"
         },
         {
             "name": "react/stream",
@@ -397,16 +398,16 @@
         },
         {
             "name": "wyrihaximus/cpu-core-detector",
-            "version": "1.0.0-alpha1",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/WyriHaximus/php-cpu-core-detector.git",
-                "reference": "59e2edfe0087147b0a6c2556c15f7793a480ffc8"
+                "reference": "d76b9a2691698e888a457b39f2dea3c0e9c1cbdb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WyriHaximus/php-cpu-core-detector/zipball/59e2edfe0087147b0a6c2556c15f7793a480ffc8",
-                "reference": "59e2edfe0087147b0a6c2556c15f7793a480ffc8",
+                "url": "https://api.github.com/repos/WyriHaximus/php-cpu-core-detector/zipball/d76b9a2691698e888a457b39f2dea3c0e9c1cbdb",
+                "reference": "d76b9a2691698e888a457b39f2dea3c0e9c1cbdb",
                 "shasum": ""
             },
             "require": {
@@ -426,7 +427,10 @@
             "autoload": {
                 "psr-4": {
                     "WyriHaximus\\CpuCoreDetector\\": "src/"
-                }
+                },
+                "files": [
+                    "src/functions_include.php"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -438,33 +442,33 @@
                     "email": "ceesjank@gmail.com"
                 }
             ],
-            "time": "2016-01-29 22:03:03"
+            "time": "2016-03-12 10:14:31"
         },
         {
             "name": "wyrihaximus/react-child-process-messenger",
-            "version": "2.6.1",
+            "version": "2.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/WyriHaximus/reactphp-child-process-messenger.git",
-                "reference": "1ee9e00c4207265c5ec671abc3bc13e2864af2ab"
+                "reference": "d7a2cce2c49409fb435528db484058c3fe31d0e9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WyriHaximus/reactphp-child-process-messenger/zipball/1ee9e00c4207265c5ec671abc3bc13e2864af2ab",
-                "reference": "1ee9e00c4207265c5ec671abc3bc13e2864af2ab",
+                "url": "https://api.github.com/repos/WyriHaximus/reactphp-child-process-messenger/zipball/d7a2cce2c49409fb435528db484058c3fe31d0e9",
+                "reference": "d7a2cce2c49409fb435528db484058c3fe31d0e9",
                 "shasum": ""
             },
             "require": {
                 "doctrine/inflector": "^1.0",
                 "indigophp/hash-compat": "^1.0",
-                "php": "^5.4|^7.0",
+                "php": "^5.4||^7.0",
                 "react/child-process": "^0.4",
                 "tivie/php-os-detector": "^1.0",
                 "wyrihaximus/ticking-promise": "^1.4"
             },
             "require-dev": {
                 "phake/phake": "^1.0.6",
-                "phpunit/phpunit": "^4.0|^5.0",
+                "phpunit/phpunit": "^4.0||^5.0",
                 "squizlabs/php_codesniffer": "^1.5",
                 "vectorface/dunit": "^2.0"
             },
@@ -486,27 +490,27 @@
                 }
             ],
             "description": "Messenger decorator for react/child-process",
-            "time": "2015-12-26 21:37:10"
+            "time": "2016-03-07 17:24:45"
         },
         {
             "name": "wyrihaximus/react-child-process-pool",
-            "version": "1.0.0-beta4",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/WyriHaximus/reactphp-child-process-pool.git",
-                "reference": "b7289252c409c8fbc4796fd2d0cdc20c001b3824"
+                "reference": "cb33aea29699eeb38533d66c38d0aba468df4106"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WyriHaximus/reactphp-child-process-pool/zipball/b7289252c409c8fbc4796fd2d0cdc20c001b3824",
-                "reference": "b7289252c409c8fbc4796fd2d0cdc20c001b3824",
+                "url": "https://api.github.com/repos/WyriHaximus/reactphp-child-process-pool/zipball/cb33aea29699eeb38533d66c38d0aba468df4106",
+                "reference": "cb33aea29699eeb38533d66c38d0aba468df4106",
                 "shasum": ""
             },
             "require": {
                 "evenement/evenement": "^2.0",
                 "php": "^5.4||^7.0",
-                "wyrihaximus/cpu-core-detector": "^1.0.0-alpha1",
-                "wyrihaximus/react-child-process-messenger": "^2.6.1||^2.7",
+                "wyrihaximus/cpu-core-detector": "^1.0.0",
+                "wyrihaximus/react-child-process-messenger": "^2.7",
                 "wyrihaximus/ticking-promise": "^1.5"
             },
             "require-dev": {
@@ -534,7 +538,7 @@
                     "email": "ceesjank@gmail.com"
                 }
             ],
-            "time": "2016-02-18 21:04:02"
+            "time": "2016-03-12 21:52:19"
         },
         {
             "name": "wyrihaximus/react-child-process-promise",
@@ -587,16 +591,16 @@
         },
         {
             "name": "wyrihaximus/ticking-promise",
-            "version": "1.6.0",
+            "version": "1.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/WyriHaximus/TickingPromise.git",
-                "reference": "000c1d22ab847c618009fb523fbd42823f3a4d3a"
+                "reference": "8d26b1458e32c367ba6fb8ad5042046279acdb12"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WyriHaximus/TickingPromise/zipball/000c1d22ab847c618009fb523fbd42823f3a4d3a",
-                "reference": "000c1d22ab847c618009fb523fbd42823f3a4d3a",
+                "url": "https://api.github.com/repos/WyriHaximus/TickingPromise/zipball/8d26b1458e32c367ba6fb8ad5042046279acdb12",
+                "reference": "8d26b1458e32c367ba6fb8ad5042046279acdb12",
                 "shasum": ""
             },
             "require": {
@@ -629,16 +633,13 @@
                 }
             ],
             "description": "Wrapping ticks into a promise",
-            "time": "2016-01-14 07:20:08"
+            "time": "2016-03-05 20:23:05"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "wyrihaximus/react-child-process-pool": 10,
-        "wyrihaximus/cpu-core-detector": 15
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

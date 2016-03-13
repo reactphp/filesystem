@@ -15,8 +15,7 @@
     "react/promise": "~2.2",
     "react/stream": "^0.4",
     "evenement/evenement": "~2.0",
-    "wyrihaximus/react-child-process-pool": "^1.0.0-beta4",
-    "wyrihaximus/cpu-core-detector": "^1.0.0-alpha1"
+    "wyrihaximus/react-child-process-pool": "^1.0"
   },
   "suggest": {
     "ext-eio": "^1.2",
