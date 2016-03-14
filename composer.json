@@ -31,5 +31,8 @@
     "psr-4": {
       "React\\Tests\\Filesystem\\": "tests/"
     }
+  },
+  "require-dev": {
+    "clue/block-react": "^1.1"
   }
 }
