@@ -296,10 +296,13 @@ class FileTest extends TestCase
         $fd = '0123456789abcdef';
         $filesystem = $this->mockAdapter();
 
-        $stream = $this->getMock('React\Filesystem\Stream\GenericStreamInterface', [
+        $stream = $this->getMock('React\Filesystem\Stream\ReadableStream', [
             'getFiledescriptor',
+            'resume',
         ], [
             'foo:bar',
+            $fd,
+            $filesystem,
         ]);
 
         $stream
