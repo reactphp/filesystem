@@ -23,8 +23,9 @@ use WyriHaximus\React\ChildProcess\Pool\PoolInterface;
 
 class Adapter implements AdapterInterface
 {
-    const DEFAULT_POOL   = 'WyriHaximus\React\ChildProcess\Pool\Factory\Flexible';
-    const POOL_INTERFACE = 'WyriHaximus\React\ChildProcess\Pool\PoolFactoryInterface';
+    const DEFAULT_POOL     = 'WyriHaximus\React\ChildProcess\Pool\Factory\Flexible';
+    const POOL_INTERFACE   = 'WyriHaximus\React\ChildProcess\Pool\PoolFactoryInterface';
+    const CHILD_CLASS_NAME = 'React\Filesystem\ChildProcess\Process';
 
     /**
      * @var LoopInterface
@@ -40,11 +41,6 @@ class Adapter implements AdapterInterface
      * @var PoolInterface
      */
     protected $pool;
-
-    /**
-     * @var Process
-     */
-    protected $process;
 
     /**
      * @var array
@@ -80,8 +76,6 @@ class Adapter implements AdapterInterface
         $this->invoker = \React\Filesystem\getInvoker($this, $options, 'invoker', 'React\Filesystem\InstantInvoker');
         $this->openFileLimiter = new OpenFileLimiter(\React\Filesystem\getOpenFileLimit($options));
 
-        $this->process = new Process('exec ' . dirname(dirname(__DIR__)) . '/child-process-adapter');
-
         $this->setUpPool($options);
 
         $this->options = array_merge_recursive($this->options, $options);
@@ -99,8 +93,8 @@ class Adapter implements AdapterInterface
             $poolClass = $options['pool']['class'];
         }
 
-        call_user_func_array($poolClass . '::create', [
-            $this->process,
+        call_user_func_array($poolClass . '::createFromClass', [
+            self::CHILD_CLASS_NAME,
             $this->loop,
             $poolOptions,
         ])->then(function (PoolInterface $pool) {

@@ -2,14 +2,23 @@
 
 namespace React\Filesystem\ChildProcess;
 
+use React\EventLoop\LoopInterface;
 use React\Filesystem\WoolTrait;
-use React\Promise\PromiseInterface;
+use WyriHaximus\React\ChildProcess\Messenger\ChildInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
-class Process
+class Process implements ChildInterface
 {
     use WoolTrait;
+
+    /**
+     * @inheritDoc
+     */
+    public static function create(Messenger $messenger, LoopInterface $loop)
+    {
+        return new self($messenger);
+    }
 
     /**
      * Process constructor.
