@@ -6,6 +6,7 @@ use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
 use React\Filesystem\ChildProcess;
 use React\Filesystem\Eio;
+use React\Filesystem\Filesystem;
 use React\Filesystem\Pthreads;
 use React\Tests\Filesystem\TestCase;
 
@@ -48,5 +49,18 @@ abstract class AbstractAdaptersTest extends TestCase
         }
 
         return $adapters;
+    }
+
+    public function filesystemProvider()
+    {
+        $filesystems = [];
+
+        foreach ($this->adapterProvider() as $name => $adapter) {
+            $filesystems[$name] = [
+                Filesystem::createFromAdapter($adapter[0]),
+            ];
+        }
+
+        return $filesystems;
     }
 }
