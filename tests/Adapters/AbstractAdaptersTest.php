@@ -23,12 +23,6 @@ abstract class AbstractAdaptersTest extends TestCase
         $this->loop = Factory::create();
     }
 
-    public function tearDown()
-    {
-        $this->loop = Factory::create();
-        parent::tearDown();
-    }
-
     public function adapterProvider()
     {
         $adapters = [];
