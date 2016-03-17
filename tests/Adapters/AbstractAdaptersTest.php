@@ -17,32 +17,47 @@ abstract class AbstractAdaptersTest extends TestCase
      */
     protected $loop;
 
-    public function __construct($name = null, array $data = [], $dataName = '')
-    {
-        parent::__construct($name, $data, $dataName);
-        $this->loop = Factory::create();
-    }
-
     public function adapterProvider()
     {
         $adapters = [];
-        $adapters['child-process'] = [
-            new ChildProcess\Adapter($this->loop),
-        ];
+        $adapters['child-process'] = $this->getChildProcessProvider();
 
         if (extension_loaded('eio')) {
-            $adapters['eio'] = [
-                new Eio\Adapter($this->loop),
-            ];
+            $adapters['eio'] = $this->getEioProvider();
         }
 
         if (extension_loaded('pthreads')) {
-            $adapters['pthreads'] = [
-                new Pthreads\Adapter($this->loop),
-            ];
+            $adapters['pthreads'] = $this->getPthreadsProvider();
         }
 
         return $adapters;
+    }
+
+    protected function getChildProcessProvider()
+    {
+        $loop = Factory::create();
+        return [
+            $loop,
+            new ChildProcess\Adapter($loop),
+        ];
+    }
+
+    protected function getEioProvider()
+    {
+        $loop = Factory::create();
+        return [
+            $loop,
+            new Eio\Adapter($loop),
+        ];
+    }
+
+    protected function getPthreadsProvider()
+    {
+        $loop = Factory::create();
+        return [
+            $loop,
+            new Pthreads\Adapter($loop),
+        ];
     }
 
     public function filesystemProvider()
@@ -51,7 +66,8 @@ abstract class AbstractAdaptersTest extends TestCase
 
         foreach ($this->adapterProvider() as $name => $adapter) {
             $filesystems[$name] = [
-                Filesystem::createFromAdapter($adapter[0]),
+                $adapter[0],
+                Filesystem::createFromAdapter($adapter[1]),
             ];
         }
 
