@@ -2,6 +2,7 @@
 
 namespace React\Tests\Filesystem\Adapters;
 
+use React\EventLoop\LoopInterface;
 use React\Filesystem\AdapterInterface;
 use React\Filesystem\ChildProcess;
 use React\Filesystem\Eio;
@@ -12,7 +13,7 @@ class InterfaceTest extends AbstractAdaptersTest
     /**
      * @dataProvider adapterProvider
      */
-    public function testInterface(AdapterInterface $adapter)
+    public function testInterface(LoopInterface $loop, AdapterInterface $adapter)
     {
         $this->assertInstanceOf('React\Filesystem\AdapterInterface', $adapter);
     }
@@ -20,7 +21,7 @@ class InterfaceTest extends AbstractAdaptersTest
     /**
      * @dataProvider adapterProvider
      */
-    public function testLoop(AdapterInterface $adapter)
+    public function testLoop(LoopInterface $loop, AdapterInterface $adapter)
     {
         $this->assertInstanceOf('React\EventLoop\LoopInterface', $adapter->getLoop());
     }
