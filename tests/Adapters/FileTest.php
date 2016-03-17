@@ -42,7 +42,7 @@ class FileTest extends AbstractAdaptersTest
         $tempFile = $this->tmpDir . uniqid('', true);
         touch($tempFile);
         do {
-            sleep(1);
+            usleep(500);
         } while (!file_exists($tempFile));
         Block\await($filesystem->file($tempFile)->remove(), $loop);
         $this->assertFalse(file_exists($tempFile));
