@@ -18,7 +18,20 @@ class FileTest extends AbstractAdaptersTest
     {
         $actualStat = lstat(__FILE__);
         $result = Block\await($filesystem->file(__FILE__)->stat(), $loop);
-        $this->assertSame($actualStat, $result);
+        foreach ($actualStat as $key => $value) {
+            if (!is_string($key) || in_array($key, ['atime', 'mtime', 'ctime'])) {
+                continue;
+            }
+
+            $this->assertSame($actualStat[$key], $result[$key]);
+        }
+
+        $this->assertInstanceOf('DateTime', $result['atime']);
+        $this->assertEquals($actualStat['atime'], $result['atime']->format('U'));
+        $this->assertInstanceOf('DateTime', $result['mtime']);
+        $this->assertEquals($actualStat['mtime'], $result['mtime']->format('U'));
+        $this->assertInstanceOf('DateTime', $result['atime']);
+        $this->assertEquals($actualStat['ctime'], $result['ctime']->format('U'));
     }
 
     /**
