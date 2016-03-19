@@ -11,11 +11,7 @@ php:
   - 7
   - hhvm
 
-before_script:
-  - yes "" | pecl install eio
-  - echo "extension=\"eio.so\"" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
-  - composer self-update
-  - composer install --dev
+install: ./travis-init.sh
 
 script:
   - phpunit --coverage-text
