@@ -1,6 +1,4 @@
 #!/bin/bash
-set -e
-set -o pipefail
 
 if [[ "$TRAVIS_PHP_VERSION" != "hhvm" ]]; then
     # install 'eio' PHP extension (does not support php 7)
