@@ -101,4 +101,15 @@ class FileTest extends AbstractAdaptersTest
         Block\await($filesystem->file($tempFile)->remove(), $loop);
         $this->assertFalse(file_exists($tempFile));
     }
+
+    /**
+     * @dataProvider filesystemProvider
+     */
+    public function testTouch(LoopInterface $loop, FilesystemInterface $filesystem)
+    {
+        $tempFile = $this->tmpDir . uniqid('', true);
+        $this->assertFalse(file_exists($tempFile));
+        Block\await($filesystem->file($tempFile)->touch(), $loop);
+        $this->assertTrue(file_exists($tempFile));
+    }
 }
