@@ -2,7 +2,6 @@
 
 namespace React\Filesystem\ChildProcess;
 
-use React\ChildProcess\Process;
 use React\EventLoop\LoopInterface;
 use React\Filesystem\AdapterInterface;
 use React\Filesystem\CallInvokerInterface;
