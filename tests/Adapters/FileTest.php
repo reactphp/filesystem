@@ -33,6 +33,7 @@ class FileTest extends AbstractAdaptersTest
         $this->assertInstanceOf('DateTime', $result['atime']);
         $this->assertEquals($actualStat['ctime'], $result['ctime']->format('U'));
     }
+
     /**
      * @dataProvider filesystemProvider
      */
@@ -47,6 +48,16 @@ class FileTest extends AbstractAdaptersTest
         $this->assertEquals($actualStat['mtime'], $result['mtime']->format('U'));
         $this->assertInstanceOf('DateTime', $result['atime']);
         $this->assertEquals($actualStat['ctime'], $result['ctime']->format('U'));
+    }
+
+    /**
+     * @dataProvider filesystemProvider
+     */
+    public function testSize(LoopInterface $loop, FilesystemInterface $filesystem)
+    {
+        $actualStat = lstat(__FILE__);
+        $result = Block\await($filesystem->file(__FILE__)->size(), $loop);
+        $this->assertEquals($actualStat['size'], $result);
     }
 
     /**
