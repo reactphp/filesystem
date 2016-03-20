@@ -119,7 +119,7 @@ class FileTest extends AbstractAdaptersTest
     public function testGetContents(LoopInterface $loop, FilesystemInterface $filesystem)
     {
         $tempFile = $this->tmpDir . uniqid('', true);
-        $contents = str_pad('a', 1024*1024*8);
+        $contents = str_pad('a', 1024*512);
         file_put_contents($tempFile, $contents);
         do {
             usleep(500);
