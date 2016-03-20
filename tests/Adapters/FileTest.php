@@ -2,7 +2,6 @@
 
 namespace React\Tests\Filesystem\Adapters;
 
-use Clue\React\Block;
 use React\EventLoop\LoopInterface;
 use React\Filesystem\ChildProcess;
 use React\Filesystem\Eio;
@@ -17,7 +16,7 @@ class FileTest extends AbstractAdaptersTest
     public function testStat(LoopInterface $loop, FilesystemInterface $filesystem)
     {
         $actualStat = lstat(__FILE__);
-        $result = Block\await($filesystem->file(__FILE__)->stat(), $loop);
+        $result = $this->await($filesystem->file(__FILE__)->stat(), $loop);
         foreach ($actualStat as $key => $value) {
             if (!is_string($key) || in_array($key, ['atime', 'mtime', 'ctime'])) {
                 continue;
@@ -40,7 +39,7 @@ class FileTest extends AbstractAdaptersTest
     public function testTime(LoopInterface $loop, FilesystemInterface $filesystem)
     {
         $actualStat = lstat(__FILE__);
-        $result = Block\await($filesystem->file(__FILE__)->time(), $loop);
+        $result = $this->await($filesystem->file(__FILE__)->time(), $loop);
         $this->assertSame(3, count($result));
         $this->assertInstanceOf('DateTime', $result['atime']);
         $this->assertEquals($actualStat['atime'], $result['atime']->format('U'));
@@ -56,7 +55,7 @@ class FileTest extends AbstractAdaptersTest
     public function testSize(LoopInterface $loop, FilesystemInterface $filesystem)
     {
         $actualStat = lstat(__FILE__);
-        $result = Block\await($filesystem->file(__FILE__)->size(), $loop);
+        $result = $this->await($filesystem->file(__FILE__)->size(), $loop);
         $this->assertEquals($actualStat['size'], $result);
     }
 
@@ -67,7 +66,7 @@ class FileTest extends AbstractAdaptersTest
     {
         $result = true;
         try {
-            Block\await($filesystem->file(__FILE__)->exists(), $loop);
+            $this->await($filesystem->file(__FILE__)->exists(), $loop);
         } catch (\Exception $e) {
             $result = false;
         }
@@ -81,7 +80,7 @@ class FileTest extends AbstractAdaptersTest
     {
         $result = false;
         try {
-            Block\await($filesystem->file(__FILE__ . '.' . time())->exists(), $loop);
+            $this->await($filesystem->file(__FILE__ . '.' . time())->exists(), $loop);
         } catch (\Exception $e) {
             $result = true;
         }
@@ -97,8 +96,9 @@ class FileTest extends AbstractAdaptersTest
         touch($tempFile);
         do {
             usleep(500);
+            $this->checkIfTimedOut();
         } while (!file_exists($tempFile));
-        Block\await($filesystem->file($tempFile)->remove(), $loop);
+        $this->await($filesystem->file($tempFile)->remove(), $loop);
         $this->assertFalse(file_exists($tempFile));
     }
 
@@ -109,7 +109,7 @@ class FileTest extends AbstractAdaptersTest
     {
         $tempFile = $this->tmpDir . uniqid('', true);
         $this->assertFalse(file_exists($tempFile));
-        Block\await($filesystem->file($tempFile)->touch(), $loop);
+        $this->await($filesystem->file($tempFile)->touch(), $loop);
         $this->assertTrue(file_exists($tempFile));
     }
 
@@ -123,9 +123,10 @@ class FileTest extends AbstractAdaptersTest
         file_put_contents($tempFile, $contents);
         do {
             usleep(500);
+            $this->checkIfTimedOut();
         } while (!file_exists($tempFile));
         $this->assertTrue(file_exists($tempFile));
-        $fileContents = Block\await($filesystem->file($tempFile)->getContents(), $loop);
+        $fileContents = $this->await($filesystem->file($tempFile)->getContents(), $loop);
         $this->assertSame($contents, $fileContents);
     }
 }

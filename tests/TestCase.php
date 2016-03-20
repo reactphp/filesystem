@@ -2,11 +2,16 @@
 
 namespace React\Tests\Filesystem;
 
+use Clue\React\Block;
 use React\EventLoop\LoopInterface;
 
 class TestCase extends \PHPUnit_Framework_TestCase
 {
+    const TIMEOUT = 30;
+
     protected $tmpDir;
+
+    protected $startTime;
 
     protected function mockAdapter(LoopInterface $loop = null)
     {
@@ -54,6 +59,14 @@ class TestCase extends \PHPUnit_Framework_TestCase
     {
         $this->tmpDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('react-filesystem-tests-') . DIRECTORY_SEPARATOR;
         mkdir($this->tmpDir, 0777, true);
+        $this->startTime = time();
+    }
+
+    protected function checkIfTimedOut($maxExecutionTime = self::TIMEOUT)
+    {
+        if (($this->startTime + $maxExecutionTime) <= time()) {
+            $this->fail();
+        }
     }
 
     public function tearDown()
@@ -80,5 +93,10 @@ class TestCase extends \PHPUnit_Framework_TestCase
             }
         }
         $directory->close();
+    }
+
+    protected function await($promise, $timeout = self::TIMEOUT)
+    {
+        return Block\await($promise, $timeout);
     }
 }
