@@ -63,6 +63,34 @@ class FileTest extends AbstractAdaptersTest
     /**
      * @dataProvider filesystemProvider
      */
+    public function testExists(LoopInterface $loop, FilesystemInterface $filesystem)
+    {
+        $result = true;
+        try {
+            Block\await($filesystem->file(__FILE__)->exists(), $loop);
+        } catch (\Exception $e) {
+            $result = false;
+        }
+        $this->assertTrue($result);
+    }
+
+    /**
+     * @dataProvider filesystemProvider
+     */
+    public function testDoesntExists(LoopInterface $loop, FilesystemInterface $filesystem)
+    {
+        $result = false;
+        try {
+            Block\await($filesystem->file(__FILE__ . '.' . time())->exists(), $loop);
+        } catch (\Exception $e) {
+            $result = true;
+        }
+        $this->assertTrue($result);
+    }
+
+    /**
+     * @dataProvider filesystemProvider
+     */
     public function testRemove(LoopInterface $loop, FilesystemInterface $filesystem)
     {
         $tempFile = $this->tmpDir . uniqid('', true);
