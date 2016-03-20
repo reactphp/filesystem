@@ -52,7 +52,7 @@ class File implements FileInterface
         return $this->stat()->then(function () {
             return new FulfilledPromise();
         }, function () {
-            return new RejectedPromise();
+            return new RejectedPromise(new \Exception('Not found'));
         });
     }
 
