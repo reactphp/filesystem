@@ -20,7 +20,7 @@ abstract class AbstractAdaptersTest extends TestCase
     {
         $adapters = [];
 
-        if (function_exists('event_base_new'))
+        /*if (function_exists('event_base_new'))
         {
             $this->adapterFactory($adapters, 'libevent', function () {
                 return new EventLoop\LibEventLoop();
@@ -39,15 +39,15 @@ abstract class AbstractAdaptersTest extends TestCase
             $this->adapterFactory($adapters, 'extevent', function () {
                 return new EventLoop\ExtEventLoop;
             });
-        }
+        }*/
 
         $this->adapterFactory($adapters, 'streamselect', function () {
             return new EventLoop\StreamSelectLoop();
         });
 
-        $this->adapterFactory($adapters, 'factory', function () {
+        /*$this->adapterFactory($adapters, 'factory', function () {
             return EventLoop\Factory::create();
-        });
+        });*/
 
         return $adapters;
     }
