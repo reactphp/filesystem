@@ -129,4 +129,23 @@ class FileTest extends AbstractAdaptersTest
         $fileContents = $this->await($filesystem->file($tempFile)->getContents(), $loop);
         $this->assertSame($contents, $fileContents);
     }
+
+    /**
+     * @dataProvider filesystemProvider
+     */
+    public function testCopy(LoopInterface $loop, FilesystemInterface $filesystem)
+    {
+        $tempFileSource = $this->tmpDir . uniqid('source', true);
+        $tempFileDestination = $this->tmpDir . uniqid('destination', true);
+        $contents = str_pad('a', 33, 'b');
+        file_put_contents($tempFileSource, $contents);
+        do {
+            usleep(500);
+            $this->checkIfTimedOut();
+        } while (!file_exists($tempFileSource));
+        $this->assertTrue(file_exists($tempFileSource));
+        $this->assertSame($contents, file_get_contents($tempFileSource));
+        $this->await($filesystem->file($tempFileSource)->copy($filesystem->file($tempFileDestination)), $loop);
+        $this->assertSame(file_get_contents($tempFileSource), file_get_contents($tempFileDestination));
+    }
 }
