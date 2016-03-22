@@ -148,4 +148,24 @@ class FileTest extends AbstractAdaptersTest
         $this->await($filesystem->file($tempFileSource)->copy($filesystem->file($tempFileDestination)), $loop);
         $this->assertSame(file_get_contents($tempFileSource), file_get_contents($tempFileDestination));
     }
+
+    /**
+     * @dataProvider filesystemProvider
+     */
+    public function testCopyToDirectory(LoopInterface $loop, FilesystemInterface $filesystem)
+    {
+        $filename = uniqid('source', true);
+        $tempFileSource = $this->tmpDir . $filename;
+        $tempFileDestination = $this->tmpDir . uniqid('destination', true) . DIRECTORY_SEPARATOR;
+        $contents = str_pad('a', 33, 'b');
+        file_put_contents($tempFileSource, $contents);
+        do {
+            usleep(500);
+            $this->checkIfTimedOut();
+        } while (!file_exists($tempFileSource));
+        $this->assertTrue(file_exists($tempFileSource));
+        $this->assertSame($contents, file_get_contents($tempFileSource));
+        $this->await($filesystem->file($tempFileSource)->copy($filesystem->dir($tempFileDestination)), $loop);
+        $this->assertSame(file_get_contents($tempFileSource), file_get_contents($tempFileDestination . $filename));
+    }
 }
