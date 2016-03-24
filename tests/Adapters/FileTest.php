@@ -168,4 +168,21 @@ class FileTest extends AbstractAdaptersTest
         $this->await($filesystem->file($tempFileSource)->copy($filesystem->dir($tempFileDestination)), $loop);
         $this->assertSame(file_get_contents($tempFileSource), file_get_contents($tempFileDestination . $filename));
     }
+
+    /**
+     * @dataProvider filesystemProvider
+     */
+    public function testChmod(LoopInterface $loop, FilesystemInterface $filesystem)
+    {
+        $filename = uniqid('', true);
+        $tempFile = $this->tmpDir . $filename;
+        touch($tempFile);
+        do {
+            usleep(500);
+            $this->checkIfTimedOut();
+        } while (!file_exists($tempFile));
+        chmod($tempFile, 0777);
+        $this->await($filesystem->file($tempFile)->chmod(0666), $loop);
+        $this->assertSame('0666', substr(sprintf('%o', fileperms($tempFile)), -4));
+    }
 }
