@@ -16,4 +16,4 @@ install:
   - composer install -n
 
 script:
-  - phpunit --coverage-text --debug
+  - phpunit --coverage-text
