@@ -78,6 +78,7 @@ class FileTest extends AbstractAdaptersTest
      */
     public function testDoesntExists(LoopInterface $loop, FilesystemInterface $filesystem)
     {
+        $this->setLoopTimeout($loop);
         $result = false;
         try {
             $this->await($filesystem->file(__FILE__ . '.' . time())->exists(), $loop);

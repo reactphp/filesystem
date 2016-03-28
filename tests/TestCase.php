@@ -69,6 +69,14 @@ class TestCase extends \PHPUnit_Framework_TestCase
         }
     }
 
+    protected function setLoopTimeout(LoopInterface $loop, $maxExecutionTime = self::TIMEOUT)
+    {
+        $loop->addTimer($maxExecutionTime, function () use ($loop) {
+            $loop->stop();
+            $this->fail();
+        });
+    }
+
     public function tearDown()
     {
         $this->rmdir($this->tmpDir);
