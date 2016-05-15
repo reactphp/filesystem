@@ -3,6 +3,7 @@
 namespace React\Filesystem\Node;
 
 use React\Filesystem\AdapterInterface;
+use React\Promise\PromiseInterface;
 
 interface FileInterface extends NodeInterface
 {
@@ -52,4 +53,15 @@ interface FileInterface extends NodeInterface
      * @return \React\Promise\PromiseInterface
      */
     public function touch($mode = AdapterInterface::CREATION_MODE, $time = null);
+
+    /**
+     * @return PromiseInterface
+     */
+    public function getContents();
+
+    /**
+     * @param string $contents
+     * @return PromiseInterface
+     */
+    public function putContents($contents);
 }
