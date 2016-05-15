@@ -155,6 +155,17 @@ class File implements FileInterface
     /**
      * {@inheritDoc}
      */
+    public function putContents($contents)
+    {
+        return $this->open('cw')->then(function (WritableStreamInterface $stream) use ($contents) {
+            $stream->write($contents);
+            return $this->close();
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function remove()
     {
         return $this->adapter->unlink($this->path);
