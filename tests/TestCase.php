@@ -65,7 +65,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
     protected function checkIfTimedOut($maxExecutionTime = self::TIMEOUT)
     {
         if (($this->startTime + $maxExecutionTime) <= time()) {
-            $this->fail();
+            $this->fail('Manual timeout');
         }
     }
 
@@ -73,7 +73,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
     {
         $loop->addTimer($maxExecutionTime, function () use ($loop) {
             $loop->stop();
-            $this->fail();
+            $this->fail('Event loop timeout');
         });
     }
 
