@@ -4,6 +4,7 @@ namespace React\Tests\Filesystem;
 
 use Clue\React\Block;
 use React\EventLoop\LoopInterface;
+use React\Promise\PromiseInterface;
 
 class TestCase extends \PHPUnit_Framework_TestCase
 {
@@ -103,8 +104,8 @@ class TestCase extends \PHPUnit_Framework_TestCase
         $directory->close();
     }
 
-    protected function await($promise, $timeout = self::TIMEOUT)
+    protected function await(PromiseInterface $promise, LoopInterface $loop, $timeout = self::TIMEOUT)
     {
-        return Block\await($promise, $timeout);
+        return Block\await($promise, $loop, $timeout);
     }
 }
