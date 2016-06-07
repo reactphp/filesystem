@@ -206,10 +206,15 @@ class File implements FileInterface
         $stream = new ObjectStream();
 
         $this->open('r')->then(function (ReadableStreamInterface $readStream) use ($node, $stream) {
-            $node->open('ctw')->then(function (WritableStreamInterface $writeStream) use ($readStream, $node, $stream) {
-                $readStream->pipe($writeStream)->on('end', function () use ($stream, $node) {
+            $readStream->pause();
+            return $node->open('ctw')->then(function (WritableStreamInterface $writeStream) use ($readStream, $node, $stream) {
+                $readStream->on('end', function () use ($stream, $node) {
                     $stream->end($node);
                 });
+                $readStream->pipe($writeStream, [
+                    'end' => false,
+                ]);
+                $readStream->resume();
             });
         });
 
