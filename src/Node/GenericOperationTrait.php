@@ -33,6 +33,7 @@ trait GenericOperationTrait
 
         if (count($pathBits) > 0) {
             $this->parent = $this->filesystem->dir(implode(NodeInterface::DS, $pathBits));
+            $this->path = $this->parent->getPath() . $this->getName();
         }
     }
 
