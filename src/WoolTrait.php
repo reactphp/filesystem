@@ -14,7 +14,7 @@ trait WoolTrait
      */
     public function mkdir(array $payload)
     {
-        if (mkdir($payload['path'], $payload['mode'])) {
+        if (@mkdir($payload['path'], $payload['mode'])) {
             return \React\Promise\resolve([]);
         }
 
@@ -120,8 +120,10 @@ trait WoolTrait
      */
     public function open(array $payload)
     {
-        $this->fd = fopen($payload['path'], $payload['flags']);
-        return \React\Promise\resolve([]);
+        $this->fd = @fopen($payload['path'], $payload['flags']);
+        return \React\Promise\resolve([
+            'result' => (string)$this->fd,
+        ]);
     }
 
     /**
@@ -155,7 +157,7 @@ trait WoolTrait
     {
         fseek($this->fd, $payload['offset']);
         return \React\Promise\resolve([
-            'written' => fwrite($this->fd, $payload['chunk']),
+            'written' => fwrite($this->fd, $payload['chunk'], $payload['length']),
         ]);
     }
 
