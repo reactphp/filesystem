@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f00acc51535a2582a7eda8443461d746",
-    "content-hash": "8bf31cbfef2d9e2bea5995e0ddc138f4",
+    "hash": "5cfd128a6a821892b2d402241cfcf52b",
+    "content-hash": "055cd15a4e2f3c4a4798dede6c4367df",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -258,16 +258,16 @@
         },
         {
             "name": "react/promise",
-            "version": "v2.2.2",
+            "version": "v2.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/promise.git",
-                "reference": "3aacad8bf10c7d83e6fa2089d413529888c2bedf"
+                "reference": "8025426794f1944de806618671d4fa476dc7626f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/promise/zipball/3aacad8bf10c7d83e6fa2089d413529888c2bedf",
-                "reference": "3aacad8bf10c7d83e6fa2089d413529888c2bedf",
+                "url": "https://api.github.com/repos/reactphp/promise/zipball/8025426794f1944de806618671d4fa476dc7626f",
+                "reference": "8025426794f1944de806618671d4fa476dc7626f",
                 "shasum": ""
             },
             "require": {
@@ -298,7 +298,7 @@
                 }
             ],
             "description": "A lightweight implementation of CommonJS Promises/A for PHP",
-            "time": "2016-02-26 19:09:02"
+            "time": "2016-05-03 17:50:52"
         },
         {
             "name": "react/stream",
@@ -494,26 +494,27 @@
         },
         {
             "name": "wyrihaximus/react-child-process-pool",
-            "version": "1.0.0",
+            "version": "1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/WyriHaximus/reactphp-child-process-pool.git",
-                "reference": "cb33aea29699eeb38533d66c38d0aba468df4106"
+                "reference": "285177394cb557620f11c383db61be2a6429a313"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WyriHaximus/reactphp-child-process-pool/zipball/cb33aea29699eeb38533d66c38d0aba468df4106",
-                "reference": "cb33aea29699eeb38533d66c38d0aba468df4106",
+                "url": "https://api.github.com/repos/WyriHaximus/reactphp-child-process-pool/zipball/285177394cb557620f11c383db61be2a6429a313",
+                "reference": "285177394cb557620f11c383db61be2a6429a313",
                 "shasum": ""
             },
             "require": {
                 "evenement/evenement": "^2.0",
                 "php": "^5.4||^7.0",
                 "wyrihaximus/cpu-core-detector": "^1.0.0",
-                "wyrihaximus/react-child-process-messenger": "^2.7",
+                "wyrihaximus/react-child-process-messenger": "^2.7.1",
                 "wyrihaximus/ticking-promise": "^1.5"
             },
             "require-dev": {
+                "clue/block-react": "^1.1",
                 "phake/phake": "^2.2.1",
                 "phpunit/phpunit": "^4.0||^5.0",
                 "squizlabs/php_codesniffer": "^1.5.6",
@@ -538,7 +539,7 @@
                     "email": "ceesjank@gmail.com"
                 }
             ],
-            "time": "2016-03-12 21:52:19"
+            "time": "2016-04-10 08:07:48"
         },
         {
             "name": "wyrihaximus/react-child-process-promise",
