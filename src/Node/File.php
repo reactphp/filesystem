@@ -7,6 +7,7 @@ use React\Filesystem\FilesystemInterface;
 use React\Filesystem\ObjectStream;
 use React\Filesystem\ObjectStreamSink;
 use React\Filesystem\Stream\GenericStreamInterface;
+use React\Promise\Deferred;
 use React\Stream\ReadableStreamInterface;
 use React\Stream\WritableStreamInterface;
 use React\Promise\FulfilledPromise;
@@ -208,14 +209,28 @@ class File implements FileInterface
         $this->open('r')->then(function (ReadableStreamInterface $readStream) use ($node, $stream) {
             $readStream->pause();
             return $node->open('ctw')->then(function (WritableStreamInterface $writeStream) use ($readStream, $node, $stream) {
-                $readStream->on('end', function () use ($stream, $node) {
-                    $stream->end($node);
+                $deferred = new Deferred();
+                $writePromises = [];
+                $readStream->on('end', function () use ($deferred, $writeStream, &$writePromises) {
+                    \React\Promise\all($writePromises)->then(function ()use ($deferred, $writeStream) {
+                        $writeStream->end();
+                        $deferred->resolve();
+                    });
                 });
-                $readStream->pipe($writeStream, [
-                    'end' => false,
-                ]);
+                $readStream->on('data', function ($data) use ($writeStream, &$writePromises) {
+                    $writePromises[] = $writeStream->write($data);
+                });
                 $readStream->resume();
+                return $deferred->promise();
+            })->always(function () use ($node) {
+                $node->close();
             });
+        })->then(function () {
+            return $this->close();
+        }, function () {
+            return $this->close();
+        })->then(function () use ($stream, $node) {
+            $stream->end($node);
         });
 
         return $stream;
