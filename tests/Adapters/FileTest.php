@@ -160,13 +160,26 @@ class FileTest extends AbstractAdaptersTest
         $tempFileDestination = $this->tmpDir . uniqid('destination', true) . DIRECTORY_SEPARATOR;
         $contents = str_pad('a', 33, 'b');
         file_put_contents($tempFileSource, $contents);
+        mkdir($tempFileDestination);
         do {
             usleep(500);
             $this->checkIfTimedOut();
-        } while (!file_exists($tempFileSource));
+        } while (!file_exists($tempFileSource) && !file_exists($tempFileDestination));
         $this->assertTrue(file_exists($tempFileSource));
         $this->assertSame($contents, file_get_contents($tempFileSource));
-        $this->await($filesystem->file($tempFileSource)->copy($filesystem->dir($tempFileDestination)), $loop);
+        $promise = $filesystem->file($tempFileSource)->copy($filesystem->dir($tempFileDestination));
+        $timer = $loop->addTimer(self::TIMEOUT, function () use ($loop) {
+            $loop->stop();
+            $this->fail('Event loop timeout');
+        });
+        $promise->always(function () use ($loop, $timer) {
+            $loop->cancelTimer($timer);
+        });
+        $loop->run();
+        do {
+            usleep(500);
+            $this->checkIfTimedOut();
+        } while (!file_exists($tempFileDestination . $filename) || stat($tempFileDestination . $filename)['size'] == 0);
         $this->assertSame(file_get_contents($tempFileSource), file_get_contents($tempFileDestination . $filename));
     }
 
