@@ -26,21 +26,25 @@ class Process implements ChildInterface
      */
     public function __construct(Messenger $messenger)
     {
-        $messenger->registerRpc('mkdir',    $this->wrapper('mkdir'));
-        $messenger->registerRpc('rmdir',    $this->wrapper('rmdir'));
-        $messenger->registerRpc('unlink',   $this->wrapper('unlink'));
-        $messenger->registerRpc('chmod',    $this->wrapper('chmod'));
-        $messenger->registerRpc('chown',    $this->wrapper('chown'));
-        $messenger->registerRpc('stat',     $this->wrapper('stat'));
-        $messenger->registerRpc('readdir',  $this->wrapper('readdir'));
-        $messenger->registerRpc('touch',    $this->wrapper('touch'));
-        $messenger->registerRpc('open',     $this->wrapper('open'));
-        $messenger->registerRpc('read',     $this->wrapper('read'));
-        $messenger->registerRpc('write',    $this->wrapper('write'));
-        $messenger->registerRpc('close',    $this->wrapper('close'));
-        $messenger->registerRpc('rename',   $this->wrapper('rename'));
-        $messenger->registerRpc('readlink', $this->wrapper('readlink'));
-        $messenger->registerRpc('symlink',  $this->wrapper('symlink'));
+        foreach ([
+            'mkdir',
+            'rmdir',
+            'unlink',
+            'chmod',
+            'chown',
+            'stat',
+            'readdir',
+            'touch',
+            'open',
+            'read',
+            'write',
+            'close',
+            'rename',
+            'readlink',
+            'symlink',
+        ] as $method) {
+            $messenger->registerRpc($method, $this->wrapper($method));
+        }
     }
 
     protected function wrapper($function)
