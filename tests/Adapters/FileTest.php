@@ -175,7 +175,7 @@ class FileTest extends AbstractAdaptersTest
         $promise->always(function () use ($loop, $timer) {
             $loop->cancelTimer($timer);
         });
-        $loop->run();
+        $this->await($promise, $loop);
         do {
             usleep(500);
             $this->checkIfTimedOut();
