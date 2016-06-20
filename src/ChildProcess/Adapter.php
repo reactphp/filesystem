@@ -18,6 +18,7 @@ use React\Promise\PromiseInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
+use WyriHaximus\React\ChildProcess\Pool\Options;
 use WyriHaximus\React\ChildProcess\Pool\PoolInterface;
 
 class Adapter implements AdapterInterface
@@ -57,6 +58,11 @@ class Adapter implements AdapterInterface
     protected $invoker;
 
     /**
+     * @var OpenFileLimiter
+     */
+    protected $openFileLimiter;
+
+    /**
      * @var array
      */
     protected $options = [
@@ -83,8 +89,9 @@ class Adapter implements AdapterInterface
     protected function setUpPool($options)
     {
         $poolOptions = [
-            'min_size' => 0,
-            'max_size' => 50,
+            Options::MIN_SIZE => 0,
+            Options::MAX_SIZE => 50,
+            Options::TTL => 3,
         ];
         $poolClass = static::DEFAULT_POOL;
 
@@ -293,7 +300,7 @@ class Adapter implements AdapterInterface
                 'mode' => $mode,
             ]));
         })->then(function () use ($path, $flags, &$id) {
-            return StreamFactory::create($path, $id, $flags, $this);
+            return \React\Promise\resolve(StreamFactory::create($path, $id, $flags, $this));
         });
     }
 
@@ -309,7 +316,7 @@ class Adapter implements AdapterInterface
             'length' => $length,
             'offset' => $offset,
         ]))->then(function ($payload) {
-            return $payload['chunk'];
+            return \React\Promise\resolve($payload['chunk']);
         });
     }
 
@@ -326,9 +333,7 @@ class Adapter implements AdapterInterface
             'chunk' => $data,
             'length' => $length,
             'offset' => $offset,
-        ]))->then(function ($payload) {
-            return $payload['chunk'];
-        });
+        ]));
     }
 
     /**
