@@ -4,6 +4,7 @@ namespace React\Tests\Filesystem;
 
 use React\Filesystem\Filesystem;
 use React\Filesystem\InstantInvoker;
+use React\Promise\FulfilledPromise;
 use React\Promise\RejectedPromise;
 
 class FilesystemTest extends TestCase
@@ -67,6 +68,11 @@ class FilesystemTest extends TestCase
     public function testGetContents()
     {
         $adapter = $this->mockAdapter();
+        $adapter
+            ->expects($this->any())
+            ->method('stat')
+            ->will($this->returnValue(new FulfilledPromise([])))
+        ;
         $adapter
             ->expects($this->any())
             ->method('open')

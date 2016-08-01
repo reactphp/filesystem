@@ -113,7 +113,10 @@ class Filesystem implements FilesystemInterface
      */
     public function getContents($filename)
     {
-        return $this->file($filename)->getContents();
+        $file = $this->file($filename);
+        return $file->exists()->then(function () use ($file) {
+            return $file->getContents();
+        });
     }
 
     /**
