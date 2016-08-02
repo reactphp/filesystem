@@ -75,6 +75,10 @@ trait WoolTrait
      */
     public function stat(array $payload)
     {
+        if (!file_exists($payload['path'])) {
+            return \React\Promise\reject([]);
+        }
+
         $stat = lstat($payload['path']);
         return \React\Promise\resolve([
             'dev'     => $stat['dev'],
