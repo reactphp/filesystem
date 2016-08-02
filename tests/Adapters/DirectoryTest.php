@@ -13,6 +13,16 @@ class DirectoryTest extends AbstractAdaptersTest
     /**
      * @dataProvider filesystemProvider
      */
+    public function testCreate(LoopInterface $loop, FilesystemInterface $filesystem)
+    {
+        $dir = $this->tmpDir . 'path';
+        $this->await($filesystem->dir($dir)->createRecursive(), $loop);
+        $this->assertTrue(file_exists($dir));
+    }
+
+    /**
+     * @dataProvider filesystemProvider
+     */
     public function testCreateRecursive(LoopInterface $loop, FilesystemInterface $filesystem)
     {
         $dir = $this->tmpDir . 'path' . DIRECTORY_SEPARATOR . 'to' . DIRECTORY_SEPARATOR . 'reactphp' . DIRECTORY_SEPARATOR . 'filesystem';
