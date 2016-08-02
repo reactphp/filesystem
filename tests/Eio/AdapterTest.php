@@ -3,7 +3,7 @@
 namespace React\Tests\Filesystem\Eio;
 
 use React\EventLoop\Factory;
-use React\Filesystem\Eio\PermissionFlagResolver;
+use React\Filesystem\PermissionFlagResolver;
 use React\Filesystem\Eio\Adapter;
 use React\Promise\FulfilledPromise;
 use React\Promise\RejectedPromise;
