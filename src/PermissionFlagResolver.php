@@ -1,9 +1,6 @@
 <?php
 
-namespace React\Filesystem\Eio;
-
-use React\Filesystem\FlagResolver;
-use React\Filesystem\FlagResolverInterface;
+namespace React\Filesystem;
 
 class PermissionFlagResolver extends FlagResolver implements FlagResolverInterface
 {
@@ -13,19 +10,19 @@ class PermissionFlagResolver extends FlagResolver implements FlagResolverInterfa
 
     private $flagMapping = [
         'user' => [
-            'w' => EIO_S_IWUSR,
-            'x' => EIO_S_IXUSR,
-            'r' => EIO_S_IRUSR,
+            'w' => 128,
+            'x' => 64,
+            'r' => 256,
         ],
         'group' => [
-            'w' => EIO_S_IWGRP,
-            'x' => EIO_S_IXGRP,
-            'r' => EIO_S_IRGRP,
+            'w' => 16,
+            'x' => 8,
+            'r' => 32,
         ],
         'universe' => [
-            'w' => EIO_S_IWOTH,
-            'x' => EIO_S_IXOTH,
-            'r' => EIO_S_IROTH,
+            'w' => 2,
+            'x' => 1,
+            'r' => 4,
         ],
     ];
 

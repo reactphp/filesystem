@@ -1,9 +1,8 @@
 <?php
 
-namespace React\Tests\Filesystem\Eio;
+namespace React\Tests\Filesystem;
 
-use React\Filesystem\Eio\PermissionFlagResolver;
-use React\Tests\Filesystem\TestCase;
+use React\Filesystem\PermissionFlagResolver;
 
 /**
  * @requires extension eio

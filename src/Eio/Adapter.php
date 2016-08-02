@@ -10,6 +10,7 @@ use React\Filesystem\ModeTypeDetector;
 use React\Filesystem\Node\NodeInterface;
 use React\Filesystem\ObjectStream;
 use React\Filesystem\OpenFileLimiter;
+use React\Filesystem\PermissionFlagResolver;
 use React\Filesystem\Stream\StreamFactory;
 use React\Filesystem\TypeDetectorInterface;
 use React\Promise\Deferred;
