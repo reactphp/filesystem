@@ -14,7 +14,9 @@ trait WoolTrait
      */
     public function mkdir(array $payload)
     {
-        if (@mkdir($payload['path'], $payload['mode'])) {
+        // TODO Fixed mode support
+        //if (@mkdir($payload['path'], $payload['mode'])) {
+        if (@mkdir($payload['path'])) {
             return \React\Promise\resolve([]);
         }
 
