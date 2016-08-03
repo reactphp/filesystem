@@ -13,7 +13,6 @@ use React\Promise\FulfilledPromise;
 
 class Directory implements DirectoryInterface
 {
-
     use GenericOperationTrait;
     use EventEmitterTrait;
 
