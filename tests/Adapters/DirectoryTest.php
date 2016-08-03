@@ -13,6 +13,19 @@ class DirectoryTest extends AbstractAdaptersTest
     /**
      * @dataProvider filesystemProvider
      */
+    public function testLs(LoopInterface $loop, FilesystemInterface $filesystem)
+    {
+        $path = $this->tmpDir . 'path';
+        touch($path);
+        $listing = $this->await($filesystem->dir($this->tmpDir)->ls(), $loop);
+        $listing->rewind();
+        $this->assertSame(1, $listing->count());
+        $this->assertSame($path, $listing->current()->getPath());
+    }
+
+    /**
+     * @dataProvider filesystemProvider
+     */
     public function testCreate(LoopInterface $loop, FilesystemInterface $filesystem)
     {
         $dir = $this->tmpDir . 'path';
