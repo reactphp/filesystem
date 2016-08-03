@@ -78,4 +78,48 @@ class DirectoryTest extends AbstractAdaptersTest
         $this->await($filesystem->dir($dir)->createRecursive(), $loop);
         $this->assertTrue(file_exists($dir));
     }
+
+    /**
+     * @dataProvider filesystemProvider
+     */
+    public function testRemove(LoopInterface $loop, FilesystemInterface $filesystem)
+    {
+        $dir = $this->tmpDir . 'path';
+        mkdir($dir);
+        $this->assertTrue(file_exists($dir));
+        $this->await($filesystem->dir($dir)->remove(), $loop);
+        $this->assertFalse(file_exists($dir));
+    }
+
+    /**
+     * @dataProvider filesystemProvider
+     */
+    public function testRemoveSubDir(LoopInterface $loop, FilesystemInterface $filesystem)
+    {
+        $dir = $this->tmpDir . 'path';
+        $subDir = $this->tmpDir . 'path' . DIRECTORY_SEPARATOR . 'sub';
+        mkdir($dir);
+        mkdir($subDir);
+        $this->assertTrue(file_exists($dir));
+        $this->assertTrue(file_exists($subDir));
+        $this->await($filesystem->dir($dir)->remove(), $loop);
+        $this->assertTrue(file_exists($dir));
+        $this->assertTrue(file_exists($subDir));
+    }
+
+    /**
+     * @dataProvider filesystemProvider
+     */
+    public function testRemoveRecursive(LoopInterface $loop, FilesystemInterface $filesystem)
+    {
+        $dir = $this->tmpDir . 'path';
+        $subDir = $this->tmpDir . 'path' . DIRECTORY_SEPARATOR . 'sub';
+        mkdir($dir);
+        mkdir($subDir);
+        $this->assertTrue(file_exists($dir));
+        $this->assertTrue(file_exists($subDir));
+        $this->await($filesystem->dir($dir)->removeRecursive(), $loop);
+        $this->assertFalse(file_exists($subDir));
+        $this->assertFalse(file_exists($dir));
+    }
 }
