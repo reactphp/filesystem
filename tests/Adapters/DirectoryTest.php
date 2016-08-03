@@ -26,6 +26,42 @@ class DirectoryTest extends AbstractAdaptersTest
     /**
      * @dataProvider filesystemProvider
      */
+    public function testSize(LoopInterface $loop, FilesystemInterface $filesystem)
+    {
+        $contents = str_repeat('a', 100);
+        $path = $this->tmpDir . 'path';
+        file_put_contents($path, $contents);
+        mkdir($this->tmpDir . 'subPath');
+        file_put_contents($this->tmpDir . 'subPath/file', $contents);
+        $size = $this->await($filesystem->dir($this->tmpDir)->size(), $loop);
+        $this->assertSame([
+            'directories' => 1,
+            'files' => 1,
+            'size' => 100,
+        ], $size);
+    }
+
+    /**
+     * @dataProvider filesystemProvider
+     */
+    public function testSizeRecursive(LoopInterface $loop, FilesystemInterface $filesystem)
+    {
+        $contents = str_repeat('a', 100);
+        $path = $this->tmpDir . 'path';
+        file_put_contents($path, $contents);
+        mkdir($this->tmpDir . 'subPath');
+        file_put_contents($this->tmpDir . 'subPath/file', $contents);
+        $size = $this->await($filesystem->dir($this->tmpDir)->sizeRecursive(), $loop);
+        $this->assertSame([
+            'directories' => 1,
+            'files' => 2,
+            'size' => 200,
+        ], $size);
+    }
+
+    /**
+     * @dataProvider filesystemProvider
+     */
     public function testCreate(LoopInterface $loop, FilesystemInterface $filesystem)
     {
         $dir = $this->tmpDir . 'path';
