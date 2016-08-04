@@ -54,7 +54,6 @@ abstract class AbstractAdaptersTest extends TestCase
 
     protected function adapterFactory(&$adapters, $loopSlug, callable $loopFactory)
     {
-
         $adapters[$loopSlug . '-factory'] = $this->getFacoryProvider($loopFactory);
         $adapters[$loopSlug . '-child-process'] = $this->getChildProcessProvider($loopFactory);
 
