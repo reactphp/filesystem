@@ -55,6 +55,7 @@ abstract class AbstractAdaptersTest extends TestCase
     protected function adapterFactory(&$adapters, $loopSlug, callable $loopFactory)
     {
 
+        $adapters[$loopSlug . '-factory'] = $this->getFacoryProvider($loopFactory);
         $adapters[$loopSlug . '-child-process'] = $this->getChildProcessProvider($loopFactory);
 
         if (extension_loaded('eio')) {
@@ -90,6 +91,15 @@ abstract class AbstractAdaptersTest extends TestCase
         return [
             $loop,
             new Pthreads\Adapter($loop),
+        ];
+    }
+
+    protected function getFacoryProvider(callable $loopFactory)
+    {
+        $loop = $loopFactory();
+        return [
+            $loop,
+            Filesystem::create($loop)->getAdapter(),
         ];
     }
 
