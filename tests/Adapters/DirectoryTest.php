@@ -122,4 +122,50 @@ class DirectoryTest extends AbstractAdaptersTest
         $this->assertFalse(file_exists($subDir));
         $this->assertFalse(file_exists($dir));
     }
+
+    /**
+     * @dataProvider filesystemProvider
+     */
+    public function testChmod(LoopInterface $loop, FilesystemInterface $filesystem)
+    {
+        $dir = $this->tmpDir . 'path';
+        $subDir = $this->tmpDir . 'path' . DIRECTORY_SEPARATOR . 'sub';
+        mkdir($dir);
+        mkdir($subDir);
+        chmod($dir, 0777);
+        chmod($subDir, 0777);
+        $this->assertTrue(file_exists($dir));
+        $this->assertTrue(file_exists($subDir));
+        $this->assertSame('0777', substr(sprintf('%o', fileperms($dir)), -4));
+        $this->assertSame('0777', substr(sprintf('%o', fileperms($subDir)), -4));
+        clearstatcache();
+        $this->await($filesystem->dir($dir)->chmod(0555), $loop);
+        clearstatcache();
+        $this->assertSame('0555', substr(sprintf('%o', fileperms($dir)), -4));
+        $this->assertSame('0777', substr(sprintf('%o', fileperms($subDir)), -4));
+        clearstatcache();
+    }
+
+    /**
+     * @dataProvider filesystemProvider
+     */
+    public function testChmodRecursive(LoopInterface $loop, FilesystemInterface $filesystem)
+    {
+        $dir = $this->tmpDir . 'path';
+        $subDir = $this->tmpDir . 'path' . DIRECTORY_SEPARATOR . 'sub';
+        mkdir($dir);
+        mkdir($subDir);
+        chmod($dir, 0777);
+        chmod($subDir, 0777);
+        $this->assertTrue(file_exists($dir));
+        $this->assertTrue(file_exists($subDir));
+        $this->assertSame('0777', substr(sprintf('%o', fileperms($dir)), -4));
+        $this->assertSame('0777', substr(sprintf('%o', fileperms($subDir)), -4));
+        clearstatcache();
+        $this->await($filesystem->dir($dir)->chmodRecursive(0555), $loop);
+        clearstatcache();
+        $this->assertSame('0555', substr(sprintf('%o', fileperms($dir)), -4));
+        $this->assertSame('0555', substr(sprintf('%o', fileperms($subDir)), -4));
+        clearstatcache();
+    }
 }
