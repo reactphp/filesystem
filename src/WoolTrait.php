@@ -58,7 +58,7 @@ trait WoolTrait
      */
     public function chmod(array $payload)
     {
-        if (chmod($payload['path'], $payload['mode'])) {
+        if (chmod($payload['path'], octdec($payload['mode']))) {
             return \React\Promise\resolve([]);
         }
 

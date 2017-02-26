@@ -195,7 +195,7 @@ class Adapter implements AdapterInterface
     {
         return $this->invoker->invokeCall('chmod', [
             'path' => $path,
-            'mode' => $mode,
+            'mode' => decoct($mode),
         ]);
     }
 
