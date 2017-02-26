@@ -71,7 +71,13 @@ trait WoolTrait
      */
     public function chown(array $payload)
     {
-        return \React\Promise\resolve([]);
+        if (chown($payload['path'], $payload['uid']) &&
+            chgrp($payload['path'], $payload['gid'])
+        ) {
+            return \React\Promise\resolve([]);
+        }
+
+        return \React\Promise\reject([]);
     }
 
     /**
