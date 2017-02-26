@@ -168,4 +168,47 @@ class DirectoryTest extends AbstractAdaptersTest
         $this->assertSame('0555', substr(sprintf('%o', fileperms($subDir)), -4));
         clearstatcache();
     }
+
+    /**
+     * @dataProvider filesystemProvider
+     */
+    public function testChown(LoopInterface $loop, FilesystemInterface $filesystem)
+    {
+        $dir = $this->tmpDir . 'path';
+        $subDir = $this->tmpDir . 'path' . DIRECTORY_SEPARATOR . 'sub';
+        mkdir($dir, 0777);
+        mkdir($subDir, 0777);
+        clearstatcache();
+        $this->assertTrue(file_exists($dir));
+        $this->assertTrue(file_exists($subDir));
+        clearstatcache();
+        $stat = stat($dir);
+        sleep(2);
+        $this->await($filesystem->dir($dir)->chown($stat['uid'], getmyuid()), $loop, 5);
+        clearstatcache();
+        $this->assertNotSame($stat, stat($dir));
+        clearstatcache();
+    }
+
+    /**
+     * @dataProvider filesystemProvider
+     */
+    public function testChownRecursive(LoopInterface $loop, FilesystemInterface $filesystem)
+    {
+        $dir = $this->tmpDir . 'path';
+        $subDir = $this->tmpDir . 'path' . DIRECTORY_SEPARATOR . 'sub';
+        mkdir($dir, 0777);
+        mkdir($subDir, 0777);
+        $this->assertTrue(file_exists($dir));
+        $this->assertTrue(file_exists($subDir));
+        clearstatcache();
+        $stat = stat($dir);
+        $subStat = stat($subDir);
+        sleep(2);
+        $this->await($filesystem->dir($dir)->chownRecursive(-1, getmyuid()), $loop);
+        clearstatcache();
+        $this->assertNotSame($stat, stat($dir));
+        $this->assertNotSame($subStat, stat($subDir));
+        clearstatcache();
+    }
 }
