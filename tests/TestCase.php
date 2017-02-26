@@ -5,8 +5,9 @@ namespace React\Tests\Filesystem;
 use Clue\React\Block;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
+use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 
-class TestCase extends \PHPUnit_Framework_TestCase
+class TestCase extends PHPUnitTestCase
 {
     const TIMEOUT = 30;
 
