@@ -8,6 +8,9 @@ use React\Filesystem\Eio;
 use React\Filesystem\FilesystemInterface;
 use React\Filesystem\Pthreads;
 
+/**
+ * @group adapters
+ */
 class DirectoryTest extends AbstractAdaptersTest
 {
     /**
