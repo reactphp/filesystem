@@ -3,53 +3,70 @@
 namespace React\Filesystem\Node;
 
 use React\Filesystem\AdapterInterface;
+use React\Promise\PromiseInterface;
 
 interface DirectoryInterface extends NodeInterface
 {
     /**
-     * @return \React\Promise\PromiseInterface
+     * Create the directory, fails when directory already exists or when parent doesn't exist.
+     *
+     * @return PromiseInterface
      */
     public function create($mode = AdapterInterface::CREATION_MODE);
 
     /**
-     * @return \React\Promise\PromiseInterface
+     * Create the directory, creating any parent that doesn't exist.
+     *
+     * @return PromiseInterface
      */
     public function createRecursive($mode = AdapterInterface::CREATION_MODE);
 
     /**
-     * @return \React\Promise\PromiseInterface
+     * Remove the directory, fails when it has contents.
+     *
+     * @return PromiseInterface
      */
     public function remove();
 
     /**
-     * @return \React\Promise\PromiseInterface
+     * List contents of the directory.
+     *
+     * @return PromiseInterface
      */
     public function ls();
 
     /**
-     * @param int $mode
-     * @return \React\Promise\PromiseInterface
-     */
-    public function chmodRecursive($mode);
-
-    /**
-     * @return \React\Promise\PromiseInterface
-     */
-    public function chownRecursive();
-
-    /**
-     * @return \React\Promise\PromiseInterface
-     */
-    public function removeRecursive();
-
-    /**
-     * @return \React\Promise\PromiseInterface
+     * List contents of the directory and any child directories recursively.
+     *
+     * @return PromiseInterface
      */
     public function lsRecursive();
 
     /**
+     * Change mode recursively.
+     *
+     * @param int $mode
+     * @return PromiseInterface
+     */
+    public function chmodRecursive($mode);
+
+    /**
+     * Change owner recursively.
+     *
+     * @return PromiseInterface
+     */
+    public function chownRecursive();
+
+    /**
+     * Remove the directory and all its contents recursively.
+     *
+     * @return PromiseInterface
+     */
+    public function removeRecursive();
+
+    /**
      * @param DirectoryInterface $directory
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
     //public function rsync(DirectoryInterface $directory);
 }
