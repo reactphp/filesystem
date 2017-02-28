@@ -2,28 +2,39 @@
 
 namespace React\Filesystem\Node;
 
+use React\Filesystem\AdapterInterface;
+use React\Promise\PromiseInterface;
+
 interface GenericOperationInterface
 {
     /**
-     * @return \React\Filesystem\AdapterInterface
+     * Return the filesystem associated with this node
+     *
+     * @return AdapterInterface
      */
     public function getFilesystem();
 
     /**
-     * @return \React\Promise\PromiseInterface
+     * Stat the node, returning information such as the file, c/m/a-time, mode, g/u-id, and more.
+     *
+     * @return PromiseInterface
      */
     public function stat();
 
     /**
+     * Change the node mode
+     *
      * @param int $mode
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
     public function chmod($mode);
 
     /**
+     * Change the owner of the node
+     *
      * @param int $uid
      * @param int $gid
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
     public function chown($uid = -1, $gid = -1);
 }
