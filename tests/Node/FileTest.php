@@ -2,6 +2,7 @@
 
 namespace React\Tests\Filesystem\Node;
 
+use React\EventLoop\Factory;
 use React\Filesystem\Filesystem;
 use React\Filesystem\Node\Directory;
 use React\Filesystem\Node\File;
@@ -58,16 +59,17 @@ class FileTest extends TestCase
         $pathFrom = 'foo.bar';
         $pathTo = 'bar.foo';
         $filesystem = $this->mockAdapter();
-        $promise = $this->getMock('React\Promise\PromiseInterface');
 
         $filesystem
             ->expects($this->once())
             ->method('rename')
             ->with($pathFrom, $pathTo)
-            ->will($this->returnValue($promise))
+            ->will($this->returnValue(new FulfilledPromise()))
         ;
 
-        $this->assertSame($promise, (new File($pathFrom, Filesystem::createFromAdapter($filesystem)))->rename($pathTo));
+        $newFile = \Clue\React\Block\await((new File($pathFrom, Filesystem::createFromAdapter($filesystem)))->rename($pathTo), Factory::create());
+        $this->assertInstanceOf('React\Filesystem\Node\FileInterface', $newFile);
+        $this->assertSame($pathTo, $newFile->getPath());
     }
 
     public function testExists()

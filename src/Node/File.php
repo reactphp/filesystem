@@ -86,7 +86,9 @@ class File implements FileInterface
      */
     public function rename($toFilename)
     {
-        return $this->adapter->rename($this->path, $toFilename);
+        return $this->adapter->rename($this->path, $toFilename)->then(function () use ($toFilename) {
+            return $this->filesystem->file($toFilename);
+        });
     }
 
     /**
