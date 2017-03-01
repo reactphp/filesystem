@@ -218,4 +218,19 @@ class FileTest extends AbstractAdaptersTest
         $this->await($filesystem->file($tempFile)->chown(1000), $loop);
         $this->assertSame(1000, fileowner($tempFile));
     }
+
+    /**
+     * @dataProvider filesystemProvider
+     */
+    public function testRename(LoopInterface $loop, FilesystemInterface $filesystem)
+    {
+        $filenameFrom = uniqid('', true);
+        $tempFileFrom = $this->tmpDir . $filenameFrom;
+        file_put_contents($tempFileFrom, $filenameFrom);
+        $filenameTo = uniqid('', true);
+        $tempFileTo = $this->tmpDir . $filenameTo;
+        $this->await($filesystem->file($tempFileFrom)->rename($tempFileTo), $loop);
+        $this->assertFileExists($tempFileTo);
+        $this->assertSame($filenameFrom, file_get_contents($tempFileTo));
+    }
 }
