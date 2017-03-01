@@ -109,6 +109,17 @@ class FileTest extends AbstractAdaptersTest
     /**
      * @dataProvider filesystemProvider
      */
+    public function testCreate(LoopInterface $loop, FilesystemInterface $filesystem)
+    {
+        $tempFile = $this->tmpDir . uniqid('', true);
+        $this->assertFileNotExists($tempFile);
+        $this->await($filesystem->file($tempFile)->create(), $loop);
+        $this->assertFileExists($tempFile);
+    }
+
+    /**
+     * @dataProvider filesystemProvider
+     */
     public function testTouch(LoopInterface $loop, FilesystemInterface $filesystem)
     {
         $tempFile = $this->tmpDir . uniqid('', true);
@@ -233,6 +244,7 @@ class FileTest extends AbstractAdaptersTest
         $this->assertFileExists($tempFileTo);
         $this->assertSame($filenameFrom, file_get_contents($tempFileTo));
     }
+
     /**
      * @dataProvider filesystemProvider
      */
