@@ -233,4 +233,16 @@ class FileTest extends AbstractAdaptersTest
         $this->assertFileExists($tempFileTo);
         $this->assertSame($filenameFrom, file_get_contents($tempFileTo));
     }
+    /**
+     * @dataProvider filesystemProvider
+     */
+    public function testPutContents(LoopInterface $loop, FilesystemInterface $filesystem)
+    {
+        $contents = str_repeat('abc', 1024 * 1024 * 5);
+        $filename = uniqid('', true);
+        $tempFile = $this->tmpDir . $filename;
+        $this->await($filesystem->file($tempFile)->putContents($contents), $loop);
+        $this->assertFileExists($tempFile);
+        $this->assertSame($contents, file_get_contents($tempFile));
+    }
 }
