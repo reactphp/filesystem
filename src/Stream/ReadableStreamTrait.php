@@ -2,6 +2,8 @@
 
 namespace React\Filesystem\Stream;
 
+use React\Promise\FulfilledPromise;
+use React\Promise\RejectedPromise;
 use React\Stream\Util;
 use React\Stream\WritableStreamInterface;
 
@@ -11,22 +13,31 @@ trait ReadableStreamTrait
     protected $readCursor;
     protected $chunkSize = 8192;
     protected $pause = true;
+    protected $isReading = false;
+    private $sizeLookupPromise;
 
     public function resume()
     {
-        $this->pause = false;
-
-        if ($this->size === null) {
-            $this->getFilesystem()->stat($this->getPath())->then(function ($info) {
-                $this->size = $info['size'];
-                $this->readCursor = 0;
-
-                $this->readChunk();
-            });
+        if (!$this->pause || $this->isReading) {
             return;
         }
 
-        $this->readChunk();
+        $this->pause = false;
+
+        if ($this->size === null && $this->sizeLookupPromise === null) {
+            $this->sizeLookupPromise = $this->getFilesystem()->stat($this->getPath())->then(function ($info) {
+                if ($this->size !== null) {
+                    return new RejectedPromise();
+                }
+                $this->size = $info['size'];
+                $this->readCursor = 0;
+                return new FulfilledPromise();
+            });
+        }
+
+        $this->sizeLookupPromise->then(function () {
+            $this->readChunk();
+        });
     }
 
     public function pause()
@@ -52,7 +63,7 @@ trait ReadableStreamTrait
 
     protected function readChunk()
     {
-        if ($this->pause) {
+        if ($this->pause || $this->isReading) {
             return;
         }
 
@@ -70,7 +81,13 @@ trait ReadableStreamTrait
 
     protected function performRead($chunkSize)
     {
+        $this->isReading = true;
         $this->getFilesystem()->read($this->getFileDescriptor(), $chunkSize, $this->readCursor)->then(function ($data) use ($chunkSize) {
+            $this->isReading = false;
+            if ($this->pause) {
+                return;
+            }
+
             // If chunk size can be set make sure to copy it before running this operation so
             // that used can't change it mid operation and cause funkyness.
             $this->readCursor += $chunkSize;
