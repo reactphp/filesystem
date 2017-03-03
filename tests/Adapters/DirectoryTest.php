@@ -70,6 +70,7 @@ class DirectoryTest extends AbstractAdaptersTest
         $dir = $this->tmpDir . 'path';
         $this->await($filesystem->dir($dir)->createRecursive(), $loop);
         $this->assertTrue(file_exists($dir));
+        $this->assertSame('0077', substr(sprintf('%o', fileperms($dir)), -4));
     }
 
     /**
@@ -105,9 +106,9 @@ class DirectoryTest extends AbstractAdaptersTest
         mkdir($subDir);
         $this->assertTrue(file_exists($dir));
         $this->assertTrue(file_exists($subDir));
-        $this->await($filesystem->dir($dir)->remove(), $loop);
+        $this->await($filesystem->dir($subDir)->remove(), $loop);
         $this->assertTrue(file_exists($dir));
-        $this->assertTrue(file_exists($subDir));
+        $this->assertFalse(file_exists($subDir));
     }
 
     /**
