@@ -2,16 +2,18 @@
 
 namespace React\Filesystem\ChildProcess;
 
+use Exception;
 use React\EventLoop\LoopInterface;
 use React\Filesystem\AdapterInterface;
 use React\Filesystem\CallInvokerInterface;
-use React\Filesystem\Node\NodeInterface;
-use React\Filesystem\Stream\StreamFactory;
 use React\Filesystem\FilesystemInterface;
 use React\Filesystem\MappedTypeDetector;
 use React\Filesystem\ModeTypeDetector;
+use React\Filesystem\Node\NodeInterface;
 use React\Filesystem\ObjectStream;
 use React\Filesystem\OpenFileLimiter;
+use React\Filesystem\PermissionFlagResolver;
+use React\Filesystem\Stream\StreamFactory;
 use React\Filesystem\TypeDetectorInterface;
 use React\Promise\FulfilledPromise;
 use React\Promise\PromiseInterface;
@@ -70,6 +72,11 @@ class Adapter implements AdapterInterface
     ];
 
     /**
+     * @var PermissionFlagResolver
+     */
+    private $permissionFlagResolver;
+
+    /**
      * Adapter constructor.
      * @param LoopInterface $loop
      * @param array $options
@@ -80,6 +87,7 @@ class Adapter implements AdapterInterface
 
         $this->invoker = \React\Filesystem\getInvoker($this, $options, 'invoker', 'React\Filesystem\InstantInvoker');
         $this->openFileLimiter = new OpenFileLimiter(\React\Filesystem\getOpenFileLimit($options));
+        $this->permissionFlagResolver = new PermissionFlagResolver();
 
         $this->setUpPool($options);
 
@@ -148,6 +156,8 @@ class Adapter implements AdapterInterface
     {
         return $this->pool->rpc(Factory::rpc($function, $args))->then(function (Payload $payload) {
             return \React\Promise\resolve($payload->getPayload());
+        }, function (Payload $payload) {
+            return \React\Promise\reject(new Exception($payload->getPayload()['error']['error']['message']));
         });
     }
 
@@ -160,7 +170,7 @@ class Adapter implements AdapterInterface
     {
         return $this->invoker->invokeCall('mkdir', [
             'path' => $path,
-            'mode' => $mode,
+            'mode' => decoct($this->permissionFlagResolver->resolve($mode)),
         ]);
     }
 
@@ -279,6 +289,7 @@ class Adapter implements AdapterInterface
     {
         return $this->invoker->invokeCall('touch', [
             'path' => $path,
+            'mode' => decoct($this->permissionFlagResolver->resolve($mode)),
         ]);
     }
 
