@@ -17,13 +17,15 @@ trait WoolTrait
         if (
             @mkdir(
                 $payload['path'],
-                (new PermissionFlagResolver())->resolve($payload['mode'])
+                octdec($payload['mode'])
             )
         ) {
             return \React\Promise\resolve([]);
         }
 
-        return \React\Promise\reject([]);
+        return \React\Promise\reject([
+            'error' => error_get_last(),
+        ]);
     }
 
     /**
@@ -32,11 +34,13 @@ trait WoolTrait
      */
     public function rmdir(array $payload)
     {
-        if (rmdir($payload['path'])) {
+        if (@rmdir($payload['path'])) {
             return \React\Promise\resolve([]);
         }
 
-        return \React\Promise\reject([]);
+        return \React\Promise\reject([
+            'error' => error_get_last(),
+        ]);
     }
 
     /**
@@ -49,7 +53,9 @@ trait WoolTrait
             return \React\Promise\resolve([]);
         }
 
-        return \React\Promise\reject([]);
+        return \React\Promise\reject([
+            'error' => error_get_last(),
+        ]);
     }
 
     /**
@@ -62,7 +68,9 @@ trait WoolTrait
             return \React\Promise\resolve([]);
         }
 
-        return \React\Promise\reject([]);
+        return \React\Promise\reject([
+            'error' => error_get_last(),
+        ]);
     }
 
     /**
@@ -77,7 +85,9 @@ trait WoolTrait
             return \React\Promise\resolve([]);
         }
 
-        return \React\Promise\reject([]);
+        return \React\Promise\reject([
+            'error' => error_get_last(),
+        ]);
     }
 
     /**
@@ -87,7 +97,9 @@ trait WoolTrait
     public function stat(array $payload)
     {
         if (!file_exists($payload['path'])) {
-            return \React\Promise\reject([]);
+            return \React\Promise\reject([
+                'error' => 'Path doesn\'t exist',
+            ]);
         }
 
         $stat = lstat($payload['path']);
@@ -148,7 +160,7 @@ trait WoolTrait
     public function touch(array $payload)
     {
         return \React\Promise\resolve([
-            touch($payload['path']),
+            touch($payload['path']) && chmod($payload['path'], octdec($payload['mode'])),
         ]);
     }
 
@@ -199,7 +211,9 @@ trait WoolTrait
             return \React\Promise\resolve([]);
         }
 
-        return \React\Promise\reject([]);
+        return \React\Promise\reject([
+            'error' => error_get_last(),
+        ]);
     }
 
     /**
