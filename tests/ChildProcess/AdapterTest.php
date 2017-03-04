@@ -46,7 +46,7 @@ class AdapterTest extends TestCase
                     'mkdir',
                     [
                         'path' => 'foo.bar',
-                        'mode' => Adapter::CREATION_MODE,
+                        'mode' => 770,
                     ],
                 ],
             ],
@@ -60,7 +60,7 @@ class AdapterTest extends TestCase
                     'mkdir',
                     [
                         'path' => 'foo.bar',
-                        'mode' => 'rwxrwxrwx',
+                        'mode' => 777,
                     ],
                 ],
             ],
@@ -97,6 +97,7 @@ class AdapterTest extends TestCase
                     'touch',
                     [
                         'path' => 'foo.bar',
+                        'mode' => 770,
                     ],
                 ],
             ],
@@ -134,7 +135,7 @@ class AdapterTest extends TestCase
                 'chmod',
                 [
                     'foo.bar',
-                    123,
+                    0123,
                 ],
                 [
                     'chmod',
