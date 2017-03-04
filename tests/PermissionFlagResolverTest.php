@@ -4,9 +4,6 @@ namespace React\Tests\Filesystem;
 
 use React\Filesystem\PermissionFlagResolver;
 
-/**
- * @requires extension eio
- */
 class PermissionFlagResolverTest extends TestCase
 {
     public function testResolveProvider()
