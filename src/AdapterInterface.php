@@ -60,7 +60,7 @@ interface AdapterInterface
     public function mkdir($path, $mode = self::CREATION_MODE);
 
     /**
-     * Remove the given directory.
+     * Remove the given directory, fails when it has contents.
      *
      * @param string $path
      * @return PromiseInterface
