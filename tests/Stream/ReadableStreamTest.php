@@ -30,28 +30,15 @@ class ReadableStreamTest extends TestCase
         $path = 'foo.bar';
         $fileDescriptor = '0123456789abcdef';
 
-        $promise = $this->getMock('React\Promise\PromiseInterface', [
-            'then',
-        ]);
-
-        $promise
-            ->expects($this->once())
-            ->method('then')
-            ->with($this->isType('callable'))
-            ->will($this->returnCallback(function ($resolveCb) {
-                $resolveCb([
-                    'size' => 123,
-                ]);
-            }))
-        ;
-
         $filesystem = $this->mockAdapter();
 
         $filesystem
             ->expects($this->once())
             ->method('stat')
             ->with($path)
-            ->will($this->returnValue($promise))
+            ->will($this->returnValue(\React\Promise\resolve([
+                'size' => 123,
+            ])))
         ;
 
         $mock = $this->getMock($className, [
@@ -75,28 +62,15 @@ class ReadableStreamTest extends TestCase
         $path = 'foo.bar';
         $fileDescriptor = '0123456789abcdef';
 
-        $promise = $this->getMock('React\Promise\PromiseInterface', [
-            'then',
-        ]);
-
-        $promise
-            ->expects($this->once())
-            ->method('then')
-            ->with($this->isType('callable'))
-            ->will($this->returnCallback(function ($resolveCb) {
-                $resolveCb([
-                    'size' => 123,
-                ]);
-            }))
-        ;
-
         $filesystem = $this->mockAdapter();
 
         $filesystem
             ->expects($this->once())
             ->method('stat')
             ->with($path)
-            ->will($this->returnValue($promise))
+            ->will($this->returnValue(\React\Promise\resolve([
+                'size' => 123,
+            ])))
         ;
 
         $mock = $this->getMock($className, [
@@ -245,21 +219,6 @@ class ReadableStreamTest extends TestCase
         $path = 'foo.bar';
         $fileDescriptor = '0123456789abcdef';
 
-        $statPromise = $this->getMock('React\Promise\PromiseInterface', [
-            'then',
-        ]);
-
-        $statPromise
-            ->expects($this->once())
-            ->method('then')
-            ->with($this->isType('callable'))
-            ->will($this->returnCallback(function ($resolveCb) {
-                $resolveCb([
-                    'size' => 16384,
-                ]);
-            }))
-        ;
-
         $readPromise = $this->getMock('React\Promise\PromiseInterface', [
             'then',
         ]);
@@ -279,7 +238,9 @@ class ReadableStreamTest extends TestCase
             ->expects($this->at((int)!$stat + 0))
             ->method('stat')
             ->with($path)
-            ->will($this->returnValue($statPromise))
+            ->will($this->returnValue(\React\Promise\resolve([
+                'size' => 16384,
+            ])))
         ;
 
         $filesystem
