@@ -15,7 +15,7 @@ class StreamFactoryTest extends TestCase
             ->expects($this->once())
             ->method('stat')
             ->with('foo.bar')
-            ->will($this->returnValue($this->getMock('React\Promise\PromiseInterface')))
+            ->will($this->returnValue(\React\Promise\resolve([])))
         ;
 
         $this->assertInstanceOf(
