@@ -85,6 +85,22 @@ class PermissionFlagResolverTest extends TestCase
                 'rwxrwxrw-',
                 510,
             ],
+            [
+                'rw-rw-rw-',
+                0666,
+            ],
+            [
+                'rwxrwxrwx',
+                0777,
+            ],
+            [
+                'rwxrwx---',
+                0770,
+            ],
+            [
+                'rw-rw-r--',
+                0664,
+            ],
         ];
     }
 
