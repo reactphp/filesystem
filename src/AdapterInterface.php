@@ -10,12 +10,6 @@ interface AdapterInterface
     const CREATION_MODE = 'rwxrwx---';
 
     /**
-     * @param LoopInterface $loop
-     * @param array $options
-     */
-    public function __construct(LoopInterface $loop, array $options = []);
-
-    /**
      * Return the loop associated with this adapter.
      *
      * @return LoopInterface
