@@ -32,7 +32,7 @@ class Filesystem implements FilesystemInterface
 
     /**
      * @param AdapterInterface $adapter
-     * @return static
+     * @return FilesystemInterface
      */
     public static function createFromAdapter(AdapterInterface $adapter)
     {
