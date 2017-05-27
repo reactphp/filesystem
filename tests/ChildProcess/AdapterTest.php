@@ -46,7 +46,7 @@ class AdapterTest extends TestCase
                     'mkdir',
                     [
                         'path' => 'foo.bar',
-                        'mode' => 770,
+                        'mode' => 760,
                     ],
                 ],
             ],
@@ -97,7 +97,7 @@ class AdapterTest extends TestCase
                     'touch',
                     [
                         'path' => 'foo.bar',
-                        'mode' => 770,
+                        'mode' => 760,
                     ],
                 ],
             ],
