@@ -4,6 +4,7 @@ namespace React\Filesystem\ChildProcess;
 
 use Exception;
 use React\EventLoop\LoopInterface;
+use React\Filesystem\AbstractSyncAdapter;
 use React\Filesystem\AdapterInterface;
 use React\Filesystem\CallInvokerInterface;
 use React\Filesystem\FilesystemInterface;
@@ -23,7 +24,7 @@ use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 use WyriHaximus\React\ChildProcess\Pool\Options;
 use WyriHaximus\React\ChildProcess\Pool\PoolInterface;
 
-class Adapter implements AdapterInterface
+class Adapter extends AbstractSyncAdapter implements AdapterInterface
 {
     const DEFAULT_POOL     = 'WyriHaximus\React\ChildProcess\Pool\Factory\Flexible';
     const POOL_INTERFACE   = 'WyriHaximus\React\ChildProcess\Pool\PoolFactoryInterface';
@@ -45,36 +46,9 @@ class Adapter implements AdapterInterface
     protected $pool;
 
     /**
-     * @var array
-     */
-    protected $fileDescriptors = [];
-
-    /**
-     * @var TypeDetectorInterface[]
-     */
-    protected $typeDetectors = [];
-
-    /**
-     * @var CallInvokerInterface
-     */
-    protected $invoker;
-
-    /**
      * @var OpenFileLimiter
      */
     protected $openFileLimiter;
-
-    /**
-     * @var array
-     */
-    protected $options = [
-        'lsFlags' => SCANDIR_SORT_NONE,
-    ];
-
-    /**
-     * @var PermissionFlagResolver
-     */
-    private $permissionFlagResolver;
 
     /**
      * Adapter constructor.
@@ -163,41 +137,6 @@ class Adapter implements AdapterInterface
 
     /**
      * @param string $path
-     * @param $mode
-     * @return PromiseInterface
-     */
-    public function mkdir($path, $mode = self::CREATION_MODE)
-    {
-        return $this->invoker->invokeCall('mkdir', [
-            'path' => $path,
-            'mode' => decoct($this->permissionFlagResolver->resolve($mode)),
-        ]);
-    }
-
-    /**
-     * @param string $path
-     * @return PromiseInterface
-     */
-    public function rmdir($path)
-    {
-        return $this->invoker->invokeCall('rmdir', [
-            'path' => $path,
-        ]);
-    }
-
-    /**
-     * @param string $path
-     * @return PromiseInterface
-     */
-    public function unlink($path)
-    {
-        return $this->invoker->invokeCall('unlink', [
-            'path' => $path,
-        ]);
-    }
-
-    /**
-     * @param string $path
      * @param int $mode
      * @return PromiseInterface
      */
@@ -211,83 +150,12 @@ class Adapter implements AdapterInterface
 
     /**
      * @param string $path
-     * @param int $uid
-     * @param int $gid
-     * @return PromiseInterface
-     */
-    public function chown($path, $uid, $gid)
-    {
-        return $this->invoker->invokeCall('chown', [
-            'path' => $path,
-            'uid' => $uid,
-            'gid' => $gid,
-        ]);
-    }
-
-    /**
-     * @param string $filename
-     * @return PromiseInterface
-     */
-    public function stat($filename)
-    {
-        return $this->invoker->invokeCall('stat', [
-            'path' => $filename,
-        ])->then(function ($stat) {
-            $stat['atime'] = new \DateTime('@' . $stat['atime']);
-            $stat['mtime'] = new \DateTime('@' . $stat['mtime']);
-            $stat['ctime'] = new \DateTime('@' . $stat['ctime']);
-            return \React\Promise\resolve($stat);
-        });
-    }
-
-    /**
-     * @param string $path
-     * @return PromiseInterface
-     */
-    public function ls($path)
-    {
-        $stream = new ObjectStream();
-
-        $this->invoker->invokeCall('readdir', [
-            'path' => $path,
-            'flags' => $this->options['lsFlags'],
-        ])->then(function ($result) use ($path, $stream) {
-            $this->processLsContents($path, $result, $stream);
-        });
-
-        return $stream;
-    }
-
-    protected function processLsContents($basePath, $result, ObjectStream $stream)
-    {
-        $promises = [];
-
-        foreach ($result as $entry) {
-            $path = $basePath . DIRECTORY_SEPARATOR . $entry['name'];
-            $node = [
-                'path' => $path,
-                'type' => $entry['type'],
-            ];
-            $promises[] = \React\Filesystem\detectType($this->typeDetectors, $node)->then(function (NodeInterface $node) use ($stream) {
-                $stream->write($node);
-
-                return new FulfilledPromise();
-            });
-        }
-
-        \React\Promise\all($promises)->then(function () use ($stream) {
-            $stream->close();
-        });
-    }
-
-    /**
-     * @param string $path
      * @param $mode
      * @return PromiseInterface
      */
-    public function touch($path, $mode = self::CREATION_MODE)
+    public function mkdir($path, $mode = self::CREATION_MODE)
     {
-        return $this->invoker->invokeCall('touch', [
+        return $this->invoker->invokeCall('mkdir', [
             'path' => $path,
             'mode' => decoct($this->permissionFlagResolver->resolve($mode)),
         ]);
@@ -316,7 +184,7 @@ class Adapter implements AdapterInterface
     }
 
     /**
-     * @param $fileDescriptor
+     * @param string $fileDescriptor
      * @param int $length
      * @param int $offset
      * @return PromiseInterface
@@ -332,7 +200,7 @@ class Adapter implements AdapterInterface
     }
 
     /**
-     * @param $fileDescriptor
+     * @param string $fileDescriptor
      * @param string $data
      * @param int $length
      * @param int $offset
@@ -348,7 +216,7 @@ class Adapter implements AdapterInterface
     }
 
     /**
-     * @param resource $fd
+     * @param string $fd
      * @return PromiseInterface
      */
     public function close($fd)
@@ -360,56 +228,5 @@ class Adapter implements AdapterInterface
         }, function () use ($fileDescriptor) {
             return $fileDescriptor->softTerminate();
         });
-    }
-
-    /**
-     * @param string $fromPath
-     * @param string $toPath
-     * @return PromiseInterface
-     */
-    public function rename($fromPath, $toPath)
-    {
-        return $this->invoker->invokeCall('rename', [
-            'from' => $fromPath,
-            'to' => $toPath,
-        ]);
-    }
-
-    /**
-     * @param string $path
-     * @return PromiseInterface
-     */
-    public function readlink($path)
-    {
-        return $this->invoker->invokeCall('readlink', [
-            'path' => $path,
-        ])->then(function ($result) {
-            return \React\Promise\resolve($result['path']);
-        });
-    }
-
-    /**
-     * @param string $fromPath
-     * @param string $toPath
-     * @return PromiseInterface
-     */
-    public function symlink($fromPath, $toPath)
-    {
-        return $this->invoker->invokeCall('symlink', [
-            'from' => $fromPath,
-            'to' => $toPath,
-        ])->then(function ($result) {
-            return \React\Promise\resolve($result['result']);
-        });
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function detectType($path)
-    {
-        return \React\Filesystem\detectType($this->typeDetectors, [
-            'path' => $path,
-        ]);
     }
 }
