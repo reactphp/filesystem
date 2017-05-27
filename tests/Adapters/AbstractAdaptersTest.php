@@ -8,6 +8,7 @@ use React\Filesystem\Eio;
 use React\Filesystem\Filesystem;
 use React\Filesystem\Pthreads;
 use React\Tests\Filesystem\TestCase;
+use WyriHaximus\React\ChildProcess\Pool\Options;
 
 abstract class AbstractAdaptersTest extends TestCase
 {
@@ -71,7 +72,7 @@ abstract class AbstractAdaptersTest extends TestCase
         $loop = $loopFactory();
         return [
             $loop,
-            new ChildProcess\Adapter($loop),
+            new ChildProcess\Adapter($loop, [Options::TTL => 0.01,]),
         ];
     }
 
