@@ -70,7 +70,7 @@ class DirectoryTest extends AbstractAdaptersTest
         $dir = $this->tmpDir . 'path';
         $this->await($filesystem->dir($dir)->createRecursive(), $loop);
         $this->assertTrue(file_exists($dir));
-        $this->assertSame('0770', substr(sprintf('%o', fileperms($dir)), -4));
+        $this->assertSame('0760', substr(sprintf('%o', fileperms($dir)), -4));
     }
 
     /**

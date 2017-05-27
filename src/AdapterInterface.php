@@ -7,7 +7,7 @@ use React\Promise\PromiseInterface;
 
 interface AdapterInterface
 {
-    const CREATION_MODE = 'rwxrwx---';
+    const CREATION_MODE = 'rwxrw----';
 
     /**
      * Return the loop associated with this adapter.
