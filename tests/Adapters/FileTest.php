@@ -28,11 +28,11 @@ class FileTest extends AbstractAdaptersTest
             $this->assertSame($actualStat[$key], $result[$key]);
         }
 
-        $this->assertInstanceOf('DateTime', $result['atime']);
+        $this->assertInstanceOf('DateTimeImmutable', $result['atime']);
         $this->assertEquals($actualStat['atime'], $result['atime']->format('U'));
-        $this->assertInstanceOf('DateTime', $result['mtime']);
+        $this->assertInstanceOf('DateTimeImmutable', $result['mtime']);
         $this->assertEquals($actualStat['mtime'], $result['mtime']->format('U'));
-        $this->assertInstanceOf('DateTime', $result['atime']);
+        $this->assertInstanceOf('DateTimeImmutable', $result['atime']);
         $this->assertEquals($actualStat['ctime'], $result['ctime']->format('U'));
     }
 
@@ -44,11 +44,11 @@ class FileTest extends AbstractAdaptersTest
         $actualStat = lstat(__FILE__);
         $result = $this->await($filesystem->file(__FILE__)->time(), $loop);
         $this->assertSame(3, count($result));
-        $this->assertInstanceOf('DateTime', $result['atime']);
+        $this->assertInstanceOf('DateTimeImmutable', $result['atime']);
         $this->assertEquals($actualStat['atime'], $result['atime']->format('U'));
-        $this->assertInstanceOf('DateTime', $result['mtime']);
+        $this->assertInstanceOf('DateTimeImmutable', $result['mtime']);
         $this->assertEquals($actualStat['mtime'], $result['mtime']->format('U'));
-        $this->assertInstanceOf('DateTime', $result['atime']);
+        $this->assertInstanceOf('DateTimeImmutable', $result['atime']);
         $this->assertEquals($actualStat['ctime'], $result['ctime']->format('U'));
     }
 
