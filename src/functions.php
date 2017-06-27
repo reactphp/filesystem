@@ -7,6 +7,7 @@ use React\Promise\RejectedPromise;
 /**
  * @param AdapterInterface $adapter
  * @param array $options
+ * @param string $key
  * @param string $fallback
  * @return CallInvokerInterface
  */
