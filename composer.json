@@ -22,8 +22,7 @@
     "phpunit/phpunit": "^6.0 || ^5.0 || ^4.8"
   },
   "suggest": {
-    "ext-eio": "^1.2",
-    "ext-pthreads": "^2.0"
+    "ext-eio": "^1.2"
   },
   "autoload": {
     "psr-4": {
