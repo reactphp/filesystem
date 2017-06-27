@@ -24,7 +24,7 @@ class Filesystem implements FilesystemInterface
         }
 
         if (extension_loaded('pthreads')) {
-            //return static::setFilesystemOnAdapter(static::createFromAdapter(new Pthreads\Adapter($loop, $options)));
+            return static::setFilesystemOnAdapter(static::createFromAdapter(new Pthreads\Adapter($loop, $options)));
         }
 
         return static::setFilesystemOnAdapter(static::createFromAdapter(new ChildProcess\Adapter($loop, $options)));
