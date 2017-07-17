@@ -2,7 +2,7 @@
 
 namespace React\Filesystem;
 
-use DateTimeImmutable;
+use DateTime;
 use React\Filesystem\Node\NodeInterface;
 use React\Filesystem\Stream\StreamFactory;
 use React\Promise\FulfilledPromise;
@@ -86,9 +86,9 @@ abstract class AbstractSyncAdapter implements AdapterInterface
         return $this->invoker->invokeCall('stat', [
             'path' => $filename,
         ])->then(function ($stat) {
-            $stat['atime'] = new DateTimeImmutable('@' . $stat['atime']);
-            $stat['mtime'] = new DateTimeImmutable('@' . $stat['mtime']);
-            $stat['ctime'] = new DateTimeImmutable('@' . $stat['ctime']);
+            $stat['atime'] = new DateTime('@' . $stat['atime']);
+            $stat['mtime'] = new DateTime('@' . $stat['mtime']);
+            $stat['ctime'] = new DateTime('@' . $stat['ctime']);
             return \React\Promise\resolve($stat);
         });
     }

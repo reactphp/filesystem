@@ -2,7 +2,7 @@
 
 namespace React\Filesystem\Eio;
 
-use DateTimeImmutable;
+use DateTime;
 use React\EventLoop\LoopInterface;
 use React\Filesystem\AdapterInterface;
 use React\Filesystem\CallInvokerInterface;
@@ -145,9 +145,9 @@ class Adapter implements AdapterInterface
     public function stat($filename)
     {
         return $this->invoker->invokeCall('eio_lstat', [$filename])->then(function ($stat) {
-            $stat['atime'] = new DateTimeImmutable('@' .$stat['atime']);
-            $stat['mtime'] = new DateTimeImmutable('@' .$stat['mtime']);
-            $stat['ctime'] = new DateTimeImmutable('@' .$stat['ctime']);
+            $stat['atime'] = new DateTime('@' .$stat['atime']);
+            $stat['mtime'] = new DateTime('@' .$stat['mtime']);
+            $stat['ctime'] = new DateTime('@' .$stat['ctime']);
             return \React\Promise\resolve($stat);
         });
     }
