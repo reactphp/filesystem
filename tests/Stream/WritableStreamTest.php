@@ -89,7 +89,7 @@ class WritableStreamTest extends TestCase
 
         $stream = (new $className($path, $fd, $filesystem));
         $stream->close();
-        $this->assertTrue(!$stream->isWritable());
+        $this->assertFalse($stream->isWritable());
     }
 
     /**

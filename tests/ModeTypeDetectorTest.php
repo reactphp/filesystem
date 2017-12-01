@@ -69,7 +69,7 @@ class ModeTypeDetectorTest extends TestCase
         (new ModeTypeDetector($filesystem))->detect([
             'path' => 'foo.bar',
         ])->otherwise(function ($result) use (&$callbackFired) {
-            $this->assertSame(null, $result);
+            $this->assertNull($result);
             $callbackFired = true;
         });
 

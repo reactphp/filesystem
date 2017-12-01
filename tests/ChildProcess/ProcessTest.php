@@ -50,7 +50,7 @@ class ProcessTest extends TestCase
                 'mtime',
                 'ctime',
             ] as $item) {
-                $this->assertTrue(isset($result[$item]));
+                $this->assertArrayHasKey($item, $result);
             }
             $resultCallbackRan = true;
         });

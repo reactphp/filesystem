@@ -62,7 +62,7 @@ class ConstTypeDetectorTest extends TestCase
         (new ConstTypeDetector($filesystem))->detect([
             'type' => 123,
         ])->otherwise(function ($result) use (&$callbackFired) {
-            $this->assertSame(null, $result);
+            $this->assertNull($result);
             $callbackFired = true;
         });
 
