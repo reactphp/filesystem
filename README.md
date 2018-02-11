@@ -17,7 +17,8 @@ Table of Contents
      * [Writing files](#writing-files)
    * [Directory object](#directory-object)
      * [List contents](#list-contents)
-4. [License](#license)
+4. [Install](#install)    
+5. [License](#license)
 
 Introduction
 ------------
@@ -127,6 +128,17 @@ $filesystem->dir(__DIR__)->ls()->then(function (\SplObjectStorage $list) {
        echo $node->getPath(), PHP_EOL;
    }
 });
+```
+
+Install
+-------
+The recommended way to install this library is [through Composer](https://getcomposer.org).
+[New to Composer?](https://getcomposer.org/doc/00-intro.md)
+
+This will install the latest supported version:
+
+```bash
+$ composer require react/filesystem:^0.1.0
 ```
 
 License
