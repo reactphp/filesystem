@@ -164,6 +164,17 @@ class Directory implements DirectoryInterface
         return $this->adapter->rmdir($this->path);
     }
 
+
+    /**
+     * {@inheritdoc}
+     */
+    public function rename($toDirectoryName)
+    {
+        return $this->adapter->rename($this->path, $toDirectoryName)->then(function () use ($toDirectoryName) {
+            return $this->filesystem->dir($toDirectoryName);
+        });
+    }
+
     /**
      * {@inheritDoc}
      */

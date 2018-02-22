@@ -2,6 +2,7 @@
 
 namespace React\Tests\Filesystem\Node;
 
+use React\EventLoop\Factory;
 use React\Filesystem\Filesystem;
 use React\Filesystem\Node\Directory;
 use React\Filesystem\Node\File;
@@ -79,6 +80,24 @@ class DirectoryTest extends TestCase
         ;
 
         $this->assertInstanceOf('React\Promise\PromiseInterface', (new Directory($path, Filesystem::createFromAdapter($filesystem)))->create());
+    }
+
+    public function testRename()
+    {
+        $pathFrom = 'foo.bar';
+        $pathTo = 'bar.foo';
+        $filesystem = $this->mockAdapter();
+
+        $filesystem
+            ->expects($this->once())
+            ->method('rename')
+            ->with($pathFrom, $pathTo)
+            ->will($this->returnValue(new FulfilledPromise()))
+        ;
+
+        $newDirectory = \Clue\React\Block\await((new Directory($pathFrom, Filesystem::createFromAdapter($filesystem)))->rename($pathTo), Factory::create());
+        $this->assertInstanceOf('React\Filesystem\Node\DirectoryInterface', $newDirectory);
+        $this->assertSame($pathTo . NodeInterface::DS, $newDirectory->getPath());
     }
 
     public function testRemove()
