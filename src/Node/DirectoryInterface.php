@@ -29,6 +29,14 @@ interface DirectoryInterface extends NodeInterface
     public function remove();
 
     /**
+     * Rename the directory and return the new directory through a promise
+     *
+     * @param string $toDirectoryName
+     * @return PromiseInterface<DirectoryInterface>
+     */
+    public function rename($toDirectoryName);
+
+    /**
      * List contents of the directory.
      *
      * @return PromiseInterface
