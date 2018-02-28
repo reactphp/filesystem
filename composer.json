@@ -11,10 +11,10 @@
   ],
   "require": {
     "php": ">=5.4.0",
+    "evenement/evenement": "^3.0 || ^2.0",
     "react/event-loop": "^0.4",
     "react/promise": "~2.2",
     "react/stream": "^0.4",
-    "evenement/evenement": "~2.0",
     "wyrihaximus/react-child-process-pool": "^1.3"
   },
   "require-dev": {
