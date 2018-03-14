@@ -98,7 +98,7 @@ trait WoolTrait
     {
         if (!file_exists($payload['path'])) {
             return \React\Promise\reject([
-                'error' => 'Path doesn\'t exist',
+                'error' => ['message' => 'Path doesn\'t exist'],
             ]);
         }
 

@@ -79,16 +79,18 @@ class FileTest extends AbstractAdaptersTest
     /**
      * @dataProvider filesystemProvider
      */
-    public function testDoesntExists(LoopInterface $loop, FilesystemInterface $filesystem)
+    public function testDoesntExist(LoopInterface $loop, FilesystemInterface $filesystem)
     {
         $this->setLoopTimeout($loop);
-        $result = false;
+        $rejectionReason = null;
+
         try {
-            $this->await($filesystem->file(__FILE__ . '.' . time())->exists(), $loop);
+            $this->await($filesystem->file(__FILE__ . '.' . time())->stat(), $loop);
         } catch (\Exception $e) {
-            $result = true;
+            $rejectionReason = $e->getMessage();
         }
-        $this->assertTrue($result);
+
+        $this->assertEquals("Path doesn't exist", $rejectionReason);
     }
 
     /**
