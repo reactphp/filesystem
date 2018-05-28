@@ -130,8 +130,8 @@ class Adapter extends AbstractSyncAdapter implements AdapterInterface
     {
         return $this->pool->rpc(Factory::rpc($function, $args))->then(function (Payload $payload) {
             return \React\Promise\resolve($payload->getPayload());
-        }, function (Payload $payload) {
-            return \React\Promise\reject(new Exception($payload->getPayload()['error']['error']['message']));
+        }, function ($payload) {
+            return \React\Promise\reject(new Exception($payload['error']['message']));
         });
     }
 
