@@ -194,17 +194,11 @@ class WritableStreamTest extends TestCase
         $stream
             ->expects($this->at(0))
             ->method('emit')
-            ->with('end', [$stream])
-        ;
-
-        $stream
-            ->expects($this->at(1))
-            ->method('emit')
             ->with('close', [$stream])
         ;
 
         $stream
-            ->expects($this->at(2))
+            ->expects($this->at(1))
             ->method('removeAllListeners')
             ->with()
         ;

@@ -8,11 +8,11 @@ use React\Filesystem\ObjectStream;
 use React\Filesystem\ObjectStreamSink;
 use React\Filesystem\Stream\GenericStreamInterface;
 use React\Promise\Deferred;
+use React\Promise\FulfilledPromise;
+use React\Promise\RejectedPromise;
 use React\Promise\Stream;
 use React\Stream\ReadableStreamInterface;
 use React\Stream\WritableStreamInterface;
-use React\Promise\FulfilledPromise;
-use React\Promise\RejectedPromise;
 
 class File implements FileInterface
 {
@@ -149,9 +149,7 @@ class File implements FileInterface
     public function getContents()
     {
         return $this->open('r')->then(function ($stream) {
-            return Stream\buffer($stream)->always(function () {
-                $this->close();
-            });
+            return Stream\buffer($stream);
         });
     }
 

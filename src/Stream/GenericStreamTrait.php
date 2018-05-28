@@ -93,7 +93,6 @@ trait GenericStreamTrait
         }
 
         $this->closed = true;
-        $this->emit('end', [$this]);
 
         $this->filesystem->close($this->fileDescriptor)->then(function () {
             $this->emit('close', [$this]);

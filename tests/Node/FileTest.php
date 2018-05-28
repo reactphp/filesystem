@@ -7,6 +7,7 @@ use React\Filesystem\Filesystem;
 use React\Filesystem\Node\Directory;
 use React\Filesystem\Node\File;
 use React\Filesystem\ObjectStream;
+use React\Filesystem\Stream\ReadableStream;
 use React\Promise\Deferred;
 use React\Promise\FulfilledPromise;
 use React\Promise\RejectedPromise;
@@ -296,27 +297,48 @@ class FileTest extends TestCase
     {
         $path = 'foo.bar';
         $fd = '0123456789abcdef';
-        $filesystem = $this->mockAdapter();
-
-        $stream = $this->getMock('React\Filesystem\Stream\ReadableStream', [
-            'getFiledescriptor',
-            'resume',
-        ], [
-            'foo:bar',
-            $fd,
-            $filesystem,
-        ]);
-
-        $stream
-            ->expects($this->once())
-            ->method('getFiledescriptor')
-            ->with()
-            ->will($this->returnValue($fd))
-        ;
 
         $openPromise = $this->getMock('React\Promise\PromiseInterface', [
             'then',
         ]);
+
+        $filesystem = $this->mockAdapter();
+
+        $filesystem
+            ->expects($this->once())
+            ->method('stat')
+            ->with($path)
+            ->will($this->returnValue(new FulfilledPromise([
+                'size' => 1,
+            ])))
+        ;
+
+        $filesystem
+            ->expects($this->once())
+            ->method('open')
+            ->with($path, 'r')
+            ->will($this->returnValue($openPromise))
+        ;
+
+        $filesystem
+            ->expects($this->once())
+            ->method('read')
+            ->with($fd, 1, 0)
+            ->will($this->returnValue(new FulfilledPromise(str_repeat('a', 1))))
+        ;
+
+        $filesystem
+            ->expects($this->once())
+            ->method('close')
+            ->with($fd)
+            ->will($this->returnValue(new FulfilledPromise()))
+        ;
+
+        $stream = new ReadableStream(
+            $path,
+            $fd,
+            $filesystem
+        );
 
         $openPromise
             ->expects($this->once())
@@ -325,13 +347,6 @@ class FileTest extends TestCase
             ->will($this->returnCallback(function ($resolveCb) use ($stream) {
                 return new FulfilledPromise($resolveCb($stream));
             }))
-        ;
-
-        $filesystem
-            ->expects($this->once())
-            ->method('open')
-            ->with($path, 'r')
-            ->will($this->returnValue($openPromise))
         ;
 
         $getContentsPromise = (new File($path, Filesystem::createFromAdapter($filesystem)))->getContents();
