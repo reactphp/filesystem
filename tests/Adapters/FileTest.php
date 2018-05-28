@@ -205,6 +205,7 @@ class FileTest extends AbstractAdaptersTest
 
     /**
      * @dataProvider filesystemProvider
+     * @group permissions
      */
     public function testChmod(LoopInterface $loop, FilesystemInterface $filesystem)
     {
@@ -222,6 +223,7 @@ class FileTest extends AbstractAdaptersTest
 
     /**
      * @dataProvider filesystemProvider
+     * @group permissions
      */
     public function testChownUid(LoopInterface $loop, FilesystemInterface $filesystem)
     {

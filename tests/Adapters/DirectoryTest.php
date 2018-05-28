@@ -129,6 +129,7 @@ class DirectoryTest extends AbstractAdaptersTest
 
     /**
      * @dataProvider filesystemProvider
+     * @group permissions
      */
     public function testChmod(LoopInterface $loop, FilesystemInterface $filesystem)
     {
@@ -152,6 +153,7 @@ class DirectoryTest extends AbstractAdaptersTest
 
     /**
      * @dataProvider filesystemProvider
+     * @group permissions
      */
     public function testChmodRecursive(LoopInterface $loop, FilesystemInterface $filesystem)
     {
@@ -175,6 +177,7 @@ class DirectoryTest extends AbstractAdaptersTest
 
     /**
      * @dataProvider filesystemProvider
+     * @group permissions
      */
     public function testChown(LoopInterface $loop, FilesystemInterface $filesystem)
     {
@@ -196,6 +199,7 @@ class DirectoryTest extends AbstractAdaptersTest
 
     /**
      * @dataProvider filesystemProvider
+     * @group permissions
      */
     public function testChownRecursive(LoopInterface $loop, FilesystemInterface $filesystem)
     {
