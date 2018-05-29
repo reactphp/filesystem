@@ -43,7 +43,7 @@ class FileTest extends AbstractAdaptersTest
     {
         $actualStat = lstat(__FILE__);
         $result = $this->await($filesystem->file(__FILE__)->time(), $loop);
-        $this->assertSame(3, count($result));
+        $this->assertCount(3, $result);
         $this->assertInstanceOf('DateTime', $result['atime']);
         $this->assertEquals($actualStat['atime'], $result['atime']->format('U'));
         $this->assertInstanceOf('DateTime', $result['mtime']);
@@ -108,7 +108,7 @@ class FileTest extends AbstractAdaptersTest
             $this->checkIfTimedOut();
         } while (!file_exists($tempFile));
         $this->await($filesystem->file($tempFile)->remove(), $loop);
-        $this->assertFalse(file_exists($tempFile));
+        $this->assertFileNotExists($tempFile);
     }
 
     /**
@@ -129,9 +129,9 @@ class FileTest extends AbstractAdaptersTest
     public function testTouch(LoopInterface $loop, FilesystemInterface $filesystem)
     {
         $tempFile = $this->tmpDir . uniqid('', true);
-        $this->assertFalse(file_exists($tempFile));
+        $this->assertFileNotExists($tempFile);
         $this->await($filesystem->file($tempFile)->touch(), $loop);
-        $this->assertTrue(file_exists($tempFile));
+        $this->assertFileExists($tempFile);
     }
 
     /**
@@ -146,7 +146,7 @@ class FileTest extends AbstractAdaptersTest
             usleep(500);
             $this->checkIfTimedOut();
         } while (!file_exists($tempFile));
-        $this->assertTrue(file_exists($tempFile));
+        $this->assertFileExists($tempFile);
         $fileContents = $this->await($filesystem->file($tempFile)->getContents(), $loop);
         $this->assertSame($contents, $fileContents);
     }
@@ -164,10 +164,10 @@ class FileTest extends AbstractAdaptersTest
             usleep(500);
             $this->checkIfTimedOut();
         } while (!file_exists($tempFileSource));
-        $this->assertTrue(file_exists($tempFileSource));
+        $this->assertFileExists($tempFileSource);
         $this->assertSame($contents, file_get_contents($tempFileSource));
         $this->await($filesystem->file($tempFileSource)->copy($filesystem->file($tempFileDestination)), $loop);
-        $this->assertSame(file_get_contents($tempFileSource), file_get_contents($tempFileDestination));
+        $this->assertFileEquals($tempFileSource, $tempFileDestination);
     }
 
     /**
@@ -185,7 +185,7 @@ class FileTest extends AbstractAdaptersTest
             usleep(500);
             $this->checkIfTimedOut();
         } while (!file_exists($tempFileSource) && !file_exists($tempFileDestination));
-        $this->assertTrue(file_exists($tempFileSource));
+        $this->assertFileExists($tempFileSource);
         $this->assertSame($contents, file_get_contents($tempFileSource));
         $promise = $filesystem->file($tempFileSource)->copy($filesystem->dir($tempFileDestination));
         $timer = $loop->addTimer(self::TIMEOUT, function () use ($loop) {
@@ -200,7 +200,7 @@ class FileTest extends AbstractAdaptersTest
             usleep(500);
             $this->checkIfTimedOut();
         } while (!file_exists($tempFileDestination . $filename) || stat($tempFileDestination . $filename)['size'] == 0);
-        $this->assertSame(file_get_contents($tempFileSource), file_get_contents($tempFileDestination . $filename));
+        $this->assertFileEquals($tempFileSource, $tempFileDestination . $filename);
     }
 
     /**

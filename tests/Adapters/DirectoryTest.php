@@ -69,7 +69,7 @@ class DirectoryTest extends AbstractAdaptersTest
     {
         $dir = $this->tmpDir . 'path';
         $this->await($filesystem->dir($dir)->createRecursive(), $loop);
-        $this->assertTrue(file_exists($dir));
+        $this->assertFileExists($dir);
         $this->assertSame('0760', substr(sprintf('%o', fileperms($dir)), -4));
     }
 
@@ -80,7 +80,7 @@ class DirectoryTest extends AbstractAdaptersTest
     {
         $dir = $this->tmpDir . 'path' . DIRECTORY_SEPARATOR . 'to' . DIRECTORY_SEPARATOR . 'reactphp' . DIRECTORY_SEPARATOR . 'filesystem';
         $this->await($filesystem->dir($dir)->createRecursive(), $loop);
-        $this->assertTrue(file_exists($dir));
+        $this->assertFileExists($dir);
     }
 
     /**
@@ -90,9 +90,9 @@ class DirectoryTest extends AbstractAdaptersTest
     {
         $dir = $this->tmpDir . 'path';
         mkdir($dir);
-        $this->assertTrue(file_exists($dir));
+        $this->assertFileExists($dir);
         $this->await($filesystem->dir($dir)->remove(), $loop);
-        $this->assertFalse(file_exists($dir));
+        $this->assertFileNotExists($dir);
     }
 
     /**
@@ -104,11 +104,11 @@ class DirectoryTest extends AbstractAdaptersTest
         $subDir = $this->tmpDir . 'path' . DIRECTORY_SEPARATOR . 'sub';
         mkdir($dir);
         mkdir($subDir);
-        $this->assertTrue(file_exists($dir));
-        $this->assertTrue(file_exists($subDir));
+        $this->assertFileExists($dir);
+        $this->assertFileExists($subDir);
         $this->await($filesystem->dir($subDir)->remove(), $loop);
-        $this->assertTrue(file_exists($dir));
-        $this->assertFalse(file_exists($subDir));
+        $this->assertFileExists($dir);
+        $this->assertFileNotExists($subDir);
     }
 
     /**
@@ -120,11 +120,11 @@ class DirectoryTest extends AbstractAdaptersTest
         $subDir = $this->tmpDir . 'path' . DIRECTORY_SEPARATOR . 'sub';
         mkdir($dir);
         mkdir($subDir);
-        $this->assertTrue(file_exists($dir));
-        $this->assertTrue(file_exists($subDir));
+        $this->assertFileExists($dir);
+        $this->assertFileExists($subDir);
         $this->await($filesystem->dir($dir)->removeRecursive(), $loop);
-        $this->assertFalse(file_exists($subDir));
-        $this->assertFalse(file_exists($dir));
+        $this->assertFileNotExists($subDir);
+        $this->assertFileNotExists($dir);
     }
 
     /**
@@ -138,8 +138,8 @@ class DirectoryTest extends AbstractAdaptersTest
         mkdir($subDir);
         chmod($dir, 0777);
         chmod($subDir, 0777);
-        $this->assertTrue(file_exists($dir));
-        $this->assertTrue(file_exists($subDir));
+        $this->assertFileExists($dir);
+        $this->assertFileExists($subDir);
         $this->assertSame('0777', substr(sprintf('%o', fileperms($dir)), -4));
         $this->assertSame('0777', substr(sprintf('%o', fileperms($subDir)), -4));
         clearstatcache();
@@ -161,8 +161,8 @@ class DirectoryTest extends AbstractAdaptersTest
         mkdir($subDir);
         chmod($dir, 0777);
         chmod($subDir, 0777);
-        $this->assertTrue(file_exists($dir));
-        $this->assertTrue(file_exists($subDir));
+        $this->assertFileExists($dir);
+        $this->assertFileExists($subDir);
         $this->assertSame('0777', substr(sprintf('%o', fileperms($dir)), -4));
         $this->assertSame('0777', substr(sprintf('%o', fileperms($subDir)), -4));
         clearstatcache();
@@ -183,8 +183,8 @@ class DirectoryTest extends AbstractAdaptersTest
         mkdir($dir, 0777);
         mkdir($subDir, 0777);
         clearstatcache();
-        $this->assertTrue(file_exists($dir));
-        $this->assertTrue(file_exists($subDir));
+        $this->assertFileExists($dir);
+        $this->assertFileExists($subDir);
         clearstatcache();
         $stat = stat($dir);
         sleep(2);
@@ -203,8 +203,8 @@ class DirectoryTest extends AbstractAdaptersTest
         $subDir = $this->tmpDir . 'path' . DIRECTORY_SEPARATOR . 'sub';
         mkdir($dir, 0777);
         mkdir($subDir, 0777);
-        $this->assertTrue(file_exists($dir));
-        $this->assertTrue(file_exists($subDir));
+        $this->assertFileExists($dir);
+        $this->assertFileExists($subDir);
         clearstatcache();
         $stat = stat($dir);
         $subStat = stat($subDir);
