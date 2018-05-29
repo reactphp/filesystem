@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ "$TRAVIS_PHP_VERSION" != "hhvm" ]]; then
-    # install 'eio' PHP extension (does not support php 7)
+    # install 'eio' PHP extension (does not support nightly)
     if [[ "$TRAVIS_PHP_VERSION" != "nightly" ]]; then
         yes "" | pecl install eio
     fi
