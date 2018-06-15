@@ -2,6 +2,7 @@
 
 namespace React\Tests\Filesystem\ChildProcess;
 
+use React\EventLoop\Factory;
 use React\Filesystem\ChildProcess\Adapter;
 use React\Filesystem\Filesystem;
 use React\Filesystem\Node\NodeInterface;
@@ -323,5 +324,18 @@ class AdapterTest extends TestCase
             ],
         ]);
         $this->assertTrue($calledOnData);
+    }
+
+    public function testErrorFromPool()
+    {
+        $this->setExpectedException('\Exception', 'oops');
+
+        $loop = Factory::create();
+        $adapter = new Adapter($loop, [
+            'pool' => [
+                'class' => 'React\Tests\Filesystem\ChildProcess\PoolRpcErrorMockFactory',
+            ],
+        ]);
+        $this->await($adapter->touch('foo.bar'), $loop, 1);
     }
 }
