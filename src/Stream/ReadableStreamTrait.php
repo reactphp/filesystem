@@ -99,9 +99,8 @@ trait ReadableStreamTrait
             if ($this->readCursor < $this->size) {
                 $this->readChunk();
             } else {
-                $this->emit('end', [
-                    $this,
-                ]);
+                $this->emit('end', [$this]);
+                $this->close();
             }
         });
     }
