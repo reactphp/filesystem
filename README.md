@@ -69,9 +69,10 @@ $filesystem->getContents('test.txt')->then(function($contents) {
 Which is a convenience method for:
 
 ```php
-$filesystem->open('test.txt')->then(function($stream) {
+$filesystem->file('test.txt')->open('r')->then(function($stream) {
     return React\Stream\BufferedSink::createPromise($stream);
 })->then(function($contents) {
+    // ...
 });
 ```
 
