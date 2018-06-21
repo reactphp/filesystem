@@ -91,6 +91,14 @@ class Adapter extends AbstractSyncAdapter implements AdapterInterface
     }
 
     /**
+     * @return boolean
+     */
+    public static function isSupported()
+    {
+        return substr(strtolower(PHP_OS), 0, 3) !== 'win' && function_exists('proc_open');
+    }
+
+    /**
      * @return LoopInterface
      */
     public function getLoop()
