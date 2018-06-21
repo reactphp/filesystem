@@ -103,6 +103,14 @@ class Adapter implements AdapterInterface
     }
 
     /**
+     * @return boolean
+     */
+    public static function isSupported()
+    {
+        return extension_loaded('eio');
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function getLoop()

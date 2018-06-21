@@ -27,6 +27,7 @@ class TestCase extends PHPUnitTestCase
             'setFilesystem',
             'setInvoker',
             'callFilesystem',
+            'isSupported',
             'mkdir',
             'rmdir',
             'unlink',
