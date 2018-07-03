@@ -18,7 +18,7 @@ class TestCase extends PHPUnitTestCase
     protected function mockAdapter(LoopInterface $loop = null)
     {
         if ($loop === null) {
-            $loop = $this->getMock('React\EventLoop\StreamSelectLoop');
+            $loop = $this->getMock('React\EventLoop\LoopInterface');
         }
 
         $mock = $this->getMock('React\Filesystem\AdapterInterface', [

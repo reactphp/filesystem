@@ -3,7 +3,6 @@
 namespace React\Filesystem\Node;
 
 use Evenement\EventEmitterTrait;
-use React\EventLoop\Timer\TimerInterface;
 use React\Filesystem\AdapterInterface;
 use React\Filesystem\FilesystemInterface;
 use React\Filesystem\ObjectStream;
@@ -258,9 +257,9 @@ class Directory implements DirectoryInterface
         });
 
         $sourceStream->on('end', function () use (&$closeCount, $stream) {
-            $this->adapter->getLoop()->addPeriodicTimer(0.01, function (TimerInterface $timer) use (&$closeCount, $stream) {
+            $this->adapter->getLoop()->addPeriodicTimer(0.01, function ($timer) use (&$closeCount, $stream) {
                 if ($closeCount === 0) {
-                    $timer->cancel();
+                    $this->adapter->getLoop()->cancelTimer($timer);
                     $stream->close();
                 }
             });

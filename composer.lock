@@ -929,16 +929,16 @@
         },
         {
             "name": "wyrihaximus/react-child-process-pool",
-            "version": "1.4.1",
+            "version": "1.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/WyriHaximus/reactphp-child-process-pool.git",
-                "reference": "85e07c48e007e28beec1a47e63686db219d44e87"
+                "reference": "232f2aef55ce6df816f837442e79ff2976ebc8ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WyriHaximus/reactphp-child-process-pool/zipball/85e07c48e007e28beec1a47e63686db219d44e87",
-                "reference": "85e07c48e007e28beec1a47e63686db219d44e87",
+                "url": "https://api.github.com/repos/WyriHaximus/reactphp-child-process-pool/zipball/232f2aef55ce6df816f837442e79ff2976ebc8ed",
+                "reference": "232f2aef55ce6df816f837442e79ff2976ebc8ed",
                 "shasum": ""
             },
             "require": {
@@ -977,7 +977,7 @@
                     "email": "ceesjank@gmail.com"
                 }
             ],
-            "time": "2018-02-28T20:22:20+00:00"
+            "time": "2018-04-23T17:21:00+00:00"
         },
         {
             "name": "wyrihaximus/react-child-process-promise",
@@ -1030,16 +1030,16 @@
         },
         {
             "name": "wyrihaximus/ticking-promise",
-            "version": "1.6.2",
+            "version": "1.6.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/WyriHaximus/TickingPromise.git",
-                "reference": "6b9f9abc74bb52ba3a479f8d3b8889579cd2cd6f"
+                "reference": "4bb99024402bb7526de8880f3dab0c1f0858def5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WyriHaximus/TickingPromise/zipball/6b9f9abc74bb52ba3a479f8d3b8889579cd2cd6f",
-                "reference": "6b9f9abc74bb52ba3a479f8d3b8889579cd2cd6f",
+                "url": "https://api.github.com/repos/WyriHaximus/TickingPromise/zipball/4bb99024402bb7526de8880f3dab0c1f0858def5",
+                "reference": "4bb99024402bb7526de8880f3dab0c1f0858def5",
                 "shasum": ""
             },
             "require": {
@@ -1073,7 +1073,7 @@
                 }
             ],
             "description": "Wrapping ticks into a promise",
-            "time": "2017-10-31T21:46:39+00:00"
+            "time": "2018-04-05T12:36:50+00:00"
         }
     ],
     "packages-dev": [

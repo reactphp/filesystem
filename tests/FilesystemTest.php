@@ -13,7 +13,7 @@ class FilesystemTest extends TestCase
     {
         $this->assertInstanceOf(
             'React\Filesystem\Filesystem',
-            Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'), [
+            Filesystem::create($this->getMock('React\EventLoop\LoopInterface'), [
                 'pool' => [
                     'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
                 ],
@@ -45,7 +45,7 @@ class FilesystemTest extends TestCase
 
     public function testFile()
     {
-        $file = Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'), [
+        $file = Filesystem::create($this->getMock('React\EventLoop\LoopInterface'), [
             'pool' => [
                 'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
             ],
@@ -56,7 +56,7 @@ class FilesystemTest extends TestCase
 
     public function testDir()
     {
-        $directory = Filesystem::create($this->getMock('React\EventLoop\StreamSelectLoop'), [
+        $directory = Filesystem::create($this->getMock('React\EventLoop\LoopInterface'), [
             'pool' => [
                 'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
             ],
