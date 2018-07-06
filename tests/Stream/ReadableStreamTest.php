@@ -3,6 +3,7 @@
 namespace React\Tests\Filesystem\Stream;
 
 use React\Filesystem\Stream\WritableStream;
+use React\Promise\FulfilledPromise;
 use React\Promise\RejectedPromise;
 use React\Tests\Filesystem\TestCase;
 
@@ -249,6 +250,13 @@ class ReadableStreamTest extends TestCase
             ->method('read')
             ->with($fileDescriptor, 8192, 8192)
             ->will($this->returnValue($readPromise))
+        ;
+
+        $filesystem
+            ->expects($this->at((int)!$stat + 3))
+            ->method('close')
+            ->with($fileDescriptor)
+            ->will($this->returnValue(new FulfilledPromise()))
         ;
 
         $mock = $this->getMock($className, [
