@@ -41,7 +41,7 @@ class DirectoryTest extends TestCase
     public function testLs()
     {
         $path = '/home/foo/bar';
-        $loop = $this->getMock('React\EventLoop\StreamSelectLoop');
+        $loop = $this->getMock('React\EventLoop\LoopInterface');
 
         $filesystem = $this->mockAdapter($loop);
 
@@ -118,7 +118,7 @@ class DirectoryTest extends TestCase
     public function testSize()
     {
         $path = '/home/foo/bar';
-        $loop = $this->getMock('React\EventLoop\StreamSelectLoop');
+        $loop = $this->getMock('React\EventLoop\LoopInterface');
 
         $filesystem = $this->mockAdapter($loop);
 

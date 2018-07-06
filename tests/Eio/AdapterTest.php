@@ -441,9 +441,23 @@ class AdapterTest extends TestCase
 
     public function testExecuteDelayedCall()
     {
-        $loop = $this->getMock('React\EventLoop\StreamSelectLoop', [
-            'futureTick',
+        $loop = $this->getMock('React\EventLoop\LoopInterface', [
             'addReadStream',
+            'addWriteStream',
+            'removeReadStream',
+            'removeWriteStream',
+            'removeStream',
+            'addTimer',
+            'addPeriodicTimer',
+            'cancelTimer',
+            'isTimerActive',
+            'nextTick',
+            'futureTick',
+            'tick',
+            'run',
+            'stop',
+            'addSignal',
+            'removeSignal',
         ]);
 
         $filesystem = new Adapter($loop);
@@ -486,9 +500,23 @@ class AdapterTest extends TestCase
 
     public function testExecuteDelayedCallFailed()
     {
-        $loop = $this->getMock('React\EventLoop\StreamSelectLoop', [
-            'futureTick',
+        $loop = $this->getMock('React\EventLoop\LoopInterface', [
             'addReadStream',
+            'addWriteStream',
+            'removeReadStream',
+            'removeWriteStream',
+            'removeStream',
+            'addTimer',
+            'addPeriodicTimer',
+            'cancelTimer',
+            'isTimerActive',
+            'nextTick',
+            'futureTick',
+            'tick',
+            'run',
+            'stop',
+            'addSignal',
+            'removeSignal',
         ]);
 
         $filesystem = new Adapter($loop);
@@ -529,9 +557,23 @@ class AdapterTest extends TestCase
 
     public function testExecuteDelayedCallFailedResult()
     {
-        $loop = $this->getMock('React\EventLoop\StreamSelectLoop', [
-            'futureTick',
+        $loop = $this->getMock('React\EventLoop\LoopInterface', [
             'addReadStream',
+            'addWriteStream',
+            'removeReadStream',
+            'removeWriteStream',
+            'removeStream',
+            'addTimer',
+            'addPeriodicTimer',
+            'cancelTimer',
+            'isTimerActive',
+            'nextTick',
+            'futureTick',
+            'tick',
+            'run',
+            'stop',
+            'addSignal',
+            'removeSignal',
         ]);
 
         $filesystem = new Adapter($loop);
@@ -572,9 +614,23 @@ class AdapterTest extends TestCase
 
     public function testUnregister()
     {
-        $loop = $this->getMock('React\EventLoop\StreamSelectLoop', [
-            'futureTick',
+        $loop = $this->getMock('React\EventLoop\LoopInterface', [
+            'addReadStream',
+            'addWriteStream',
             'removeReadStream',
+            'removeWriteStream',
+            'removeStream',
+            'addTimer',
+            'addPeriodicTimer',
+            'cancelTimer',
+            'isTimerActive',
+            'nextTick',
+            'futureTick',
+            'tick',
+            'run',
+            'stop',
+            'addSignal',
+            'removeSignal',
         ]);
 
         $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
@@ -625,8 +681,23 @@ class AdapterTest extends TestCase
 
     public function testUnregisterInactive()
     {
-        $loop = $this->getMock('React\EventLoop\StreamSelectLoop', [
+        $loop = $this->getMock('React\EventLoop\LoopInterface', [
+            'addReadStream',
+            'addWriteStream',
             'removeReadStream',
+            'removeWriteStream',
+            'removeStream',
+            'addTimer',
+            'addPeriodicTimer',
+            'cancelTimer',
+            'isTimerActive',
+            'nextTick',
+            'futureTick',
+            'tick',
+            'run',
+            'stop',
+            'addSignal',
+            'removeSignal',
         ]);
 
         $filesystem = $this->getMock('React\Filesystem\Eio\Adapter', [
