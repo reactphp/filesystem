@@ -195,7 +195,7 @@ class Adapter extends AbstractSyncAdapter implements AdapterInterface
             'length' => $length,
             'offset' => $offset,
         ]))->then(function ($payload) {
-            return \React\Promise\resolve($payload['chunk']);
+            return \React\Promise\resolve(base64_decode($payload['chunk']));
         });
     }
 
@@ -209,7 +209,7 @@ class Adapter extends AbstractSyncAdapter implements AdapterInterface
     public function write($fileDescriptor, $data, $length, $offset)
     {
         return $this->fileDescriptors[$fileDescriptor]->rpc(Factory::rpc('write', [
-            'chunk' => $data,
+            'chunk' => base64_encode($data),
             'length' => $length,
             'offset' => $offset,
         ]));
