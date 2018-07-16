@@ -154,6 +154,17 @@ class FileTest extends AbstractAdaptersTest
     /**
      * @dataProvider filesystemProvider
      */
+    public function testGetBinaryContents(LoopInterface $loop, FilesystemInterface $filesystem)
+    {
+        $file = __DIR__ . DIRECTORY_SEPARATOR . 'reactphp-logo.png';
+        $this->assertFileExists($file);
+        $fileContents = $this->await($filesystem->file($file)->getContents(), $loop);
+        $this->assertSame(file_get_contents($file), $fileContents);
+    }
+
+    /**
+     * @dataProvider filesystemProvider
+     */
     public function testCopy(LoopInterface $loop, FilesystemInterface $filesystem)
     {
         $tempFileSource = $this->tmpDir . uniqid('source', true);
@@ -251,6 +262,18 @@ class FileTest extends AbstractAdaptersTest
     public function testPutContents(LoopInterface $loop, FilesystemInterface $filesystem)
     {
         $contents = str_repeat('abc', 1024 * 1024 * 5);
+        $filename = uniqid('', true);
+        $tempFile = $this->tmpDir . $filename;
+        $this->await($filesystem->file($tempFile)->putContents($contents), $loop);
+        $this->assertFileExists($tempFile);
+        $this->assertSame($contents, file_get_contents($tempFile));
+    }
+    /**
+     * @dataProvider filesystemProvider
+     */
+    public function testPutBinaryContents(LoopInterface $loop, FilesystemInterface $filesystem)
+    {
+        $contents = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'reactphp-logo.png');
         $filename = uniqid('', true);
         $tempFile = $this->tmpDir . $filename;
         $this->await($filesystem->file($tempFile)->putContents($contents), $loop);
