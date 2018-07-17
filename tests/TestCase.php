@@ -59,7 +59,7 @@ class TestCase extends PHPUnitTestCase
 
     public function setUp()
     {
-        $this->tmpDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('react-filesystem-tests-') . DIRECTORY_SEPARATOR;
+        $this->tmpDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'react-filesystem-tests' . DIRECTORY_SEPARATOR . uniqid('', true) . DIRECTORY_SEPARATOR;
         mkdir($this->tmpDir, 0777, true);
         $this->startTime = time();
     }
