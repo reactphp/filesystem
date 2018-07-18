@@ -206,32 +206,21 @@ class File implements FileInterface
     {
         $stream = new ObjectStream();
 
-        $this->open('r')->then(function (ReadableStreamInterface $readStream) use ($node, $stream) {
+        $this->open('r')->then(function (ReadableStreamInterface $readStream) use ($node) {
             $readStream->pause();
-            return $node->open('ctw')->then(function (WritableStreamInterface $writeStream) use ($readStream, $node, $stream) {
-                $deferred = new Deferred();
-                $writePromises = [];
-                $readStream->on('end', function () use ($deferred, $writeStream, &$writePromises) {
-                    \React\Promise\all($writePromises)->then(function ()use ($deferred, $writeStream) {
-                        $writeStream->end();
-                        $deferred->resolve();
-                    });
-                });
-                $readStream->on('data', function ($data) use ($writeStream, &$writePromises) {
-                    $writePromises[] = $writeStream->write($data);
-                });
-                $readStream->resume();
-                return $deferred->promise();
-            })->always(function () use ($node) {
-                $node->close();
+
+            return \React\Promise\all([
+                'read' => $readStream,
+                'write' => $node->open('ctw'),
+            ]);
+        })->then(function (array $streams) use ($stream, $node) {
+            $streams['read']->pipe($streams['write']);
+            $streams['read']->on('close', function () use ($streams, $stream, $node) {
+                $streams['write']->close();
+                $stream->end($node);
             });
-        })->then(function () {
-            return $this->close();
-        }, function () {
-            return $this->close();
-        })->then(function () use ($stream, $node) {
-            $stream->end($node);
-        });
+            $streams['read']->resume();
+        })->done();
 
         return $stream;
     }
