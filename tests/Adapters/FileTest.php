@@ -187,15 +187,7 @@ class FileTest extends AbstractAdaptersTest
         } while (!file_exists($tempFileSource) && !file_exists($tempFileDestination));
         $this->assertFileExists($tempFileSource);
         $this->assertSame($contents, file_get_contents($tempFileSource));
-        $promise = $filesystem->file($tempFileSource)->copy($filesystem->dir($tempFileDestination));
-        $timer = $loop->addTimer(self::TIMEOUT, function () use ($loop) {
-            $loop->stop();
-            $this->fail('Event loop timeout');
-        });
-        $promise->always(function () use ($loop, $timer) {
-            $loop->cancelTimer($timer);
-        });
-        $this->await($promise, $loop);
+        $this->await($filesystem->file($tempFileSource)->copy($filesystem->dir($tempFileDestination)), $loop);
         do {
             usleep(500);
             $this->checkIfTimedOut();
