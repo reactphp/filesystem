@@ -16,6 +16,7 @@ php:
 matrix:
   allow_failures:
     - php: 5.4
+    - php: 7.1
 
 install:
   - ./travis-init.sh
