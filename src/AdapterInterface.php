@@ -8,6 +8,13 @@ use React\Promise\PromiseInterface;
 interface AdapterInterface
 {
     const CREATION_MODE = 'rwxrw----';
+    
+    /**
+     * Checks whether the current installation supports the adapter.
+     *
+     * @return boolean
+     */
+    public static function isSupported();
 
     /**
      * Return the loop associated with this adapter.

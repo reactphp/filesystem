@@ -2,6 +2,7 @@
 
 namespace React\Filesystem;
 
+use RuntimeException;
 use React\EventLoop\LoopInterface;
 use React\Filesystem\Node;
 
@@ -16,14 +17,18 @@ class Filesystem implements FilesystemInterface
      * @param LoopInterface $loop
      * @param array $options
      * @return FilesystemInterface
+     * @throws RuntimeException
      */
     public static function create(LoopInterface $loop, array $options = [])
     {
-        if (extension_loaded('eio')) {
-            return static::setFilesystemOnAdapter(static::createFromAdapter(new Eio\Adapter($loop, $options)));
+        $adapters = static::getSupportedAdapters();
+
+        if (!empty($adapters)) {
+            $adapter = "\\React\\Filesystem\\".$adapters[0]."\\Adapter";
+            return static::setFilesystemOnAdapter(static::createFromAdapter(new $adapter($loop, $options)));
         }
 
-        return static::setFilesystemOnAdapter(static::createFromAdapter(new ChildProcess\Adapter($loop, $options)));
+        throw new RuntimeException('No supported adapter found for this installation');
     }
 
     /**
@@ -43,6 +48,24 @@ class Filesystem implements FilesystemInterface
     {
         $filesystem->getAdapter()->setFilesystem($filesystem);
         return $filesystem;
+    }
+
+    /**
+     * @return string[]
+     */
+    public static function getSupportedAdapters()
+    {
+        $adapters = [];
+
+        if (Eio\Adapter::isSupported()) {
+            $adapters[] = 'Eio';
+        }
+
+        if (ChildProcess\Adapter::isSupported()) {
+            $adapters[] = 'ChildProcess';
+        }
+
+        return $adapters;
     }
 
     /**
