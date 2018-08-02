@@ -172,7 +172,7 @@ trait WoolTrait
     {
         fseek($this->fd, $payload['offset']);
         return \React\Promise\resolve([
-            'chunk' => fread($this->fd, $payload['length']),
+            'chunk' => base64_encode(fread($this->fd, $payload['length'])),
         ]);
     }
 
@@ -184,7 +184,7 @@ trait WoolTrait
     {
         fseek($this->fd, $payload['offset']);
         return \React\Promise\resolve([
-            'written' => fwrite($this->fd, $payload['chunk'], $payload['length']),
+            'written' => fwrite($this->fd, base64_decode($payload['chunk']), $payload['length']),
         ]);
     }
 
