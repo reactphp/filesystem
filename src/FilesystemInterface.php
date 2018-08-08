@@ -2,6 +2,7 @@
 
 namespace React\Filesystem;
 
+use RuntimeException;
 use React\EventLoop\LoopInterface;
 use React\Filesystem\Node;
 
@@ -11,6 +12,7 @@ interface FilesystemInterface
      * @param LoopInterface $loop
      * @param array $options
      * @return FilesystemInterface
+     * @throws RuntimeException
      */
     public static function create(LoopInterface $loop, array $options = []);
 
@@ -19,6 +21,11 @@ interface FilesystemInterface
      * @return static
      */
     public static function createFromAdapter(AdapterInterface $adapter);
+
+    /**
+     * @return string[]
+     */
+    public static function getSupportedAdapters();
 
     /**
      * @return AdapterInterface
