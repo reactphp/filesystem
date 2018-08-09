@@ -139,7 +139,7 @@ The recommended way to install this library is [through Composer](https://getcom
 This will install the latest supported version:
 
 ```bash
-$ composer require react/filesystem:^0.1.0
+$ composer require react/filesystem:^0.1.1
 ```
 
 License
