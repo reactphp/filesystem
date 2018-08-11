@@ -6,6 +6,7 @@ require dirname(__DIR__) . '/vendor/autoload.php';
  * Defining these constants so they don't cause errors during tests when EIO isn't installed
  */
 if (!extension_loaded('eio')) {
+    define('EIO_READDIR_STAT_ORDER', 1);
     define('EIO_DT_REG', 1);
     define('EIO_DT_DIR', 1);
     define('EIO_S_IROTH', 1);

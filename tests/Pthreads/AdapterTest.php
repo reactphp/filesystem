@@ -1,13 +1,13 @@
 <?php
 
-namespace React\Tests\Filesystem\Eio;
+namespace React\Tests\Filesystem\Pthreads;
 
 use React\Filesystem\Filesystem;
-use React\Filesystem\Eio\Adapter;
+use React\Filesystem\Pthreads\Adapter;
 use React\Tests\Filesystem\AdapterTestAbstract;
 
 /**
- * @requires extension eio
+ * @requires extension pthreads
  */
 class AdapterTest extends AdapterTestAbstract
 {
@@ -17,5 +17,11 @@ class AdapterTest extends AdapterTestAbstract
 
         $this->adapter = new Adapter($this->loop);
         $this->filesystem = Filesystem::createFromAdapter($this->adapter);
+    }
+
+    public function tearDown()
+    {
+        $this->adapter->destroy();
+        parent::tearDown();
     }
 }

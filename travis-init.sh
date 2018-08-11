@@ -8,6 +8,12 @@ if [[ "$TRAVIS_PHP_VERSION" != "hhvm" ]]; then
     if [[ "$TRAVIS_PHP_VERSION" != "nightly" ]]; then
         yes "" | pecl install eio
     fi
+
+    if [[ "$TRAVIS_PHP_VERSION" == "7.2" ]]; then
+        git clone https://github.com/krakjoe/pthreads.git && cd pthreads && phpize && ./configure && make && make install && cd ..
+        echo "extension=pthreads.so" >> "$(php --ini | grep ' */php.ini' | sed 's/  */ /g' | cut -d ' ' -f4 | tr -d '\n')"
+        composer require charlottedunois/phoebe dev-master -n
+    fi
 fi
 
 #set -e

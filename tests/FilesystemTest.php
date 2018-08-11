@@ -3,101 +3,96 @@
 namespace React\Tests\Filesystem;
 
 use React\Filesystem\Filesystem;
+use React\Filesystem\QueuedInvoker;
+use React\Filesystem\PooledInvoker;
 use React\Filesystem\InstantInvoker;
-use React\Promise\FulfilledPromise;
-use React\Promise\RejectedPromise;
+use React\Filesystem\AdapterInterface;
+use React\Filesystem\FilesystemInterface;
+use React\Filesystem\CallInvokerInterface;
+use React\Filesystem\ThrottledQueuedInvoker;
+use React\Filesystem\Node\NodeInterface;
 
 class FilesystemTest extends TestCase
 {
-    public function testCreate()
-    {
-        $this->assertInstanceOf(
-            'React\Filesystem\Filesystem',
-            Filesystem::create($this->getMock('React\EventLoop\LoopInterface'), [
-                'pool' => [
-                    'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
-                ],
-            ])
-        );
-    }
-    public function testCreateWithAdapter()
-    {
-        $this->assertInstanceOf(
-            'React\Filesystem\Filesystem',
-            Filesystem::createFromAdapter($this->mockAdapter())
-        );
-    }
-
-    public function testFactory()
-    {
-        try {
-            $this->assertInstanceOf('React\Filesystem\Filesystem', Filesystem::create(null, [
-                'pool' => [
-                    'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
-                ],
-            ]));
-        } catch (\PHPUnit_Framework_Error $typeError) {
-            $this->assertTrue(true);
-        } catch (\TypeError $typeError) {
-            $this->assertTrue(true);
-        }
-    }
-
-    public function testFile()
-    {
-        $file = Filesystem::create($this->getMock('React\EventLoop\LoopInterface'), [
-            'pool' => [
-                'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
-            ],
-        ])->file('foo.bar');
-        $this->assertInstanceOf('React\Filesystem\Node\File', $file);
-        $this->assertInstanceOf('React\Filesystem\Node\GenericOperationInterface', $file);
-    }
-
-    public function testDir()
-    {
-        $directory = Filesystem::create($this->getMock('React\EventLoop\LoopInterface'), [
-            'pool' => [
-                'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
-            ],
-        ])->dir('foo.bar');
-        $this->assertInstanceOf('React\Filesystem\Node\Directory', $directory);
-        $this->assertInstanceOf('React\Filesystem\Node\GenericOperationInterface', $directory);
-    }
-
-    public function testGetContents()
+    public function filesystemProvider()
     {
         $adapter = $this->mockAdapter();
-        $adapter
-            ->expects($this->any())
-            ->method('stat')
-            ->will($this->returnValue(new FulfilledPromise([])))
-        ;
-        $adapter
-            ->expects($this->any())
-            ->method('open')
-            ->will($this->returnValue(new RejectedPromise()))
-        ;
-        $this->assertInstanceOf(
-            'React\Promise\PromiseInterface',
-            Filesystem::createFromAdapter($adapter)->getContents('foo.bar')
-        );
+        $fs = Filesystem::createFromAdapter($adapter);
+
+        $adapters = [
+            $this->pooled($fs, $adapter),
+            $this->instant($fs, $adapter),
+            $this->queued($fs, $adapter),
+            $this->throttledqueued($fs, $adapter),
+        ];
+    
+        return $adapters;
     }
 
-    public function testSetFilesystemAndInvoker()
+    protected function pooled($fs, $adapter)
     {
-        $adapter = $this->mockAdapter();
+        $invoker = new PooledInvoker($adapter);
+        $adapter->setInvoker($invoker);
+
+        return [$fs, $adapter, $invoker];
+    }
+
+    protected function instant($fs, $adapter)
+    {
         $invoker = new InstantInvoker($adapter);
-        $adapter
-            ->expects($this->at(0))
-            ->method('setFilesystem')
-            ->with($this->isInstanceOf('React\Filesystem\Filesystem'))
-        ;
-        $adapter
-            ->expects($this->at(1))
-            ->method('setInvoker')
-            ->with($invoker)
-        ;
-        Filesystem::createFromAdapter($adapter)->setInvoker($invoker);
+        $adapter->setInvoker($invoker);
+
+        return [$fs, $adapter, $invoker];
+    }
+
+    protected function queued($fs, $adapter)
+    {
+        $invoker = new QueuedInvoker($adapter);
+        $adapter->setInvoker($invoker);
+
+        return [$fs, $adapter, $invoker];
+    }
+
+    protected function throttledqueued($fs, $adapter)
+    {
+        $invoker = new ThrottledQueuedInvoker($adapter);
+        $adapter->setInvoker($invoker);
+
+        return [$fs, $adapter, $invoker];
+    }
+
+    /**
+     * @dataProvider filesystemProvider
+     */
+    public function testGetAdapter(FilesystemInterface $filesystem)
+    {
+        $this->assertInstanceOf(AdapterInterface::class, $filesystem->getAdapter());
+    }
+
+    /**
+     * @dataProvider filesystemProvider
+     */
+    public function testFile(FilesystemInterface $filesystem)
+    {
+        $this->assertInstanceOf(NodeInterface::class, $filesystem->file('foo.bar'));
+    }
+
+    /**
+     * @dataProvider filesystemProvider
+     */
+    public function testDir(FilesystemInterface $filesystem)
+    {
+        $this->assertInstanceOf(NodeInterface::class, $filesystem->dir('foo'));
+    }
+
+    /**
+     * @dataProvider filesystemProvider
+     */
+    public function testSetInvoker(FilesystemInterface $filesystem, AdapterInterface $adapter, CallInvokerInterface $invoker)
+    {
+        $invoker2 = new InstantInvoker($adapter);
+        $filesystem->setInvoker($invoker2);
+        $this->assertSame($invoker2, $adapter->getInvoker());
+        $filesystem->setInvoker($invoker);
     }
 }

@@ -2,29 +2,34 @@
 
 namespace React\Tests\Filesystem;
 
+use React\Filesystem\QueuedInvoker;
+use React\Filesystem\InstantInvoker;
 use React\Filesystem\OpenFileLimiter;
+use React\Filesystem\AdapterInterface;
 
 class FunctionsTest extends TestCase
 {
     public function testGetInvoker()
     {
-        $adapter = $this->getMock('React\Filesystem\AdapterInterface');
-        $callInvoker = $this->getMock('React\Filesystem\CallInvokerInterface');
-        $key = 'k';
+        $adapter = $this->mockAdapter();
+        $invoker = new QueuedInvoker($adapter);
+
         $options = [
-            $key => $callInvoker,
+            'k' => $invoker,
         ];
-        $fallback = '';
-        $this->assertSame($callInvoker, \React\Filesystem\getInvoker($adapter, $options, $key, $fallback));
+
+        $callInvoker = \React\Filesystem\getInvoker($adapter, $options, 'k', InstantInvoker::class);
+        $this->assertSame($invoker, $callInvoker);
+
+        $callInvoker2 = \React\Filesystem\getInvoker($adapter, $options, 'l', InstantInvoker::class);
+        $this->assertInstanceOf(InstantInvoker::class, $callInvoker2);
     }
 
     public function testGetInvokerFallback()
     {
-        $adapter = $this->getMock('React\Filesystem\AdapterInterface');
-        $key = 'k';
-        $options = [];
-        $fallback = '\stdClass';
-        $this->assertInstanceOf($fallback, \React\Filesystem\getInvoker($adapter, $options, $key, $fallback));
+        $adapter = $this->mockAdapter();
+        $fallback = \stdClass::class;
+        $this->assertInstanceOf($fallback, \React\Filesystem\getInvoker($adapter, [], 'k', $fallback));
     }
 
     public function testGetOpenFileLimit()
@@ -34,6 +39,7 @@ class FunctionsTest extends TestCase
             'open_file_limit' => $limit,
         ]));
     }
+
     public function testGetOpenFileLimitFallback()
     {
         $this->assertSame(OpenFileLimiter::DEFAULT_LIMIT, \React\Filesystem\getOpenFileLimit([]));

@@ -8,7 +8,6 @@ use React\Filesystem\FilesystemInterface;
 use React\Filesystem\ObjectStream;
 use React\Filesystem\ObjectStreamSink;
 use React\Promise\Deferred;
-use React\Promise\FulfilledPromise;
 
 class Directory implements DirectoryInterface
 {
@@ -70,14 +69,6 @@ class Directory implements DirectoryInterface
      */
     public function ls()
     {
-        return ObjectStreamSink::promise($this->lsStreaming());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function lsStreaming()
-    {
         return $this->adapter->ls($this->path);
     }
 
@@ -114,7 +105,7 @@ class Directory implements DirectoryInterface
                             $numbers['directories'] += $size['directories'];
                             $numbers['files'] += $size['files'];
                             $numbers['size'] += $size['size'];
-                            return new FulfilledPromise();
+                            return \React\Promise\resolve();
                         });
                     }
                     break;
@@ -122,7 +113,7 @@ class Directory implements DirectoryInterface
                     $numbers['files']++;
                     $promises[] = $node->size()->then(function ($size) use (&$numbers) {
                         $numbers['size'] += $size;
-                        return new FulfilledPromise();
+                        return \React\Promise\resolve();
                     });
                     break;
             }
@@ -138,21 +129,7 @@ class Directory implements DirectoryInterface
      */
     public function create($mode = AdapterInterface::CREATION_MODE)
     {
-        return $this->adapter->mkdir($this->path, $mode)->then(function () {
-            $deferred = new Deferred();
-
-            $check = function () use (&$check, $deferred) {
-                $this->stat()->then(function () use ($deferred) {
-                    $deferred->resolve();
-                }, function () use (&$check) {
-                    $this->adapter->getLoop()->addTimer(0.1, $check);
-                });
-            };
-
-            $check();
-
-            return $deferred->promise();
-        });
+        return $this->adapter->mkdir($this->path, $mode);
     }
 
     /**
@@ -189,7 +166,7 @@ class Directory implements DirectoryInterface
         })->then(function () use ($mode) {
             return $this->create($mode);
         })->then(function () {
-            return new FulfilledPromise();
+            return \React\Promise\resolve();
         });
     }
 
@@ -230,59 +207,7 @@ class Directory implements DirectoryInterface
      */
     public function lsRecursive()
     {
-        return ObjectStreamSink::promise($this->lsRecursiveStreaming());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function lsRecursiveStreaming()
-    {
-        return $this->processLsRecursiveContents($this->lsStreaming());
-    }
-
-    /**
-     * @param $sourceStream
-     * @return Stream
-     */
-    protected function processLsRecursiveContents($sourceStream)
-    {
-        $stream = new ObjectStream();
-        $closeCount = 0;
-        $sourceStream->on('data', function (NodeInterface $node) use (&$closeCount, $stream) {
-            $stream->write($node);
-            if ($node instanceof Directory) {
-                $this->streamLsIntoStream($node, $stream, $closeCount);
-            }
-        });
-
-        $sourceStream->on('end', function () use (&$closeCount, $stream) {
-            $this->adapter->getLoop()->addPeriodicTimer(0.01, function ($timer) use (&$closeCount, $stream) {
-                if ($closeCount === 0) {
-                    $this->adapter->getLoop()->cancelTimer($timer);
-                    $stream->close();
-                }
-            });
-        });
-
-        return $stream;
-    }
-
-    /**
-     * @param DirectoryInterface $node
-     * @param $stream
-     * @param $closeCount
-     */
-    protected function streamLsIntoStream(DirectoryInterface $node, $stream, &$closeCount)
-    {
-        $closeCount++;
-        $nodeStream = $node->lsRecursiveStreaming();
-        $nodeStream->on('end', function () use (&$closeCount) {
-            $closeCount--;
-        });
-        $nodeStream->pipe($stream, [
-            'end' => false,
-        ]);
+        return $this->getRecursiveInvoker()->execute('ls', [$this->path]);
     }
 
     /**
@@ -313,26 +238,29 @@ class Directory implements DirectoryInterface
      */
     protected function copyToDirectory(DirectoryInterface $targetNode)
     {
-        $promises = [];
         $objectStream = new ObjectStream();
 
-        $stream = $this->lsStreaming();
-        $stream->on('data', function (NodeInterface $node) use ($targetNode, &$promises, $objectStream) {
-            $deferred = new Deferred();
-            $promises[] = $deferred->promise();
+        $this->ls()->then(function ($nodes) use ($targetNode, $objectStream) {
+            $promises = [];
 
-            $stream = $this->handleStreamingCopyNode($node, $targetNode);
-            $stream->on('end', function () use ($deferred) {
-                $deferred->resolve();
-            });
-            $stream->pipe($objectStream , [
-                'end' => false,
-            ]);
-        });
-        $stream->on('end', function () use ($objectStream, &$promises, $targetNode) {
+            foreach($nodes as $node) {
+                $deferred = new Deferred();
+                $promises[] = $deferred->promise();
+
+                $stream = $this->handleStreamingCopyNode($node, $targetNode);
+                $stream->on('end', function () use ($deferred) {
+                    $deferred->resolve();
+                });
+                $stream->pipe($objectStream, [
+                    'end' => false,
+                ]);
+            }
+
             \React\Promise\all($promises)->then(function () use ($objectStream, $targetNode) {
                 $objectStream->end();
             });
+        }, function () use ($objectStream) {
+            $objectStream->end();
         });
 
         return $objectStream;

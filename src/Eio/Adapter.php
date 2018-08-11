@@ -8,14 +8,10 @@ use React\Filesystem\AdapterInterface;
 use React\Filesystem\CallInvokerInterface;
 use React\Filesystem\FilesystemInterface;
 use React\Filesystem\ModeTypeDetector;
-use React\Filesystem\Node\NodeInterface;
-use React\Filesystem\ObjectStream;
 use React\Filesystem\OpenFileLimiter;
 use React\Filesystem\PermissionFlagResolver;
-use React\Filesystem\Stream\StreamFactory;
 use React\Filesystem\TypeDetectorInterface;
 use React\Promise\Deferred;
-use React\Promise\FulfilledPromise;
 
 class Adapter implements AdapterInterface
 {
@@ -60,9 +56,14 @@ class Adapter implements AdapterInterface
     protected $filesystem;
 
     /**
-     * @var TypeDetectorInterface[]
+     * @var TypeDetectorInterface
      */
-    protected $typeDetectors;
+    protected $typeDetectorLs;
+
+    /**
+     * @var TypeDetectorInterface
+     */
+    protected $typeDetector;
 
     /**
      * @var OpenFileLimiter
@@ -121,9 +122,25 @@ class Adapter implements AdapterInterface
     /**
      * {@inheritDoc}
      */
+    public function getInvoker()
+    {
+        return $this->invoker;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function setInvoker(CallInvokerInterface $invoker)
     {
         $this->invoker = $invoker;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getFilesystem()
+    {
+         return $this->filesystem;
     }
 
     /**
@@ -133,10 +150,8 @@ class Adapter implements AdapterInterface
     {
         $this->filesystem = $filesystem;
 
-        $this->typeDetectors = [
-            new ConstTypeDetector($this->filesystem),
-            new ModeTypeDetector($this->filesystem),
-        ];
+        $this->typeDetectorLs = new ConstTypeDetector($this->filesystem);
+        $this->typeDetector = new ModeTypeDetector($this->filesystem);
     }
 
     /**
@@ -156,7 +171,7 @@ class Adapter implements AdapterInterface
             $stat['atime'] = new DateTime('@' .$stat['atime']);
             $stat['mtime'] = new DateTime('@' .$stat['mtime']);
             $stat['ctime'] = new DateTime('@' .$stat['ctime']);
-            return \React\Promise\resolve($stat);
+            return $stat;
         });
     }
 
@@ -197,44 +212,26 @@ class Adapter implements AdapterInterface
      */
     public function ls($path)
     {
-        $stream = new ObjectStream();
-
-        $this->readDirInvoker->invokeCall('eio_readdir', [$path, $this->options['lsFlags']], false)->then(function ($result) use ($path, $stream) {
-            $this->processLsContents($path, $result, $stream);
-        });
-
-        return $stream;
-    }
-
-    /**
-     * @param $basePath
-     * @param $result
-     * @param ObjectStream $stream
-     */
-    protected function processLsContents($basePath, $result, ObjectStream $stream)
-    {
-        if (!isset($result['dents'])) {
-            $stream->close();
-            return;
-        }
-
-        $promises = [];
-
-        foreach ($result['dents'] as $entry) {
-            $path = $basePath . DIRECTORY_SEPARATOR . $entry['name'];
-            $node = [
-                'path' => $path,
-                'type' => $entry['type'],
-            ];
-            $promises[] = \React\Filesystem\detectType($this->typeDetectors, $node)->then(function (NodeInterface $node) use ($stream) {
-                $stream->write($node);
-
-                return new FulfilledPromise();
-            });
-        }
-
-        \React\Promise\all($promises)->then(function () use ($stream) {
-            $stream->close();
+        return $this->readDirInvoker->invokeCall('eio_readdir', [$path, $this->options['lsFlags']], false)->then(function ($result) use ($path) {
+            if (!isset($result['dents'])) {
+                return [];
+            }
+    
+            $basePath = $path;
+            $promises = [];
+    
+            foreach ($result['dents'] as $entry) {
+                $path = $basePath . DIRECTORY_SEPARATOR . $entry['name'];
+                $node = [
+                    'path' => $path,
+                    'type' => $entry['type'],
+                ];
+                $promises[] = $this->typeDetectorLs->detect($node)->otherwise(function () use ($path) {
+                    return $this->detectType($path);
+                });
+            }
+    
+            return \React\Promise\all($promises);
         });
     }
 
@@ -270,9 +267,7 @@ class Adapter implements AdapterInterface
                 $eioFlags,
                 $mode,
             ]);
-        })->then(function ($fileDescriptor) use ($path, $flags) {
-            return StreamFactory::create($path, $fileDescriptor, $flags, $this);
-        }, function ($error) {
+        })->then(null, function ($error) {
             $this->openFileLimiter->close();
             return \React\Promise\reject($error);
         });
@@ -353,11 +348,11 @@ class Adapter implements AdapterInterface
     /**
      * {@inheritDoc}
      */
-    public function symlink($fromPath, $toPath)
+    public function symlink($target, $link)
     {
         return $this->invoker->invokeCall('eio_symlink', [
-            $fromPath,
-            $toPath,
+            $target,
+            $link,
         ]);
     }
 
@@ -366,9 +361,10 @@ class Adapter implements AdapterInterface
      */
     public function detectType($path)
     {
-        return \React\Filesystem\detectType($this->typeDetectors, [
-            'path' => $path,
-        ]);
+        return $this->stat($path)->then(function ($stat) use ($path) {
+            $stat['path'] = $path;
+            return $this->typeDetector->detect($stat);
+        });
     }
 
     /**

@@ -61,6 +61,10 @@ class Filesystem implements FilesystemInterface
             $adapters[] = 'Eio';
         }
 
+        if (Pthreads\Adapter::isSupported()) {
+            $adapters[] = 'Pthreads';
+        }
+
         if (ChildProcess\Adapter::isSupported()) {
             $adapters[] = 'ChildProcess';
         }
@@ -122,7 +126,7 @@ class Filesystem implements FilesystemInterface
         return $this->adapter->readlink($path)->then(function ($linkPath) {
             return $this->adapter->detectType($linkPath);
         })->then(function (Node\NodeInterface $destination) use ($path) {
-            return \React\Promise\resolve($this->link($path, $destination));
+            return $this->link($path, $destination);
         });
     }
 

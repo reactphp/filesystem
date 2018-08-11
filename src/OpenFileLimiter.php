@@ -3,7 +3,6 @@
 namespace React\Filesystem;
 
 use React\Promise\Deferred;
-use React\Promise\FulfilledPromise;
 
 class OpenFileLimiter
 {
@@ -43,7 +42,7 @@ class OpenFileLimiter
     {
         if ($this->current < $this->limit) {
             $this->current++;
-            return new FulfilledPromise();
+            return \React\Promise\resolve();
         }
 
         $deferred = new Deferred();

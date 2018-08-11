@@ -2,6 +2,7 @@
 
 namespace React\Tests\Filesystem;
 
+use React\Filesystem\Filesystem;
 use React\Filesystem\Node\NodeInterface;
 use React\Filesystem\ObjectStream;
 
@@ -9,7 +10,10 @@ class ObjectStreamTest extends TestCase
 {
     public function testObjectStream()
     {
-        $node = $this->getMock('React\Filesystem\Node\NodeInterface');
+        $adapter = $this->mockAdapter();
+        $fs = Filesystem::createFromAdapter($adapter);
+
+        $node = $fs->file('test.foo.bar');
         $stream = new ObjectStream();
 
         $this->assertTrue($stream->isWritable());

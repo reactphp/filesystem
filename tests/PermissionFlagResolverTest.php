@@ -6,7 +6,7 @@ use React\Filesystem\PermissionFlagResolver;
 
 class PermissionFlagResolverTest extends TestCase
 {
-    public function testResolveProvider()
+    public function resolveProvider()
     {
         return [
             [
@@ -105,7 +105,7 @@ class PermissionFlagResolverTest extends TestCase
     }
 
     /**
-     * @dataProvider testResolveProvider
+     * @dataProvider resolveProvider
      */
     public function testResolve($flags, $result)
     {

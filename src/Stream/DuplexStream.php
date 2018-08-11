@@ -6,7 +6,6 @@ use Evenement\EventEmitter;
 use React\Filesystem\AdapterInterface;
 use React\Stream\DuplexStreamInterface;
 use React\Filesystem\ThrottledQueuedInvoker;
-use React\Promise\FulfilledPromise;
 
 class DuplexStream extends EventEmitter implements DuplexStreamInterface, GenericStreamInterface
 {
@@ -16,7 +15,7 @@ class DuplexStream extends EventEmitter implements DuplexStreamInterface, Generi
 
     /**
      * @param string $path
-     * @param resource $fileDescriptor
+     * @param mixed $fileDescriptor
      * @param AdapterInterface $filesystem
      */
     public function __construct($path, $fileDescriptor, AdapterInterface $filesystem)
@@ -42,12 +41,12 @@ class DuplexStream extends EventEmitter implements DuplexStreamInterface, Generi
     protected function resolveSize()
     {
         if ($this->readCursor < $this->size) {
-            return new FulfilledPromise();
+            return \React\Promise\resolve();
         }
 
         return $this->callInvoker->invokeCall('eio_stat', [$this->path])->then(function ($stat) {
             $this->size = $stat['size'];
-            return new FulfilledPromise();
+            return \React\Promise\resolve();
         });
     }
 }

@@ -2,14 +2,12 @@
 
 namespace React\Filesystem\Node;
 
+use Exception;
 use React\Filesystem\AdapterInterface;
 use React\Filesystem\FilesystemInterface;
 use React\Filesystem\ObjectStream;
 use React\Filesystem\ObjectStreamSink;
-use React\Filesystem\Stream\GenericStreamInterface;
-use React\Promise\Deferred;
-use React\Promise\FulfilledPromise;
-use React\Promise\RejectedPromise;
+use React\Filesystem\Stream\StreamFactory;
 use React\Promise\Stream;
 use React\Stream\ReadableStreamInterface;
 use React\Stream\WritableStreamInterface;
@@ -51,9 +49,9 @@ class File implements FileInterface
     public function exists()
     {
         return $this->stat()->then(function () {
-            return new FulfilledPromise();
+            return null;
         }, function () {
-            return new RejectedPromise(new \Exception('Not found'));
+            return \React\Promise\reject(new \Exception('Not found'));
         });
     }
 
@@ -97,7 +95,7 @@ class File implements FileInterface
     public function create($mode = AdapterInterface::CREATION_MODE, $time = null)
     {
         return $this->stat()->then(function () {
-            return new RejectedPromise(new \Exception('File exists'));
+            return \React\Promise\reject(new \Exception('File exists'));
         }, function () use ($mode, $time) {
             return $this->adapter->touch($this->path, $mode, $time);
         });
@@ -117,13 +115,14 @@ class File implements FileInterface
     public function open($flags, $mode = AdapterInterface::CREATION_MODE)
     {
         if ($this->open === true) {
-            return new RejectedPromise();
+            return \React\Promise\reject(new Exception('File already open'));
         }
 
-        return $this->adapter->open($this->path, $flags, $mode)->then(function (GenericStreamInterface $stream) {
+        return $this->adapter->open($this->path, $flags, $mode)->then(function ($fd) use ($flags) {
             $this->open = true;
-            $this->fileDescriptor = $stream->getFiledescriptor();
-            return $stream;
+            $this->fileDescriptor = $fd;
+
+            return StreamFactory::create($this->path, $fd, $flags, $this->adapter);
         });
     }
 
@@ -133,13 +132,12 @@ class File implements FileInterface
     public function close()
     {
         if ($this->open === false) {
-            return new RejectedPromise();
+            return \React\Promise\reject(new Exception('File already closed'));
         }
 
         return $this->adapter->close($this->fileDescriptor)->then(function () {
             $this->open = false;
             $this->fileDescriptor = null;
-            return new FulfilledPromise();
         });
     }
 
@@ -148,7 +146,12 @@ class File implements FileInterface
      */
     public function getContents()
     {
-        return $this->open('r')->then(function ($stream) {
+        return $this->open('r')->then(function (ReadableStreamInterface $stream) {
+            $stream->on('close', function () {
+                $this->open = false;
+                $this->fileDescriptor = null;
+            });
+
             return Stream\buffer($stream);
         });
     }

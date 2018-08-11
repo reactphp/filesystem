@@ -2,8 +2,12 @@
 
 namespace React\Tests\Filesystem\Eio;
 
+use Exception;
+use React\Filesystem\Eio\Adapter;
 use React\Filesystem\Eio\ConstTypeDetector;
 use React\Filesystem\Filesystem;
+use React\Filesystem\Node\Directory;
+use React\Filesystem\Node\File;
 use React\Tests\Filesystem\TestCase;
 
 /**
@@ -16,11 +20,11 @@ class ConstTypeDetectorTest extends TestCase
         return [
             [
                 EIO_DT_DIR,
-                'dir',
+                Directory::class,
             ],
             [
                 EIO_DT_REG,
-                'file',
+                File::class,
             ],
         ];
     }
@@ -30,42 +34,25 @@ class ConstTypeDetectorTest extends TestCase
      */
     public function testDetect($const, $method)
     {
-        $callbackFired = false;
+        $adapter = new Adapter($this->loop);
+        $filesystem = Filesystem::createFromAdapter($adapter);
 
-        $filesystem = Filesystem::create($this->getMock('React\EventLoop\LoopInterface'), [
-            'pool' => [
-                'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
-            ],
-        ]);
-        (new ConstTypeDetector($filesystem))->detect([
+        $result = $this->await((new ConstTypeDetector($filesystem))->detect([
+            'path' => 'foo.bar',
             'type' => $const,
-        ])->then(function ($result) use ($filesystem, $method, &$callbackFired) {
-            $this->assertSame([
-                $filesystem,
-                $method,
-            ], $result);
-            $callbackFired = true;
-        });
+        ]), $this->loop);
 
-        $this->assertTrue($callbackFired);
+        $this->assertInstanceOf($method, $result);
     }
 
     public function testDetectUnknown()
     {
-        $callbackFired = false;
+        $adapter = new Adapter($this->loop);
+        $filesystem = Filesystem::createFromAdapter($adapter);
 
-        $filesystem = Filesystem::create($this->getMock('React\EventLoop\LoopInterface'), [
-            'pool' => [
-                'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
-            ],
-        ]);
-        (new ConstTypeDetector($filesystem))->detect([
+        $this->expectException(Exception::class);
+        $this->await((new ConstTypeDetector($filesystem))->detect([
             'type' => 123,
-        ])->otherwise(function ($result) use (&$callbackFired) {
-            $this->assertNull($result);
-            $callbackFired = true;
-        });
-
-        $this->assertTrue($callbackFired);
+        ]), $this->loop);
     }
 }

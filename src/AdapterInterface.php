@@ -8,7 +8,7 @@ use React\Promise\PromiseInterface;
 interface AdapterInterface
 {
     const CREATION_MODE = 'rwxrw----';
-    
+
     /**
      * Checks whether the current installation supports the adapter.
      *
@@ -24,6 +24,14 @@ interface AdapterInterface
     public function getLoop();
 
     /**
+     * Get the relevant filesystem for this adapter.
+     *
+     * @internal
+     * @return FilesystemInterface
+     */
+    public function getFilesystem();
+
+    /**
      * Set the relevant filesystem for this adapter.
      *
      * @internal
@@ -31,6 +39,13 @@ interface AdapterInterface
      * @return void
      */
     public function setFilesystem(FilesystemInterface $filesystem);
+
+    /**
+     * Get the call invoker for this adapter.
+     *
+     * @return CallInvokerInterface
+     */
+    public function getInvoker();
 
     /**
      * Set the call invoker for this adapter.
@@ -121,7 +136,7 @@ interface AdapterInterface
     public function touch($path, $mode = self::CREATION_MODE);
 
     /**
-     * Open a file for reading or writing at the given path. This will return a file descriptor,
+     * Open a file for reading or writing at the given path. This will return the file descriptor,
      * which can be used to read or write to the file. And ultimately close the file descriptor.
      *
      * @param string $path
@@ -178,13 +193,13 @@ interface AdapterInterface
     public function readlink($path);
 
     /**
-     * Create a symlink from $fromPath to $toPath.
+     * Create a symlink.
      *
-     * @param string $fromPath
-     * @param string $toPath
+     * @param string $target
+     * @param string $link
      * @return PromiseInterface
      */
-    public function symlink($fromPath, $toPath);
+    public function symlink($target, $link);
 
     /**
      * Detect the type of the given path.

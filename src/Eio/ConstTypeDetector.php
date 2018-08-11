@@ -2,9 +2,9 @@
 
 namespace React\Filesystem\Eio;
 
+use Exception;
 use React\Filesystem\FilesystemInterface;
 use React\Filesystem\TypeDetectorInterface;
-use React\Promise\RejectedPromise;
 
 class ConstTypeDetector implements TypeDetectorInterface
 {
@@ -37,12 +37,14 @@ class ConstTypeDetector implements TypeDetectorInterface
     public function detect(array $node)
     {
         if (!isset($node['type']) || !isset($this->mapping[$node['type']])) {
-            return new RejectedPromise();
+            return \React\Promise\reject(new Exception('Unknown type'));
         }
 
-        return \React\Promise\resolve([
+        $callable = [
             $this->filesystem,
             $this->mapping[$node['type']],
-        ]);
+        ];
+
+        return \React\Promise\resolve($callable($node['path']));
     }
 }
