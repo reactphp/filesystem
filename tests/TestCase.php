@@ -27,12 +27,16 @@ class TestCase extends PHPUnitTestCase
     {
         parent::__construct($name, $data, $dataName);
 
-        $this->loop = Factory::create();
-
         $this->tmpDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'react-filesystem-tests' . DIRECTORY_SEPARATOR . uniqid('', true);
         mkdir($this->tmpDir, 0777, true);
         $this->tmpDir = realpath($this->tmpDir) . DIRECTORY_SEPARATOR; // Fixing a windows "feature"
+
         $this->startTime = time();
+    }
+
+    public function setUp()
+    {
+        $this->loop = Factory::create();
     }
 
     protected function setLoopTimeout(LoopInterface $loop, $maxExecutionTime = self::TIMEOUT)
@@ -47,11 +51,6 @@ class TestCase extends PHPUnitTestCase
     {
         $result = Block\await($promise, $loop, $timeout);
         return $result;
-    }
-
-    public function setUp()
-    {
-        $this->loop = Factory::create();
     }
 
     public function mockPromise($value = null)

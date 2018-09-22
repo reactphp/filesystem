@@ -136,20 +136,20 @@ interface AdapterInterface
     public function touch($path, $mode = self::CREATION_MODE);
 
     /**
-     * Open a file for reading or writing at the given path. This will return the file descriptor,
+     * Open a file for reading or writing at the given path. The promise will resolve with file descriptor,
      * which can be used to read or write to the file. And ultimately close the file descriptor.
      *
      * @param string $path
      * @param string $flags
      * @param $mode
-     * @return PromiseInterface<file descriptor>
+     * @return PromiseInterface
      */
     public function open($path, $flags, $mode = self::CREATION_MODE);
 
     /**
      * Read from the given file descriptor.
      *
-     * @param $fileDescriptor
+     * @param mixed $fileDescriptor
      * @param int $length
      * @param int $offset
      * @return PromiseInterface
@@ -159,7 +159,7 @@ interface AdapterInterface
     /**
      * Write to the given file descriptor.
      *
-     * @param $fileDescriptor
+     * @param mixed $fileDescriptor
      * @param string $data
      * @param int $length
      * @param int $offset
@@ -170,7 +170,7 @@ interface AdapterInterface
     /**
      * Close the given file descriptor.
      *
-     * @param resource $fd
+     * @param mixed $fd
      * @return PromiseInterface
      */
     public function close($fd);

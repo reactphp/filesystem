@@ -478,6 +478,7 @@ class Adapter implements AdapterInterface
     protected function unregister()
     {
         $this->workCounter--;
+
         if($this->workCounter <= 0) {
             $this->pool->cancelTimer();
         }

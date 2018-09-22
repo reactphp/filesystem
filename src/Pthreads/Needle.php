@@ -56,7 +56,7 @@ class Needle extends Threaded
             return Worker::$me->sendMessageToPool($message);
         }
 
-        $listener = function (Message $message) use (&$fd, &$listener) {
+        $listener = function (Message $message) use (&$listener) {
             $payload = $message->getPayload();
 
             $type = $message->getType();

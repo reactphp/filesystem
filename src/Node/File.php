@@ -51,7 +51,7 @@ class File implements FileInterface
         return $this->stat()->then(function () {
             return null;
         }, function () {
-            return \React\Promise\reject(new \Exception('Not found'));
+            return \React\Promise\reject(new Exception('Not found'));
         });
     }
 
