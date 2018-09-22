@@ -15,7 +15,7 @@ class AdapterTest extends AdapterTestAbstract
     {
         parent::setUp();
 
-        $this->adapter = new Adapter($this->loop);
+        $this->adapter = new Adapter($this->loop, [ 'workers' => [ 'size' => 5, 'timerInterval' => 0.01 ] ]);
         $this->filesystem = Filesystem::createFromAdapter($this->adapter);
     }
 

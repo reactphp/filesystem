@@ -80,11 +80,17 @@ class Adapter implements AdapterInterface
     {
         $this->loop = $loop;
 
-        if(!empty($options['workerPool']) && $options['workerPool'] instanceof Pool) {
-            $this->pool = $options['workerPool'];
+        if (!empty($options['workers']['pool']) && $options['workers']['pool'] instanceof Pool) {
+            $this->pool = $options['workers']['pool'];
             $this->workCounter = 9001;
         } else {
-            $this->pool = new Pool($loop, ((int) ($options['workerSize'] ?? 5)));
+            if (empty($options['workers'])) {
+                $options['workers'] = [ 'size' => 5 ];
+            } elseif (empty($options['workers']['size'])) {
+                $options['workers']['size'] = 5;
+            }
+
+            $this->pool = new Pool($loop, $options['workers']);
             $this->pool->cancelTimer();
         }
 
