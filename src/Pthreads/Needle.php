@@ -9,19 +9,9 @@ use CharlotteDunois\Phoebe\Worker;
 
 class Needle extends Threaded
 {
-    /**
-     * The ID of the thread.
-     * @var int
-     */
-    public $id;
-
+    protected $id;
     protected $path;
     protected $flags;
-
-    /**
-     * @var resource
-     */
-    protected static $fd;
 
     /**
      * Needle constructor.
@@ -35,18 +25,21 @@ class Needle extends Threaded
         $this->flags = $flags;
     }
 
-    public function call(Worker $worker, $type, $args)
+    /**
+     * Gets the ID of the thread.
+     * @return string
+     */
+    public function getID()
     {
-        $args['id'] = $this->id;
-
-        $message = new Message($type, $args);
-        $worker->sendMessageToWorker($message);
+        return $this->id;
     }
 
     public function run()
     {
+        static $fd;
+
         try {
-            static::$fd = fopen($this->path, $this->flags);
+            $fd = fopen($this->path, $this->flags);
         } catch (Throwable $e) {
             $message = new Message('rfs-fd-ready', [
                 'id' => $this->id,
@@ -56,90 +49,39 @@ class Needle extends Threaded
             return Worker::$me->sendMessageToPool($message);
         }
 
-        $listener = function (Message $message) use (&$listener) {
+        // Fixes an unexpected behaviour (bug?) which makes
+        // the needle object lose all properties
+        // https://hastebin.com/jibujukoco.rb
+        $id = $this->id;
+
+        $listener = function (Message $message) use ($id, &$fd, &$listener) {
             $payload = $message->getPayload();
 
             $type = $message->getType();
             if ($type === 'internal-worker-exit') {
                 Worker::$events->removeListener('message', $listener);
 
-                if (static::$fd) {
-                    @fclose(static::$fd);
-                    static::$fd = null;
+                if ($fd) {
+                    @fclose($fd);
+                    $fd = null;
                 }
 
                 return;
             }
 
-            if (($payload['id'] ?? null) !== $this->id) {
+            if (($payload['id'] ?? null) !== $id) {
                 return;
             }
 
             switch($type) {
                 case 'rfs-req-read':
-                    try {
-                        fseek(static::$fd, $payload['offset']);
-                        $chunk = fread(static::$fd, $payload['length']);
-
-                        $message = new Message('rfs-fd-read', [
-                            'id' => $this->id,
-                            'result' => $chunk,
-                            'error' => null,
-                        ]);
-                    } catch (Throwable $e) {
-                        $message = new Message('rfs-fd-read', [
-                            'id' => $this->id,
-                            'result' => null,
-                            'error' => Message::exportException($e),
-                        ]);
-                    }
-
-                    Worker::$me->sendMessageToPool($message);
+                    $this->handleReadCall($id, $fd, $payload);
                     break;
                 case 'rfs-req-write':
-                    try {
-                        fseek(static::$fd, $payload['offset']);
-
-                        $chunk = $payload['chunk'];
-                        $written = fwrite(static::$fd, $chunk, $payload['length']);
-
-                        $message = new Message('rfs-fd-write', [
-                            'id' => $this->id,
-                            'result' => $written,
-                            'error' => null,
-                        ]);
-                    } catch (Throwable $e) {
-                        $message = new Message('rfs-fd-write', [
-                            'id' => $this->id,
-                            'result' => null,
-                            'error' => Message::exportException($e),
-                        ]);
-                    }
-
-                    Worker::$me->sendMessageToPool($message);
+                    $this->handleWriteCall($id, $fd, $payload);
                     break;
                 case 'rfs-req-close':
-                    try {
-                        Worker::$events->removeListener('message', $listener);
-
-                        $closed = @fclose(static::$fd);
-                        $fd = null;
-
-                        $message = new Message('rfs-fd-close', [
-                            'id' => $this->id,
-                            'result' => $closed,
-                            'error' => null,
-                        ]);
-                    } catch (Throwable $e) {
-                        static::$fd = null;
-                        $message = new Message('rfs-fd-close', [
-                            'id' => $this->id,
-                            'result' => null,
-                            'error' => Message::exportException($e),
-                        ]);
-                    }
-
-                    Worker::$me->sendMessageToPool($message);
+                    $this->handleCloseCall($id, $fd, $listener);
                     break;
             }
         };
@@ -151,6 +93,89 @@ class Needle extends Threaded
             'result' => null,
             'error' => null,
         ]);
+        Worker::$me->sendMessageToPool($message);
+    }
+
+    /**
+     * Handles messages for reading.
+     * @internal
+     */
+    protected function handleReadCall(string $id, &$fd, array $payload)
+    {
+        try {
+            fseek($fd, $payload['offset']);
+            $chunk = fread($fd, $payload['length']);
+
+            $message = new Message('rfs-fd-read', [
+                'id' => $id,
+                'result' => $chunk,
+                'error' => null,
+            ]);
+        } catch (Throwable $e) {
+            $message = new Message('rfs-fd-read', [
+                'id' => $id,
+                'result' => null,
+                'error' => Message::exportException($e),
+            ]);
+        }
+
+        Worker::$me->sendMessageToPool($message);
+    }
+
+    /**
+     * Handles messages for writing.
+     * @internal
+     */
+    protected function handleWriteCall(string $id, &$fd, array $payload)
+    {
+        try {
+            fseek($fd, $payload['offset']);
+
+            $chunk = $payload['chunk'];
+            $written = fwrite($fd, $chunk, $payload['length']);
+
+            $message = new Message('rfs-fd-write', [
+                'id' => $id,
+                'result' => $written,
+                'error' => null,
+            ]);
+        } catch (Throwable $e) {
+            $message = new Message('rfs-fd-write', [
+                'id' => $id,
+                'result' => null,
+                'error' => Message::exportException($e),
+            ]);
+        }
+
+        Worker::$me->sendMessageToPool($message);
+    }
+
+    /**
+     * Handles messages for closing.
+     * @internal
+     */
+    protected function handleCloseCall(string $id, &$fd, callable $listener)
+    {
+        try {
+            Worker::$events->removeListener('message', $listener);
+
+            $closed = @fclose($fd);
+            $fd = null;
+
+            $message = new Message('rfs-fd-close', [
+                'id' => $id,
+                'result' => $closed,
+                'error' => null,
+            ]);
+        } catch (Throwable $e) {
+            $fd = null;
+            $message = new Message('rfs-fd-close', [
+                'id' => $id,
+                'result' => null,
+                'error' => Message::exportException($e),
+            ]);
+        }
+
         Worker::$me->sendMessageToPool($message);
     }
 }

@@ -51,7 +51,7 @@ class File implements FileInterface
         return $this->stat()->then(function () {
             return null;
         }, function () {
-            return \React\Promise\reject(new Exception('Not found'));
+            throw new Exception('Not found');
         });
     }
 
@@ -95,7 +95,7 @@ class File implements FileInterface
     public function create($mode = AdapterInterface::CREATION_MODE, $time = null)
     {
         return $this->stat()->then(function () {
-            return \React\Promise\reject(new \Exception('File exists'));
+            throw new \Exception('File exists');
         }, function () use ($mode, $time) {
             return $this->adapter->touch($this->path, $mode, $time);
         });

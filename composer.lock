@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "73dbc14c405ff465281abcb5425148d6",
+    "content-hash": "39f4af99af8d096f5c9d39053a966ba7",
     "packages": [
         {
             "name": "cakephp/core",
@@ -107,173 +107,6 @@
                 "utility"
             ],
             "time": "2018-09-02T05:18:03+00:00"
-        },
-        {
-            "name": "charlottedunois/collection",
-            "version": "v0.1.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/CharlotteDunois/Collection.git",
-                "reference": "670a106c22d9db3a9786c8ed0fc20884f49927f8"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/CharlotteDunois/Collection/zipball/670a106c22d9db3a9786c8ed0fc20884f49927f8",
-                "reference": "670a106c22d9db3a9786c8ed0fc20884f49927f8",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "CharlotteDunois\\": "src/CharlotteDunois/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "authors": [
-                {
-                    "name": "Charlotte Dunois",
-                    "email": "github@charuru.moe"
-                }
-            ],
-            "description": "This is an export of the Collection class included in Yasmin. Similar to Laravel's and JavaScript's Collection.",
-            "homepage": "https://github.com/CharlotteDunois/Collection",
-            "keywords": [
-                "collection",
-                "php"
-            ],
-            "time": "2018-01-25T15:41:34+00:00"
-        },
-        {
-            "name": "charlottedunois/eventemitter",
-            "version": "v0.1.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/CharlotteDunois/EventEmitter.git",
-                "reference": "cb65273f1b49a60282b00a8d6e1def7620908f61"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/CharlotteDunois/EventEmitter/zipball/cb65273f1b49a60282b00a8d6e1def7620908f61",
-                "reference": "cb65273f1b49a60282b00a8d6e1def7620908f61",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.1.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "CharlotteDunois\\Events\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "authors": [
-                {
-                    "name": "Charlotte Dunois",
-                    "email": "github@charuru.moe"
-                }
-            ],
-            "description": "This is an Event Emitter equivalent to Node.js' Event Emitter.",
-            "homepage": "https://github.com/CharlotteDunois/EventEmitter",
-            "keywords": [
-                "EventEmitter",
-                "emitter",
-                "event",
-                "events"
-            ],
-            "time": "2018-09-06T16:38:22+00:00"
-        },
-        {
-            "name": "charlottedunois/phoebe",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/CharlotteDunois/Phoebe.git",
-                "reference": "12fe43ff38e7087ceb0b7928ca29a4490d7b092b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/CharlotteDunois/Phoebe/zipball/12fe43ff38e7087ceb0b7928ca29a4490d7b092b",
-                "reference": "12fe43ff38e7087ceb0b7928ca29a4490d7b092b",
-                "shasum": ""
-            },
-            "require": {
-                "charlottedunois/collection": "^0.1.3",
-                "charlottedunois/eventemitter": "^0.1.5|dev-master",
-                "charlottedunois/set": "^0.1.1",
-                "ext-pthreads": "^3.1",
-                "php-64bit": ">=7.2",
-                "php-zts": "*",
-                "react/event-loop": "^1.0|^0.5|^0.4",
-                "react/promise": "^2.7"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "CharlotteDunois\\Phoebe\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "authors": [
-                {
-                    "name": "CharlotteDunois",
-                    "email": "github@charuru.moe"
-                }
-            ],
-            "description": "Phoebe is a pthreads pool manager.",
-            "time": "2018-09-21T21:08:28+00:00"
-        },
-        {
-            "name": "charlottedunois/set",
-            "version": "v0.1.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/CharlotteDunois/Set.git",
-                "reference": "584b01db8ba073c7ddd8c53c413c579b8b7d5dc2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/CharlotteDunois/Set/zipball/584b01db8ba073c7ddd8c53c413c579b8b7d5dc2",
-                "reference": "584b01db8ba073c7ddd8c53c413c579b8b7d5dc2",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.6.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "CharlotteDunois\\Collect\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "authors": [
-                {
-                    "name": "Charlotte Dunois",
-                    "email": "github@charuru.moe"
-                }
-            ],
-            "description": "This is an utility class to store conventionally unique values, similar to JavaScript's Set.",
-            "homepage": "https://github.com/CharlotteDunois/Set",
-            "keywords": [
-                "set"
-            ],
-            "time": "2018-02-25T12:58:25+00:00"
         },
         {
             "name": "doctrine/inflector",
@@ -2755,13 +2588,11 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "charlottedunois/phoebe": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.4.0"
+        "php": ">=7.0.0"
     },
     "platform-dev": []
 }

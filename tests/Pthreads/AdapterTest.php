@@ -17,13 +17,13 @@ class AdapterTest extends AdapterTestAbstract
         parent::setUp();
 
         Worker::$workerInterval = 0.001;
-        $this->adapter = new Adapter($this->loop, [ 'workers' => [ 'size' => 5, 'timerInterval' => 0.01 ] ]);
+        $this->adapter = new Adapter($this->loop, [ 'workers' => [ 'size' => 1, 'timerInterval' => 0.01 ] ]);
         $this->filesystem = Filesystem::createFromAdapter($this->adapter);
     }
 
     public function tearDown()
     {
-        $this->adapter->destroy();
+        $this->await($this->adapter->destroy(), $this->adapter->getLoop());
         parent::tearDown();
     }
 }

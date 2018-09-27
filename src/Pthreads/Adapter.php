@@ -18,6 +18,7 @@ use React\Filesystem\MappedTypeDetector;
 use React\Filesystem\ModeTypeDetector;
 use React\Filesystem\PermissionFlagResolver;
 use React\Promise\Promise;
+use React\Promise\ExtendedPromiseInterface;
 
 class Adapter implements AdapterInterface
 {
@@ -109,10 +110,11 @@ class Adapter implements AdapterInterface
 
     /**
      * Destroys the pool manager and thus free the event loop from its timer.
+     * @return ExtendedPromiseInterface
      */
     public function destroy()
     {
-        $this->pool->destroy();
+        return $this->pool->destroy();
     }
 
     /**
@@ -316,20 +318,18 @@ class Adapter implements AdapterInterface
         $worker = $this->pool->submit($needle);
 
         $this->register();
-        return $this->waitForEvent('rfs-fd-ready', $needle->id)->then(function ($value) {
-            $this->unregister();
-            return $value;
-        }, function ($error) {
-            $this->unregister();
-            throw $error;
-        })->then(function () use ($path, $flags, $needle, $worker) {
-            $this->fileDescriptors[$needle->id] = array(
-                'needle' => $needle,
-                'worker' => $worker,
-            );
+        return $this->waitForEvent('rfs-fd-ready', $needle->getID())
+            ->always(function () {
+                $this->unregister();
+            })
+            ->then(function () use ($path, $flags, $needle, $worker) {
+                $this->fileDescriptors[$needle->getID()] = array(
+                    'needle' => $needle,
+                    'worker' => $worker,
+                );
 
-            return $needle->id;
-        });
+                return $needle->getID();
+            });
     }
 
     /**
@@ -344,16 +344,15 @@ class Adapter implements AdapterInterface
             return \React\Promise\reject(new Exception('Unknown file descriptor'));
         }
 
+        $fd = $this->fileDescriptors[$fileDescriptor];
+
         $this->register();
-        $wait = $this->waitForEvent('rfs-fd-read', $this->fileDescriptors[$fileDescriptor]['needle']->id)->then(function ($value) {
+        $wait = $this->waitForEvent('rfs-fd-read', $fd['needle']->getID())->always(function () {
             $this->unregister();
-            return $value;
-        }, function ($error) {
-            $this->unregister();
-            throw $error;
         });
 
-        $this->fileDescriptors[$fileDescriptor]['needle']->call($this->fileDescriptors[$fileDescriptor]['worker'], 'rfs-req-read', [
+        $this->call($fd['worker'], 'rfs-req-read', [
+            'id' => $fd['needle']->getID(),
             'length' => $length,
             'offset' => $offset,
         ]);
@@ -374,16 +373,15 @@ class Adapter implements AdapterInterface
             return \React\Promise\reject(new Exception('Unknown file descriptor'));
         }
 
+        $fd = $this->fileDescriptors[$fileDescriptor];
+
         $this->register();
-        $wait = $this->waitForEvent('rfs-fd-write', $this->fileDescriptors[$fileDescriptor]['needle']->id)->then(function ($value) {
+        $wait = $this->waitForEvent('rfs-fd-write', $fd['needle']->getID())->always(function () {
             $this->unregister();
-            return $value;
-        }, function ($error) {
-            $this->unregister();
-            throw $error;
         });
 
-        $this->fileDescriptors[$fileDescriptor]['needle']->call($this->fileDescriptors[$fileDescriptor]['worker'], 'rfs-req-write', [
+        $this->call($fd['worker'], 'rfs-req-write', [
+            'id' => $fd['needle']->getID(),
             'chunk' => $data,
             'length' => $length,
             'offset' => $offset,
@@ -406,15 +404,14 @@ class Adapter implements AdapterInterface
         unset($this->fileDescriptors[$fileDescriptor]);
 
         $this->register();
-        $wait = $this->waitForEvent('rfs-fd-close', $fd['needle']->id)->then(function ($value) {
+        $wait = $this->waitForEvent('rfs-fd-close', $fd['needle']->getID())->always(function () {
             $this->unregister();
-            return $value;
-        }, function ($error) {
-            $this->unregister();
-            throw $error;
         });
 
-        $fd['needle']->call($fd['worker'], 'rfs-req-close', []);
+        $this->call($fd['worker'], 'rfs-req-close', [
+            'id' => $fd['needle']->getID(),
+        ]);
+
         return $wait;
     }
 
@@ -491,8 +488,18 @@ class Adapter implements AdapterInterface
     }
 
     /**
+     * Calls the needle.
+     */
+    protected function call(Worker $worker, $type, $args)
+    {
+        $message = new Message($type, $args);
+        $this->pool->sendMessageToWorker($worker, $message);
+    }
+
+    /**
      * @param string $event
      * @param int    $id
+     * @return ExtendedPromiseInterface
      */
     protected function waitForEvent($event, $id) {
         return (new Promise(function (callable $resolve, callable $reject) use ($event, $id) {

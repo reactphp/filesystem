@@ -23,7 +23,8 @@
     "phpunit/phpunit": "^8.0 || ^7.0 || ^6.0"
   },
   "suggest": {
-    "ext-eio": "^1.2"
+    "ext-eio": "^1.2",
+    "charlottedunois/phoebe": "Required package for the pthreads adapter"
   },
   "autoload": {
     "psr-4": {

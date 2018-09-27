@@ -5,7 +5,6 @@ namespace React\Tests\Filesystem;
 use React\Filesystem\QueuedInvoker;
 use React\Filesystem\InstantInvoker;
 use React\Filesystem\OpenFileLimiter;
-use React\Filesystem\AdapterInterface;
 
 class FunctionsTest extends TestCase
 {
