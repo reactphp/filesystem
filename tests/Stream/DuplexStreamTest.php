@@ -3,7 +3,6 @@
 namespace React\Tests\Filesystem\Stream;
 
 use Exception;
-
 use React\Filesystem\Stream\DuplexStream;
 use React\Tests\Filesystem\TestCase;
 

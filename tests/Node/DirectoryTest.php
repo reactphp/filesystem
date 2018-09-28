@@ -2,8 +2,6 @@
 
 namespace React\Tests\Filesystem\Node;
 
-use RecursiveIterator;
-
 use React\Filesystem\Filesystem;
 use React\Filesystem\Node\File;
 use React\Filesystem\Node\Directory;

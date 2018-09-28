@@ -3,7 +3,6 @@
 namespace React\Tests\Filesystem\Stream;
 
 use InvalidArgumentException;
-
 use React\Filesystem\Stream\DuplexStream;
 use React\Filesystem\Stream\StreamFactory;
 use React\Filesystem\Stream\ReadableStream;

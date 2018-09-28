@@ -3,7 +3,6 @@
 namespace React\Tests\Filesystem\Stream;
 
 use React\Filesystem\Stream\GenericStreamTrait;
-
 use React\Tests\Filesystem\TestCase;
 
 class GenericStreamTraitTest extends TestCase
