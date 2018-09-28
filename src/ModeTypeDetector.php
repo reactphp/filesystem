@@ -57,6 +57,6 @@ class ModeTypeDetector implements TypeDetectorInterface
             ]);
         }
 
-        return \React\Promise\reject();
+        return \React\Promise\reject(new Exception('Unknown mode'));
     }
 }

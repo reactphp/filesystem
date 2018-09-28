@@ -2,7 +2,7 @@
 
 namespace React\Filesystem\Pthreads;
 
-use \CharlotteDunois\Phoebe\AsyncTask;
+use CharlotteDunois\Phoebe\AsyncTask;
 
 class Yarn extends AsyncTask
 {
