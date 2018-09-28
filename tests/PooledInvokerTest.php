@@ -3,8 +3,6 @@
 namespace React\Tests\Filesystem;
 
 use React\Filesystem\PooledInvoker;
-use React\Filesystem\QueuedInvoker;
-use React\Promise\FulfilledPromise;
 
 class PooledInvokerTest extends TestCase
 {

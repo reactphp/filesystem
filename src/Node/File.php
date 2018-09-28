@@ -3,6 +3,7 @@
 namespace React\Filesystem\Node;
 
 use Exception;
+use UnexpectedValueException;
 use React\Filesystem\AdapterInterface;
 use React\Filesystem\FilesystemInterface;
 use React\Filesystem\ObjectStream;
@@ -187,6 +188,7 @@ class File implements FileInterface
     /**
      * @param NodeInterface $node
      * @return ObjectStream
+     * @throws UnexpectedValueException
      */
     public function copyStreaming(NodeInterface $node)
     {
@@ -198,7 +200,7 @@ class File implements FileInterface
             return $this->copyToDirectory($node);
         }
 
-        throw new \UnexpectedValueException('Unsupported node type');
+        throw new UnexpectedValueException('Unsupported node type');
     }
 
     /**

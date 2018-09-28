@@ -2,6 +2,7 @@
 
 namespace React\Tests\Filesystem\Pthreads;
 
+use CharlotteDunois\Phoebe\Pool;
 use CharlotteDunois\Phoebe\Worker;
 use React\Filesystem\Filesystem;
 use React\Filesystem\Pthreads\Adapter;
@@ -25,5 +26,10 @@ class AdapterTest extends AdapterTestAbstract
     {
         $this->await($this->adapter->destroy(), $this->adapter->getLoop());
         parent::tearDown();
+    }
+
+    public function testGetPool()
+    {
+        $this->assertInstanceOf(Pool::class, $this->adapter->getPool());
     }
 }

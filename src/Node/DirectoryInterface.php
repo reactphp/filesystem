@@ -71,10 +71,4 @@ interface DirectoryInterface extends NodeInterface
      * @return PromiseInterface
      */
     public function removeRecursive();
-
-    /**
-     * @param DirectoryInterface $directory
-     * @return PromiseInterface
-     */
-    //public function rsync(DirectoryInterface $directory);
 }

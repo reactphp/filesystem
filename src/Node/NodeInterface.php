@@ -51,6 +51,7 @@ interface NodeInterface extends GenericOperationInterface
      *
      * @param NodeInterface $node
      * @return ObjectStream
+     * @throws UnexpectedValueException
      */
     public function copyStreaming(NodeInterface $node);
 }

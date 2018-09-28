@@ -22,6 +22,10 @@ class Yarn extends AsyncTask
         $this->args = serialize($args);
     }
 
+    /**
+     * @internal
+     * @codeCoverageIgnore
+     */
     public function run()
     {
         $this->wrap(function () {
@@ -38,6 +42,7 @@ class Yarn extends AsyncTask
     /**
      * @param array $payload
      * @return PromiseInterface
+     * @codeCoverageIgnore
      */
     public function chown(array $payload)
     {
@@ -47,6 +52,7 @@ class Yarn extends AsyncTask
     /**
      * @param array $payload
      * @return array
+     * @codeCoverageIgnore
      */
     public function readdir(array $payload)
     {
@@ -69,6 +75,7 @@ class Yarn extends AsyncTask
     /**
      * @param array $payload
      * @return array
+     * @codeCoverageIgnore
      */
     public function stat(array $payload)
     {
@@ -96,6 +103,7 @@ class Yarn extends AsyncTask
 
     /**
      * @return bool
+     * @codeCoverageIgnore
      */
     public function touch(array $payload)
     {

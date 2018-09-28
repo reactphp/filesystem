@@ -2,6 +2,7 @@
 
 namespace React\Filesystem\Node;
 
+use UnexpectedValueException;
 use Evenement\EventEmitterTrait;
 use React\Filesystem\AdapterInterface;
 use React\Filesystem\FilesystemInterface;
@@ -222,6 +223,7 @@ class Directory implements DirectoryInterface
     /**
      * @param NodeInterface $node
      * @return ObjectStream
+     * @throws UnexpectedValueException
      */
     public function copyStreaming(NodeInterface $node)
     {
@@ -229,7 +231,7 @@ class Directory implements DirectoryInterface
             return $this->copyToDirectory($node);
         }
 
-        throw new \UnexpectedValueException('Unsupported node type');
+        throw new UnexpectedValueException('Unsupported node type');
     }
 
     /**

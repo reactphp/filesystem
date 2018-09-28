@@ -30,6 +30,7 @@ class ObjectStream extends EventEmitter implements ReadableStreamInterface, Writ
 
         return $dest;
     }
+
     public function write($data)
     {
         $this->emit('data', array($data, $this));

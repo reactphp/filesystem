@@ -177,12 +177,8 @@ class Adapter implements AdapterInterface
         $this->register();
         $yarn = new Yarn($function, $args);
 
-        return $this->pool->submitTask($yarn)->then(function ($value) {
+        return $this->pool->submitTask($yarn)->always(function () {
             $this->unregister();
-            return $value;
-        }, function ($error) {
-            $this->unregister();
-            throw $error;
         });
     }
 
@@ -275,6 +271,10 @@ class Adapter implements AdapterInterface
             'path' => $path,
             'flags' => $this->options['lsFlags'],
         ])->then(function ($result) use ($path) {
+            if (empty($result)) {
+                return [];
+            }
+
             $basePath = $path;
             $promises = [];
 

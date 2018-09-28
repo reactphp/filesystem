@@ -25,7 +25,7 @@ class Filesystem implements FilesystemInterface
 
         if (!empty($adapters)) {
             $adapter = "\\React\\Filesystem\\".$adapters[0]."\\Adapter";
-            return static::setFilesystemOnAdapter(static::createFromAdapter(new $adapter($loop, $options)));
+            return static::createFromAdapter(new $adapter($loop, $options));
         }
 
         throw new RuntimeException('No supported adapter found for this installation');

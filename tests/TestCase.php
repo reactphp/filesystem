@@ -8,6 +8,7 @@ use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
 use React\Filesystem\Filesystem;
 use React\Filesystem\InstantInvoker;
+use React\Filesystem\AdapterInterface;
 use React\Promise\RejectedPromise;
 use React\Promise\FulfilledPromise;
 use React\Promise\PromiseInterface;
@@ -102,7 +103,7 @@ class TestCase extends PHPUnitTestCase
 
     protected function mockAdapter()
     {
-        $mock = $this->getMockBuilder('React\Filesystem\AdapterInterface')
+        $mock = $this->getMockBuilder(AdapterInterface::class)
             ->setMethods([
                 '__construct',
                 'getLoop',

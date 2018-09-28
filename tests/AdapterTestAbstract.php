@@ -8,6 +8,7 @@ use React\Filesystem\InstantInvoker;
 use React\Filesystem\AdapterInterface;
 use React\Filesystem\FilesystemInterface;
 use React\Filesystem\CallInvokerInterface;
+use React\Filesystem\Node\LinkInterface;
 use React\Filesystem\Node\NodeInterface;
 use React\Filesystem\Node\FileInterface;
 
@@ -217,6 +218,21 @@ abstract class AdapterTestAbstract extends TestCase
         $this->assertTrue(file_exists($path2));
 
         @unlink($path);
+        @unlink($path2);
+    }
+
+    public function testConstructLink()
+    {
+        $path = $this->tmpDir.'testdir';
+        $path2 = $this->tmpDir.'testdir2';
+
+        $this->assertTrue(mkdir($path));
+        $this->assertTrue(symlink($path, $path2));
+
+        $link = $this->await($this->filesystem->constructLink($path2), $this->adapter->getLoop());
+        $this->assertInstanceOf(LinkInterface::class, $link);
+
+        @rmdir($path);
         @unlink($path2);
     }
 

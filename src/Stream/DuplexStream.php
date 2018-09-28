@@ -5,7 +5,6 @@ namespace React\Filesystem\Stream;
 use Evenement\EventEmitter;
 use React\Filesystem\AdapterInterface;
 use React\Stream\DuplexStreamInterface;
-use React\Filesystem\ThrottledQueuedInvoker;
 
 class DuplexStream extends EventEmitter implements DuplexStreamInterface, GenericStreamInterface
 {
@@ -23,8 +22,6 @@ class DuplexStream extends EventEmitter implements DuplexStreamInterface, Generi
         $this->path = $path;
         $this->setFilesystem($filesystem);
         $this->fileDescriptor = $fileDescriptor;
-
-        $this->callInvoker = new ThrottledQueuedInvoker($filesystem);
     }
 
     protected function readChunk()
@@ -44,9 +41,8 @@ class DuplexStream extends EventEmitter implements DuplexStreamInterface, Generi
             return \React\Promise\resolve();
         }
 
-        return $this->callInvoker->invokeCall('eio_stat', [$this->path])->then(function ($stat) {
+        return $this->getFilesystem()->stat($this->path)->then(function ($stat) {
             $this->size = $stat['size'];
-            return \React\Promise\resolve();
         });
     }
 }

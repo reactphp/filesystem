@@ -2,11 +2,13 @@
 
 namespace React\Tests\Filesystem;
 
+use React\Filesystem\FlagResolver;
+
 class FlagResolverTest extends TestCase
 {
     public function testResolve()
     {
-        $resolver = $this->getMockBuilder('React\Filesystem\FlagResolver')
+        $resolver = $this->getMockBuilder(FlagResolver::class)
             ->setMethods([
                 'defaultFlags',
                 'flagMapping',

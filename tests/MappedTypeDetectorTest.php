@@ -4,21 +4,21 @@ namespace React\Tests\Filesystem;
 
 use Exception;
 use React\Filesystem\Filesystem;
-use React\Filesystem\ModeTypeDetector;
+use React\Filesystem\MappedTypeDetector;
 use React\Filesystem\Node\FileInterface;
 use React\Filesystem\Node\DirectoryInterface;
 
-class ModeTypeDetectorTest extends TestCase
+class MappedTypeDetectorTest extends TestCase
 {
     public function providerDetect()
     {
         return [
             [
-                0x4000,
+                'dir',
                 DirectoryInterface::class,
             ],
             [
-                0x8000,
+                'file',
                 FileInterface::class,
             ],
         ];
@@ -27,14 +27,14 @@ class ModeTypeDetectorTest extends TestCase
     /**
      * @dataProvider providerDetect
      */
-    public function testDetect($mode, $class)
+    public function testDetect($type, $class)
     {
         $adapter = $this->mockAdapter();
         $filesystem = Filesystem::createFromAdapter($adapter);
 
-        $promise = (new ModeTypeDetector($filesystem))->detect([
+        $promise = (MappedTypeDetector::createDefault($filesystem))->detect([
             'path' => 'foo.bar',
-            'mode' => $mode,
+            'type' => $type,
         ]);
         $result = $this->await($promise, $adapter->getLoop());
 
@@ -46,13 +46,13 @@ class ModeTypeDetectorTest extends TestCase
         $adapter = $this->mockAdapter();
         $filesystem = Filesystem::createFromAdapter($adapter);
 
-        $promise = (new ModeTypeDetector($filesystem))->detect([
+        $promise = (MappedTypeDetector::createDefault($filesystem))->detect([
             'mode' => 0,
             'path' => 'foo.bar',
         ]);
 
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('Unknown mode');
+        $this->expectExceptionMessage('Unknown type');
 
         $this->await($promise, $adapter->getLoop());
     }

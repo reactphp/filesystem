@@ -3,12 +3,12 @@
 namespace React\Tests\Filesystem\Eio;
 
 use React\Filesystem\Eio\OpenFlagResolver;
-use React\Tests\Filesystem\AbstractFlagResolverTest;
+use React\Tests\Filesystem\FlagResolverTestAbstract;
 
 /**
  * @requires extension eio
  */
-class OpenFlagResolverTest extends AbstractFlagResolverTest
+class OpenFlagResolverTest extends FlagResolverTestAbstract
 {
     public function setUp()
     {

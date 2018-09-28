@@ -358,6 +358,10 @@ class Adapter implements AdapterInterface
             'path' => $path,
             'flags' => $this->options['lsFlags'],
         ])->then(function ($result) use ($path) {
+            if (empty($result)) {
+                return [];
+            }
+
             $basePath = $path;
             $promises = [];
     

@@ -31,5 +31,23 @@ class ObjectStreamTest extends TestCase
 
         $this->assertFalse($stream->isWritable());
         $this->assertFalse($stream->isReadable());
+
+        $stream = new ObjectStream();
+        $dest = new ObjectStream();
+
+        $stream->pipe($dest);
+        $node = $fs->file('test.foo.bar');
+
+        $dest->on('data', function (NodeInterface $data) use ($node) {
+            $this->assertEquals($node, $data);
+        });
+
+        $stream->end($node);
+
+        $stream->pause();
+        $stream->resume();
+
+        $stream->close();
+        $dest->close();
     }
 }
