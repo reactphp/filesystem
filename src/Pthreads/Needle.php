@@ -49,8 +49,8 @@ class Needle extends Threaded
             return Worker::$me->sendMessageToPool($message);
         }
 
-        // Fixes an unexpected behaviour (bug?) which makes
-        // the needle object lose all properties
+        // Workaround for an unexpected behaviour (bug?) which
+        // makes the needle object lose all properties
         // https://hastebin.com/jibujukoco.rb
         $id = $this->id;
 
