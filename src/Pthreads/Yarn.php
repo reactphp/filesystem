@@ -24,7 +24,6 @@ class Yarn extends AsyncTask
 
     /**
      * @internal
-     * @codeCoverageIgnore
      */
     public function run()
     {
@@ -42,7 +41,6 @@ class Yarn extends AsyncTask
     /**
      * @param array $payload
      * @return PromiseInterface
-     * @codeCoverageIgnore
      */
     public function chown(array $payload)
     {
@@ -52,7 +50,6 @@ class Yarn extends AsyncTask
     /**
      * @param array $payload
      * @return array
-     * @codeCoverageIgnore
      */
     public function readdir(array $payload)
     {
@@ -75,7 +72,6 @@ class Yarn extends AsyncTask
     /**
      * @param array $payload
      * @return array
-     * @codeCoverageIgnore
      */
     public function stat(array $payload)
     {
@@ -103,7 +99,6 @@ class Yarn extends AsyncTask
 
     /**
      * @return bool
-     * @codeCoverageIgnore
      */
     public function touch(array $payload)
     {

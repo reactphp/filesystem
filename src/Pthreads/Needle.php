@@ -36,7 +36,6 @@ class Needle extends Threaded
 
     /**
      * @internal
-     * @codeCoverageIgnore
      */
     public function run()
     {
@@ -103,7 +102,6 @@ class Needle extends Threaded
     /**
      * Handles messages for reading.
      * @internal
-     * @codeCoverageIgnore
      */
     protected function handleReadCall(string $id, &$fd, array $payload)
     {
@@ -130,7 +128,6 @@ class Needle extends Threaded
     /**
      * Handles messages for writing.
      * @internal
-     * @codeCoverageIgnore
      */
     protected function handleWriteCall(string $id, &$fd, array $payload)
     {
@@ -159,7 +156,6 @@ class Needle extends Threaded
     /**
      * Handles messages for closing.
      * @internal
-     * @codeCoverageIgnore
      */
     protected function handleCloseCall(string $id, &$fd, callable $listener)
     {
