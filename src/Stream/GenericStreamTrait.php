@@ -3,7 +3,6 @@
 namespace React\Filesystem\Stream;
 
 use React\Filesystem\AdapterInterface;
-use React\Filesystem\InstantInvoker;
 
 trait GenericStreamTrait
 {
@@ -11,7 +10,6 @@ trait GenericStreamTrait
     protected $filesystem;
     protected $fileDescriptor;
     protected $closed = false;
-    protected $callInvoker;
 
     /**
      * @param string $path
@@ -23,8 +21,6 @@ trait GenericStreamTrait
         $this->path = $path;
         $this->filesystem = $filesystem;
         $this->fileDescriptor = $fileDescriptor;
-
-        $this->callInvoker = new InstantInvoker($filesystem);
     }
 
     /**

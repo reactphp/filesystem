@@ -4,7 +4,6 @@ namespace React\Filesystem\Node;
 
 use React\Filesystem\AdapterInterface;
 use React\Promise\PromiseInterface;
-use React\Stream\WritableStreamInterface;
 
 interface FileInterface extends NodeInterface
 {

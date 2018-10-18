@@ -16,7 +16,7 @@ class WritableStreamTest extends TestCase
             ],
             [
                 'React\Filesystem\Stream\DuplexStream',
-                1
+                0
             ],
         ];
     }
