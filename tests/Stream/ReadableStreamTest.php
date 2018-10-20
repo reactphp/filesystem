@@ -230,7 +230,7 @@ class ReadableStreamTest extends TestCase
         $filesystem = $this->mockAdapter();
 
         $filesystem
-            ->expects($this->at((int)!$stat + 0))
+            ->expects($this->at(0))
             ->method('stat')
             ->with($path)
             ->will($this->returnValue(\React\Promise\resolve([
@@ -239,21 +239,21 @@ class ReadableStreamTest extends TestCase
         ;
 
         $filesystem
-            ->expects($this->at((int)!$stat + 1))
+            ->expects($this->at(1))
             ->method('read')
             ->with($fileDescriptor, 8192, 0)
             ->will($this->returnValue($readPromise))
         ;
 
         $filesystem
-            ->expects($this->at((int)!$stat + 2))
+            ->expects($this->at(2))
             ->method('read')
             ->with($fileDescriptor, 8192, 8192)
             ->will($this->returnValue($readPromise))
         ;
 
         $filesystem
-            ->expects($this->at((int)!$stat + 3))
+            ->expects($this->at(3))
             ->method('close')
             ->with($fileDescriptor)
             ->will($this->returnValue(new FulfilledPromise()))

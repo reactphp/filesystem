@@ -7,7 +7,6 @@ use React\Filesystem\FilesystemInterface;
 use React\Filesystem\ObjectStream;
 use React\Filesystem\ObjectStreamSink;
 use React\Filesystem\Stream\GenericStreamInterface;
-use React\Promise\Deferred;
 use React\Promise\FulfilledPromise;
 use React\Promise\RejectedPromise;
 use React\Promise\Stream;

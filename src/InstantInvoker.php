@@ -3,7 +3,6 @@
 namespace React\Filesystem;
 
 use React\EventLoop\LoopInterface;
-use React\Promise\Deferred;
 
 class InstantInvoker implements CallInvokerInterface
 {
