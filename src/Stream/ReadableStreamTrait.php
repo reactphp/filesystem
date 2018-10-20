@@ -2,8 +2,7 @@
 
 namespace React\Filesystem\Stream;
 
-use React\Promise\FulfilledPromise;
-use React\Promise\RejectedPromise;
+use Exception;
 use React\Stream\Util;
 use React\Stream\WritableStreamInterface;
 
@@ -27,11 +26,11 @@ trait ReadableStreamTrait
         if ($this->size === null && $this->sizeLookupPromise === null) {
             $this->sizeLookupPromise = $this->getFilesystem()->stat($this->getPath())->then(function ($info) {
                 if ($this->size !== null) {
-                    return new RejectedPromise();
+                    throw new Exception('File was already stat-ed');
                 }
+
                 $this->size = $info['size'];
                 $this->readCursor = 0;
-                return new FulfilledPromise();
             });
         }
 

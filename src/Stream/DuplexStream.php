@@ -5,7 +5,6 @@ namespace React\Filesystem\Stream;
 use Evenement\EventEmitter;
 use React\Filesystem\AdapterInterface;
 use React\Stream\DuplexStreamInterface;
-use React\Promise\FulfilledPromise;
 
 class DuplexStream extends EventEmitter implements DuplexStreamInterface, GenericStreamInterface
 {
@@ -39,12 +38,11 @@ class DuplexStream extends EventEmitter implements DuplexStreamInterface, Generi
     protected function resolveSize()
     {
         if ($this->readCursor < $this->size) {
-            return new FulfilledPromise();
+            return \React\Promise\resolve();
         }
 
         return $this->getFilesystem()->stat($this->path)->then(function ($stat) {
             $this->size = $stat['size'];
-            return new FulfilledPromise();
         });
     }
 }

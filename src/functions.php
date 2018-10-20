@@ -2,7 +2,7 @@
 
 namespace React\Filesystem;
 
-use React\Promise\RejectedPromise;
+use Exception;
 
 /**
  * @param AdapterInterface $adapter
@@ -40,7 +40,7 @@ function getOpenFileLimit(array $options)
  */
 function detectType(array $typeDetectors, array $node)
 {
-    $promiseChain = new RejectedPromise();
+    $promiseChain = \React\Promise\reject(new Exception('Unknown type'));
     foreach ($typeDetectors as $detector) {
         $promiseChain = $promiseChain->otherwise(function () use ($node, $detector) {
             return $detector->detect($node);

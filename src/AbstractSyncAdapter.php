@@ -3,13 +3,9 @@
 namespace React\Filesystem;
 
 use DateTime;
+use LogicException;
 use React\Filesystem\Node\NodeInterface;
-use React\Filesystem\Stream\StreamFactory;
-use React\Promise\FulfilledPromise;
 use React\Promise\PromiseInterface;
-use React\Promise\RejectedPromise;
-use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory;
-use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
 abstract class AbstractSyncAdapter implements AdapterInterface
 {
@@ -123,8 +119,6 @@ abstract class AbstractSyncAdapter implements AdapterInterface
             ];
             $promises[] = \React\Filesystem\detectType($this->typeDetectors, $node)->then(function (NodeInterface $node) use ($stream) {
                 $stream->write($node);
-
-                return new FulfilledPromise();
             });
         }
 
@@ -154,19 +148,7 @@ abstract class AbstractSyncAdapter implements AdapterInterface
      */
     public function open($path, $flags, $mode = self::CREATION_MODE)
     {
-        return new RejectedPromise();
-        $id = null;
-        return \WyriHaximus\React\ChildProcess\Messenger\Factory::parentFromClass(self::CHILD_CLASS_NAME, $this->loop)->then(function (Messenger $messenger) use (&$id, $path, $flags, $mode) {
-            $id = count($this->fileDescriptors);
-            $this->fileDescriptors[$id] = $messenger;
-            return $this->fileDescriptors[$id]->rpc(Factory::rpc('open', [
-                'path' => $path,
-                'flags' => $flags,
-                'mode' => $mode,
-            ]));
-        })->then(function () use ($path, $flags, &$id) {
-            return \React\Promise\resolve(StreamFactory::create($path, $id, $flags, $this));
-        });
+        return \React\Promise\reject(new LogicException('Not implemented'));
     }
 
     /**
@@ -177,13 +159,7 @@ abstract class AbstractSyncAdapter implements AdapterInterface
      */
     public function read($fileDescriptor, $length, $offset)
     {
-        return new RejectedPromise();
-        return $this->fileDescriptors[$fileDescriptor]->rpc(Factory::rpc('read', [
-            'length' => $length,
-            'offset' => $offset,
-        ]))->then(function ($payload) {
-            return \React\Promise\resolve($payload['chunk']);
-        });
+        return \React\Promise\reject(new LogicException('Not implemented'));
     }
 
     /**
@@ -195,12 +171,7 @@ abstract class AbstractSyncAdapter implements AdapterInterface
      */
     public function write($fileDescriptor, $data, $length, $offset)
     {
-        return new RejectedPromise();
-        return $this->fileDescriptors[$fileDescriptor]->rpc(Factory::rpc('write', [
-            'chunk' => $data,
-            'length' => $length,
-            'offset' => $offset,
-        ]));
+        return \React\Promise\reject(new LogicException('Not implemented'));
     }
 
     /**
@@ -209,14 +180,7 @@ abstract class AbstractSyncAdapter implements AdapterInterface
      */
     public function close($fd)
     {
-        return new RejectedPromise();
-        $fileDescriptor = $this->fileDescriptors[$fd];
-        unset($this->fileDescriptors[$fd]);
-        return $fileDescriptor->rpc(Factory::rpc('close'))->then(function () use ($fileDescriptor) {
-            return $fileDescriptor->softTerminate();
-        }, function () use ($fileDescriptor) {
-            return $fileDescriptor->softTerminate();
-        });
+        return \React\Promise\reject(new LogicException('Not implemented'));
     }
 
     /**

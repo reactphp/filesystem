@@ -8,7 +8,6 @@ use React\Filesystem\FilesystemInterface;
 use React\Filesystem\ObjectStream;
 use React\Filesystem\ObjectStreamSink;
 use React\Promise\Deferred;
-use React\Promise\FulfilledPromise;
 
 class Directory implements DirectoryInterface
 {
@@ -114,7 +113,6 @@ class Directory implements DirectoryInterface
                             $numbers['directories'] += $size['directories'];
                             $numbers['files'] += $size['files'];
                             $numbers['size'] += $size['size'];
-                            return new FulfilledPromise();
                         });
                     }
                     break;
@@ -122,7 +120,6 @@ class Directory implements DirectoryInterface
                     $numbers['files']++;
                     $promises[] = $node->size()->then(function ($size) use (&$numbers) {
                         $numbers['size'] += $size;
-                        return new FulfilledPromise();
                     });
                     break;
             }
@@ -189,7 +186,7 @@ class Directory implements DirectoryInterface
         })->then(function () use ($mode) {
             return $this->create($mode);
         })->then(function () {
-            return new FulfilledPromise();
+            return null;
         });
     }
 

@@ -2,6 +2,7 @@
 
 namespace React\Tests\Filesystem\Eio;
 
+use Exception;
 use React\Filesystem\Eio\ConstTypeDetector;
 use React\Filesystem\Filesystem;
 use React\Tests\Filesystem\TestCase;
@@ -62,7 +63,7 @@ class ConstTypeDetectorTest extends TestCase
         (new ConstTypeDetector($filesystem))->detect([
             'type' => 123,
         ])->otherwise(function ($result) use (&$callbackFired) {
-            $this->assertNull($result);
+            $this->assertInstanceOf('Exception', $result);
             $callbackFired = true;
         });
 
