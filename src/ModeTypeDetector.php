@@ -2,9 +2,9 @@
 
 namespace React\Filesystem;
 
+use Exception;
 use React\Filesystem\FilesystemInterface;
 use React\Filesystem\TypeDetectorInterface;
-use React\Promise\RejectedPromise;
 
 class ModeTypeDetector implements TypeDetectorInterface
 {
@@ -43,7 +43,7 @@ class ModeTypeDetector implements TypeDetectorInterface
 
     protected function walkMapping($stat)
     {
-        $promiseChain = new RejectedPromise();
+        $promiseChain = \React\Promise\reject(new Exception('Unknown type'));
         foreach ($this->mapping as $mappingMode => $method) {
             $promiseChain = $promiseChain->otherwise(function () use ($stat, $mappingMode, $method) {
                 return $this->matchMapping($stat['mode'], $mappingMode, $method);
@@ -61,6 +61,6 @@ class ModeTypeDetector implements TypeDetectorInterface
             ]);
         }
 
-        return new RejectedPromise();
+        return \React\Promise\reject(new Exception('Unknown filesystem method for type'));
     }
 }

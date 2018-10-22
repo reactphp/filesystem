@@ -2,6 +2,7 @@
 
 namespace React\Tests\Filesystem;
 
+use Exception;
 use React\Filesystem\Filesystem;
 use React\Filesystem\ModeTypeDetector;
 use React\Promise\FulfilledPromise;
@@ -69,7 +70,7 @@ class ModeTypeDetectorTest extends TestCase
         (new ModeTypeDetector($filesystem))->detect([
             'path' => 'foo.bar',
         ])->otherwise(function ($result) use (&$callbackFired) {
-            $this->assertNull($result);
+            $this->assertInstanceOf('Exception', $result);
             $callbackFired = true;
         });
 

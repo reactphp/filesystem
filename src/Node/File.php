@@ -2,13 +2,12 @@
 
 namespace React\Filesystem\Node;
 
+use Exception;
 use React\Filesystem\AdapterInterface;
 use React\Filesystem\FilesystemInterface;
 use React\Filesystem\ObjectStream;
 use React\Filesystem\ObjectStreamSink;
 use React\Filesystem\Stream\GenericStreamInterface;
-use React\Promise\FulfilledPromise;
-use React\Promise\RejectedPromise;
 use React\Promise\Stream;
 use React\Stream\ReadableStreamInterface;
 use React\Stream\WritableStreamInterface;
@@ -50,9 +49,9 @@ class File implements FileInterface
     public function exists()
     {
         return $this->stat()->then(function () {
-            return new FulfilledPromise();
+            return null;
         }, function () {
-            return new RejectedPromise(new \Exception('Not found'));
+            throw new Exception('Not found');
         });
     }
 
@@ -96,7 +95,7 @@ class File implements FileInterface
     public function create($mode = AdapterInterface::CREATION_MODE, $time = null)
     {
         return $this->stat()->then(function () {
-            return new RejectedPromise(new \Exception('File exists'));
+            throw new \Exception('File exists already');
         }, function () use ($mode, $time) {
             return $this->adapter->touch($this->path, $mode, $time);
         });
@@ -116,7 +115,7 @@ class File implements FileInterface
     public function open($flags, $mode = AdapterInterface::CREATION_MODE)
     {
         if ($this->open === true) {
-            return new RejectedPromise();
+            return \React\Promise\reject(new Exception('File is already open'));
         }
 
         return $this->adapter->open($this->path, $flags, $mode)->then(function (GenericStreamInterface $stream) {
@@ -132,13 +131,12 @@ class File implements FileInterface
     public function close()
     {
         if ($this->open === false) {
-            return new RejectedPromise();
+            return \React\Promise\reject(new Exception('File is already closed'));
         }
 
         return $this->adapter->close($this->fileDescriptor)->then(function () {
             $this->open = false;
             $this->fileDescriptor = null;
-            return new FulfilledPromise();
         });
     }
 

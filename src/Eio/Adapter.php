@@ -15,7 +15,6 @@ use React\Filesystem\PermissionFlagResolver;
 use React\Filesystem\Stream\StreamFactory;
 use React\Filesystem\TypeDetectorInterface;
 use React\Promise\Deferred;
-use React\Promise\FulfilledPromise;
 
 class Adapter implements AdapterInterface
 {
@@ -228,8 +227,6 @@ class Adapter implements AdapterInterface
             ];
             $promises[] = \React\Filesystem\detectType($this->typeDetectors, $node)->then(function (NodeInterface $node) use ($stream) {
                 $stream->write($node);
-
-                return new FulfilledPromise();
             });
         }
 

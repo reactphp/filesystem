@@ -85,16 +85,7 @@ class FileTest extends TestCase
             Filesystem::createFromAdapter($filesystem),
         ]);
 
-        $promise = $this->getMock('React\Promise\PromiseInterface');
-
-        $promise
-            ->expects($this->once())
-            ->method('then')
-            ->with($this->isType('callable'))
-            ->will($this->returnCallback(function ($resolveCb) {
-                return $resolveCb();
-            }))
-        ;
+        $promise = \React\Promise\resolve();
 
         $file
             ->expects($this->once())
@@ -118,16 +109,7 @@ class FileTest extends TestCase
             Filesystem::createFromAdapter($filesystem),
         ]);
 
-        $promise = $this->getMock('React\Promise\PromiseInterface');
-
-        $promise
-            ->expects($this->once())
-            ->method('then')
-            ->with($this->isType('callable'))
-            ->will($this->returnCallback(function ($null, $resolveCb) {
-                return $resolveCb();
-            }))
-        ;
+        $promise = \React\Promise\resolve();
 
         $file
             ->expects($this->once())
@@ -241,7 +223,7 @@ class FileTest extends TestCase
         $callbackFired = false;
         (new File($path, Filesystem::createFromAdapter($filesystem)))->create()->then(null, function ($e) use (&$callbackFired) {
             $this->assertInstanceOf('Exception', $e);
-            $this->assertSame('File exists', $e->getMessage());
+            $this->assertSame('File exists already', $e->getMessage());
             $callbackFired = true;
         });
 

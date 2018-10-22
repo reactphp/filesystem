@@ -2,7 +2,7 @@
 
 namespace React\Filesystem;
 
-use React\Promise\RejectedPromise;
+use Exception;
 
 class MappedTypeDetector implements TypeDetectorInterface
 {
@@ -52,7 +52,7 @@ class MappedTypeDetector implements TypeDetectorInterface
     public function detect(array $node)
     {
         if (!isset($node['type']) || !isset($this->mapping[$node['type']])) {
-            return new RejectedPromise();
+            return \React\Promise\reject(new Exception('Unknown type'));
         }
 
         return \React\Promise\resolve([
