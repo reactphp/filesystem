@@ -2,10 +2,19 @@
 
 namespace React\Filesystem\Eio;
 
-use React\Filesystem\ArgsExceptionTrait;
 use RuntimeException as SplRuntimeException;
 
 class RuntimeException extends SplRuntimeException
 {
-    use ArgsExceptionTrait;
+    protected $args = [];
+
+    public function setArgs(array $args = [])
+    {
+        $this->args = $args;
+    }
+
+    public function getArgs()
+    {
+        return $this->args;
+    }
 }
