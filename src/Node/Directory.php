@@ -240,7 +240,7 @@ class Directory implements DirectoryInterface
 
     /**
      * @param $sourceStream
-     * @return Stream
+     * @return ObjectStream
      */
     protected function processLsRecursiveContents($sourceStream)
     {

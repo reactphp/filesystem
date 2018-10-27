@@ -48,7 +48,7 @@ trait GenericStreamTrait
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isClosed()
     {
@@ -56,7 +56,7 @@ trait GenericStreamTrait
     }
 
     /**
-     * @param boolean $closed
+     * @param bool $closed
      */
     public function setClosed($closed)
     {

@@ -12,7 +12,6 @@ use React\Filesystem\Node\NodeInterface;
 use React\Filesystem\ObjectStream;
 use React\Filesystem\OpenFileLimiter;
 use React\Filesystem\PermissionFlagResolver;
-use React\Filesystem\Stream\StreamFactory;
 use React\Filesystem\TypeDetectorInterface;
 use React\Promise\Deferred;
 
@@ -102,7 +101,7 @@ class Adapter implements AdapterInterface
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public static function isSupported()
     {
@@ -267,9 +266,7 @@ class Adapter implements AdapterInterface
                 $eioFlags,
                 $mode,
             ]);
-        })->then(function ($fileDescriptor) use ($path, $flags) {
-            return StreamFactory::create($path, $fileDescriptor, $flags, $this);
-        }, function ($error) {
+        })->otherwise(function ($error) {
             $this->openFileLimiter->close();
             return \React\Promise\reject($error);
         });

@@ -15,7 +15,6 @@ use React\Filesystem\OpenFileLimiter;
 use React\Filesystem\TypeDetectorInterface;
 use React\Filesystem\PermissionFlagResolver;
 use React\Filesystem\Node\NodeInterface;
-use React\Filesystem\Stream\StreamFactory;
 use React\Promise\PromiseInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
@@ -212,8 +211,8 @@ class Adapter implements AdapterInterface
                 'flags' => $flags,
                 'mode' => $mode,
             ]));
-        })->then(function () use ($path, $flags, &$id) {
-            return \React\Promise\resolve(StreamFactory::create($path, $id, $flags, $this));
+        })->then(function () use (&$id) {
+            return $id;
         });
     }
 

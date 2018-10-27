@@ -8,11 +8,11 @@ use React\Promise\PromiseInterface;
 interface AdapterInterface
 {
     const CREATION_MODE = 'rwxrw----';
-    
+
     /**
      * Checks whether the current installation supports the adapter.
      *
-     * @return boolean
+     * @return bool
      */
     public static function isSupported();
 
@@ -127,7 +127,7 @@ interface AdapterInterface
      * @param string $path
      * @param string $flags
      * @param $mode
-     * @return PromiseInterface<file descriptor>
+     * @return PromiseInterface
      */
     public function open($path, $flags, $mode = self::CREATION_MODE);
 
