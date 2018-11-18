@@ -202,16 +202,15 @@ class Adapter implements AdapterInterface
      */
     public function open($path, $flags, $mode = self::CREATION_MODE)
     {
-        $id = null;
-        return \WyriHaximus\React\ChildProcess\Messenger\Factory::parentFromClass(self::CHILD_CLASS_NAME, $this->loop)->then(function (Messenger $messenger) use (&$id, $path, $flags, $mode) {
-            $id = count($this->fileDescriptors);
+        $id = bin2hex(random_bytes(10));
+        return \WyriHaximus\React\ChildProcess\Messenger\Factory::parentFromClass(self::CHILD_CLASS_NAME, $this->loop)->then(function (Messenger $messenger) use ($id, $path, $flags, $mode) {
             $this->fileDescriptors[$id] = $messenger;
             return $this->fileDescriptors[$id]->rpc(Factory::rpc('open', [
                 'path' => $path,
                 'flags' => $flags,
                 'mode' => $mode,
             ]));
-        })->then(function () use (&$id) {
+        })->then(function () use ($id) {
             return $id;
         });
     }
