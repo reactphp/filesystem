@@ -7,7 +7,7 @@ use React\Filesystem\AdapterInterface;
 use React\Filesystem\FilesystemInterface;
 use React\Filesystem\ObjectStream;
 use React\Filesystem\ObjectStreamSink;
-use React\Filesystem\Stream\GenericStreamInterface;
+use React\Filesystem\Stream\StreamFactory;
 use React\Promise\Stream;
 use React\Stream\ReadableStreamInterface;
 use React\Stream\WritableStreamInterface;
@@ -118,10 +118,10 @@ class File implements FileInterface
             return \React\Promise\reject(new Exception('File is already open'));
         }
 
-        return $this->adapter->open($this->path, $flags, $mode)->then(function (GenericStreamInterface $stream) {
+        return $this->adapter->open($this->path, $flags, $mode)->then(function ($fd) use ($flags) {
             $this->open = true;
-            $this->fileDescriptor = $stream->getFiledescriptor();
-            return $stream;
+            $this->fileDescriptor = $fd;
+            return StreamFactory::create($this->path, $fd, $flags, $this->adapter);
         });
     }
 

@@ -235,23 +235,21 @@ class FileTest extends TestCase
         $path = 'foo.bar';
         $filesystem = $this->mockAdapter();
 
-        $stream = $this->getMock('React\Filesystem\Stream\GenericStreamInterface', [], ['foo:bar']);
+        $fd = 'foo:bar';
         $flags = 'abc';
 
         $filesystem
             ->expects($this->once())
             ->method('open')
             ->with($path, $flags)
-            ->will($this->returnValue(new FulfilledPromise($stream)))
+            ->will($this->returnValue(new FulfilledPromise($fd)))
         ;
 
-        $callbackFired = false;
-        (new File($path, Filesystem::createFromAdapter($filesystem)))->open($flags)->then(function ($passStream) use (&$callbackFired, $stream) {
-            $this->assertSame($stream, $passStream);
-            $callbackFired = true;
-        });
+        $fs = Filesystem::createFromAdapter($filesystem);
+        $pass = $this->await((new File($path, $fs))->open($flags), $fs->getAdapter()->getLoop());
 
-        $this->assertTrue($callbackFired);
+        $this->assertInstanceOf('\React\Filesystem\Stream\GenericStreamInterface', $pass);
+        $this->assertSame($fd, $pass->getFiledescriptor());
     }
 
 
@@ -260,14 +258,14 @@ class FileTest extends TestCase
         $path = 'foo.bar';
         $filesystem = $this->mockAdapter();
 
-        $stream = $this->getMock('React\Filesystem\Stream\GenericStreamInterface', [], ['foo:bar']);
+        $fd = 'foo:bar';
         $flags = 'abc';
 
         $filesystem
             ->expects($this->once())
             ->method('open')
             ->with($path, $flags)
-            ->will($this->returnValue(new FulfilledPromise($stream)))
+            ->will($this->returnValue(new FulfilledPromise($fd)))
         ;
 
         $file = new File($path, Filesystem::createFromAdapter($filesystem));
@@ -280,14 +278,10 @@ class FileTest extends TestCase
         $path = 'foo.bar';
         $fd = '0123456789abcdef';
 
-        $openPromise = $this->getMock('React\Promise\PromiseInterface', [
-            'then',
-        ]);
-
         $filesystem = $this->mockAdapter();
 
         $filesystem
-            ->expects($this->once())
+            ->expects($this->any())
             ->method('stat')
             ->with($path)
             ->will($this->returnValue(new FulfilledPromise([
@@ -299,14 +293,14 @@ class FileTest extends TestCase
             ->expects($this->once())
             ->method('open')
             ->with($path, 'r')
-            ->will($this->returnValue($openPromise))
+            ->will($this->returnValue(new FulfilledPromise($fd)))
         ;
 
         $filesystem
             ->expects($this->once())
             ->method('read')
             ->with($fd, 1, 0)
-            ->will($this->returnValue(new FulfilledPromise(str_repeat('a', 1))))
+            ->will($this->returnValue(new FulfilledPromise('a')))
         ;
 
         $filesystem
@@ -314,21 +308,6 @@ class FileTest extends TestCase
             ->method('close')
             ->with($fd)
             ->will($this->returnValue(new FulfilledPromise()))
-        ;
-
-        $stream = new ReadableStream(
-            $path,
-            $fd,
-            $filesystem
-        );
-
-        $openPromise
-            ->expects($this->once())
-            ->method('then')
-            ->with($this->isType('callable'))
-            ->will($this->returnCallback(function ($resolveCb) use ($stream) {
-                return new FulfilledPromise($resolveCb($stream));
-            }))
         ;
 
         $getContentsPromise = (new File($path, Filesystem::createFromAdapter($filesystem)))->getContents();
@@ -341,30 +320,20 @@ class FileTest extends TestCase
         $fd = '0123456789abcdef';
         $filesystem = $this->mockAdapter();
 
-        $stream = $this->getMock('React\Filesystem\Stream\GenericStreamInterface', [
-            'getFiledescriptor',
-        ], [
-            'foo:bar',
-        ]);
+        $openPromise = new FulfilledPromise($fd);
 
-        $stream
-            ->expects($this->once())
-            ->method('getFiledescriptor')
-            ->with()
-            ->will($this->returnValue($fd))
+        $filesystem
+            ->method('stat')
+            ->with($path)
+            ->will($this->returnValue(new FulfilledPromise([
+                'size' => 1,
+            ])))
         ;
 
-        $openPromise = $this->getMock('React\Promise\PromiseInterface', [
-            'then',
-        ]);
-
-        $openPromise
-            ->expects($this->once())
-            ->method('then')
-            ->with($this->isType('callable'))
-            ->will($this->returnCallback(function ($resolveCb) use ($stream) {
-                return new FulfilledPromise($resolveCb($stream));
-            }))
+        $filesystem
+            ->method('read')
+            ->with($path)
+            ->will($this->returnValue(new FulfilledPromise('a')))
         ;
 
         $filesystem
@@ -374,24 +343,11 @@ class FileTest extends TestCase
             ->will($this->returnValue($openPromise))
         ;
 
-        $closePromise = $this->getMock('React\Promise\PromiseInterface', [
-            'then',
-        ]);
-
-        $closePromise
-            ->expects($this->once())
-            ->method('then')
-            ->with($this->isType('callable'))
-            ->will($this->returnCallback(function ($resolveCb) use ($stream) {
-                return \React\Promise\resolve($resolveCb($stream));
-            }))
-        ;
-
         $filesystem
             ->expects($this->once())
             ->method('close')
             ->with($fd)
-            ->will($this->returnValue($closePromise))
+            ->will($this->returnValue(\React\Promise\resolve()))
         ;
 
         $file = new File($path, Filesystem::createFromAdapter($filesystem));
