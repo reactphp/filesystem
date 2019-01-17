@@ -35,6 +35,7 @@ class TestCase extends PHPUnitTestCase
             'chown',
             'stat',
             'ls',
+            'lsStream',
             'touch',
             'open',
             'read',

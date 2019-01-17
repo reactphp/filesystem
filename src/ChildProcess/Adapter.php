@@ -6,6 +6,7 @@ use DateTime;
 use Exception;
 use React\EventLoop\LoopInterface;
 use React\Filesystem\ObjectStream;
+use React\Filesystem\ObjectStreamSink;
 use React\Filesystem\AdapterInterface;
 use React\Filesystem\CallInvokerInterface;
 use React\Filesystem\FilesystemInterface;
@@ -322,6 +323,15 @@ class Adapter implements AdapterInterface
      * @return PromiseInterface
      */
     public function ls($path)
+    {
+        return ObjectStreamSink::promise($this->lsStream($path));
+    }
+
+    /**
+     * @param string $path
+     * @return ObjectStream
+     */
+    public function lsStream($path)
     {
         $stream = new ObjectStream();
 

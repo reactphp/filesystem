@@ -69,7 +69,7 @@ class Directory implements DirectoryInterface
      */
     public function ls()
     {
-        return ObjectStreamSink::promise($this->lsStreaming());
+        return $this->adapter->ls($this->path);
     }
 
     /**
@@ -77,7 +77,7 @@ class Directory implements DirectoryInterface
      */
     public function lsStreaming()
     {
-        return $this->adapter->ls($this->path);
+        return $this->adapter->lsStream($this->path);
     }
 
     /**
