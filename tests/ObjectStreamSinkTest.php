@@ -15,12 +15,13 @@ class ObjectStreamSinkTest extends TestCase
         $this->assertInstanceOf('React\Promise\PromiseInterface', $sink);
         $stream->emit('data', [$node]);
         $stream->close();
+
         $nodes = null;
-        $sink->then(function (\SplObjectStorage $list) use (&$nodes) {
+        $sink->then(function ($list) use (&$nodes) {
             $nodes = $list;
         });
-        $nodes->rewind();
-        $this->assertSame(1, $nodes->count());
-        $this->assertSame($node, $nodes->current());
+
+        $this->assertSame(1, count($nodes));
+        $this->assertSame($node, reset($nodes));
     }
 }

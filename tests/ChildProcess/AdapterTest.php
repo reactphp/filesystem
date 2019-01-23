@@ -319,9 +319,8 @@ class AdapterTest extends TestCase
         ]);
 
         $nodes = $this->await($promise, $loop);
-        $nodes->rewind();
 
-        $this->assertEquals(new File('foo.bar/bar.foo', $fs), $nodes->current());
+        $this->assertEquals(new File('foo.bar/bar.foo', $fs), reset($nodes));
     }
 
     public function testLsStream()
