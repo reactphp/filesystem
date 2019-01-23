@@ -45,18 +45,39 @@ class DirectoryTest extends TestCase
 
         $filesystem = $this->mockAdapter($loop);
 
-        $lsStream = $this->getMock('React\Filesystem\ObjectStream');
+        $ls = \React\Promise\resolve();
 
         $filesystem
             ->expects($this->once())
             ->method('ls')
+            ->with()
+            ->will($this->returnValue($ls))
+        ;
+
+        $directory = new Directory($path, Filesystem::createFromAdapter($filesystem));
+
+        $this->assertInstanceOf('React\Promise\PromiseInterface', $directory->ls());
+    }
+
+    public function testLsStream()
+    {
+        $path = '/home/foo/bar';
+        $loop = $this->getMock('React\EventLoop\LoopInterface');
+
+        $filesystem = $this->mockAdapter($loop);
+
+        $lsStream = $this->getMock('React\Filesystem\ObjectStream');
+
+        $filesystem
+            ->expects($this->once())
+            ->method('lsStream')
             ->with()
             ->will($this->returnValue($lsStream))
         ;
 
         $directory = new Directory($path, Filesystem::createFromAdapter($filesystem));
 
-        $this->assertInstanceOf('React\Promise\PromiseInterface', $directory->ls());
+        $this->assertInstanceOf('React\Filesystem\ObjectStream', $directory->lsStreaming());
     }
 
     public function testCreate()

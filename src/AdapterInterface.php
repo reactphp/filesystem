@@ -2,6 +2,7 @@
 
 namespace React\Filesystem;
 
+use React\Filesystem\ObjectStream;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 
@@ -110,6 +111,14 @@ interface AdapterInterface
      * @return PromiseInterface
      */
     public function ls($path);
+
+    /**
+     * List contents of the given path.
+     *
+     * @param string $path
+     * @return ObjectStream
+     */
+    public function lsStream($path);
 
     /**
      * Touch the given path, either creating a file, or updating mtime on the file.

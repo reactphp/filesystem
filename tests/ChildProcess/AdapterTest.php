@@ -5,6 +5,7 @@ namespace React\Tests\Filesystem\ChildProcess;
 use React\EventLoop\Factory;
 use React\Filesystem\ChildProcess\Adapter;
 use React\Filesystem\Filesystem;
+use React\Filesystem\Node\File;
 use React\Filesystem\Node\NodeInterface;
 use React\Promise\Deferred;
 use React\Promise\FulfilledPromise;
@@ -279,6 +280,52 @@ class AdapterTest extends TestCase
 
     public function testLs()
     {
+        $loop = \React\EventLoop\Factory::create();
+        $adapter = new Adapter($loop, [
+            'pool' => [
+                'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
+            ],
+        ]);
+        $invoker = $this->getMock('React\Filesystem\CallInvokerInterface', [
+            '__construct',
+            'invokeCall',
+            'isEmpty',
+        ]);
+        $adapter->setInvoker($invoker);
+        $fs = Filesystem::createFromAdapter($adapter);
+
+        $deferred = new Deferred();
+
+        $invoker
+            ->expects($this->once())
+            ->method('invokeCall')
+            ->with(
+                'readdir',
+                [
+                    'path' => 'foo.bar',
+                    'flags' => 2,
+                ]
+            )->will($this->returnValue($deferred->promise()))
+        ;
+
+        $promise = $adapter->ls('foo.bar');
+        $this->assertInstanceOf('React\Promise\PromiseInterface', $promise);
+
+        $deferred->resolve([
+            [
+                'type' => 'file',
+                'name' => 'bar.foo',
+            ],
+        ]);
+
+        $nodes = $this->await($promise, $loop);
+        $nodes->rewind();
+
+        $this->assertEquals(new File('foo.bar/bar.foo', $fs), $nodes->current());
+    }
+
+    public function testLsStream()
+    {
         $loop = $this->getMock('React\EventLoop\LoopInterface');
         $adapter = new Adapter($loop, [
             'pool' => [
@@ -307,7 +354,7 @@ class AdapterTest extends TestCase
             )->will($this->returnValue($deferred->promise()))
         ;
 
-        $stream = $adapter->ls('foo.bar');
+        $stream = $adapter->lsStream('foo.bar');
         $this->assertInstanceOf('React\Filesystem\ObjectStream', $stream);
 
         $calledOnData = false;

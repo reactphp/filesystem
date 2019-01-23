@@ -3,7 +3,7 @@
 namespace React\Tests\Filesystem;
 
 use React\Filesystem\Node\NodeInterface;
-use React\Filesystem\Node\ObjectStream;
+use React\Filesystem\ObjectStream;
 
 class UnknownNodeType implements NodeInterface
 {

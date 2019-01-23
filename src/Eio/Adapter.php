@@ -10,10 +10,12 @@ use React\Filesystem\FilesystemInterface;
 use React\Filesystem\ModeTypeDetector;
 use React\Filesystem\Node\NodeInterface;
 use React\Filesystem\ObjectStream;
+use React\Filesystem\ObjectStreamSink;
 use React\Filesystem\OpenFileLimiter;
 use React\Filesystem\PermissionFlagResolver;
 use React\Filesystem\TypeDetectorInterface;
 use React\Promise\Deferred;
+use React\Promise\PromiseInterface;
 
 class Adapter implements AdapterInterface
 {
@@ -191,9 +193,18 @@ class Adapter implements AdapterInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $path
+     * @return PromiseInterface
      */
     public function ls($path)
+    {
+        return ObjectStreamSink::promise($this->lsStream($path));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function lsStream($path)
     {
         $stream = new ObjectStream();
 
