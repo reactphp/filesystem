@@ -13,7 +13,7 @@ $dir = $filesystem->dir($dirName);
 echo 'Creating directory: ' . $dirName, PHP_EOL;
 $dir->createRecursive('rwxrwx---')->then(function () use ($startDir) {
     return $startDir->lsRecursive();
-})->then(function (\SplObjectStorage $list) {
+})->then(function (array $list) {
     foreach ($list as $node) {
         echo $node->getPath(), PHP_EOL;
     }

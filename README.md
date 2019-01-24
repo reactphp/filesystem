@@ -124,7 +124,7 @@ List contents
 -------------
 
 ```php
-$filesystem->dir(__DIR__)->ls()->then(function (\SplObjectStorage $list) {
+$filesystem->dir(__DIR__)->ls()->then(function (array $list) {
    foreach ($list as $node) {
        echo $node->getPath(), PHP_EOL;
    }
