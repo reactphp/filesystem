@@ -21,9 +21,8 @@ class DirectoryTest extends AbstractAdaptersTest
         $path = $this->tmpDir . 'path';
         touch($path);
         $listing = $this->await($filesystem->dir($this->tmpDir)->ls(), $loop);
-        $listing->rewind();
-        $this->assertSame(1, $listing->count());
-        $this->assertSame($path, $listing->current()->getPath());
+        $this->assertSame(1, count($listing));
+        $this->assertSame($path, reset($listing)->getPath());
     }
 
     /**

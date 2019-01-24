@@ -6,7 +6,7 @@ $loop = \React\EventLoop\Factory::create();
 
 $filesystem = \React\Filesystem\Filesystem::create($loop);
 echo 'Using ', get_class($filesystem->getAdapter()), PHP_EOL;
-$filesystem->dir(dirname(__DIR__))->lsRecursive()->then(function (\SplObjectStorage $list) {
+$filesystem->dir(dirname(__DIR__))->lsRecursive()->then(function (array $list) {
     foreach ($list as $node) {
         echo $node->getPath(), PHP_EOL;
     }

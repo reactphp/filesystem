@@ -13,12 +13,12 @@ class ObjectStreamSink
     public static function promise(ObjectStream $stream)
     {
         $deferred = new Deferred();
-        $list = new \SplObjectStorage();
+        $list = array();
 
-        $stream->on('data', function ($object) use ($list) {
-            $list->attach($object);
+        $stream->on('data', function ($object) use (&$list) {
+            $list[] = $object;
         });
-        $stream->on('end', function () use ($deferred, $list) {
+        $stream->on('end', function () use ($deferred, &$list) {
             $deferred->resolve($list);
         });
 
