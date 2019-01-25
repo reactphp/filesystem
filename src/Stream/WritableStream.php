@@ -13,7 +13,7 @@ class WritableStream extends EventEmitter implements GenericStreamInterface, Wri
 
     /**
      * @param string $path
-     * @param resource $fileDescriptor
+     * @param mixed $fileDescriptor
      * @param AdapterInterface $filesystem
      */
     public function __construct($path, $fileDescriptor, AdapterInterface $filesystem)

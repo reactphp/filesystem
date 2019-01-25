@@ -24,7 +24,9 @@ class TestCase extends PHPUnitTestCase
         $mock = $this->getMock('React\Filesystem\AdapterInterface', [
             '__construct',
             'getLoop',
+            'getFilesystem',
             'setFilesystem',
+            'getInvoker',
             'setInvoker',
             'callFilesystem',
             'isSupported',

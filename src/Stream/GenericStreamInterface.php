@@ -5,7 +5,7 @@ namespace React\Filesystem\Stream;
 interface GenericStreamInterface
 {
     /**
-     * @return resource
+     * @return mixed
      */
     public function getFiledescriptor();
 }

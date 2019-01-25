@@ -25,6 +25,21 @@ interface AdapterInterface
     public function getLoop();
 
     /**
+     * Get the relevant filesystem for this adapter.
+     *
+     * @internal
+     * @return FilesystemInterface
+     */
+    public function getFilesystem();
+
+    /**
+     * Get the call invoker for this adapter.
+     *
+     * @return CallInvokerInterface
+     */
+    public function getInvoker();
+
+    /**
      * Set the relevant filesystem for this adapter.
      *
      * @internal
@@ -143,7 +158,7 @@ interface AdapterInterface
     /**
      * Read from the given file descriptor.
      *
-     * @param $fileDescriptor
+     * @param mixed $fileDescriptor
      * @param int $length
      * @param int $offset
      * @return PromiseInterface
@@ -153,7 +168,7 @@ interface AdapterInterface
     /**
      * Write to the given file descriptor.
      *
-     * @param $fileDescriptor
+     * @param mixed $fileDescriptor
      * @param string $data
      * @param int $length
      * @param int $offset
@@ -164,7 +179,7 @@ interface AdapterInterface
     /**
      * Close the given file descriptor.
      *
-     * @param resource $fd
+     * @param mixed $fd
      * @return PromiseInterface
      */
     public function close($fd);

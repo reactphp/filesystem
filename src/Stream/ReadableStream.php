@@ -13,7 +13,7 @@ class ReadableStream extends EventEmitter implements GenericStreamInterface, Rea
 
     /**
      * @param string $path
-     * @param resource $fileDescriptor
+     * @param mixed $fileDescriptor
      * @param AdapterInterface $filesystem
      */
     public function __construct($path, $fileDescriptor, AdapterInterface $filesystem)

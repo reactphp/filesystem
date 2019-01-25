@@ -121,9 +121,25 @@ class Adapter implements AdapterInterface
     /**
      * {@inheritDoc}
      */
+    public function getInvoker()
+    {
+        return $this->invoker;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function setInvoker(CallInvokerInterface $invoker)
     {
         $this->invoker = $invoker;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getFilesystem()
+    {
+        return $this->filesystem;
     }
 
     /**
