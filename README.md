@@ -1,9 +1,9 @@
 Filesystem
 ==========
 
-Evented filesystem access utilizing [EIO](http://php.net/eio).
-
 [![Build Status](https://secure.travis-ci.org/reactphp/filesystem.png?branch=master)](http://travis-ci.org/reactphp/filesystem) [![Code Climate](https://codeclimate.com/github/reactphp/filesystem/badges/gpa.svg)](https://codeclimate.com/github/reactphp/filesystem)
+
+[ReactPHP](https://reactphp.org/)'s evented asynchronous, non-blocking filesystem access library.
 
 Table of Contents
 -----------------
@@ -23,7 +23,7 @@ Table of Contents
 Introduction
 ------------
 
-Filesystem WIP for [EIO](http://php.net/eio), keep in mind that this can be very unstable at times and is not stable by a long shot!
+`react/filesystem` is a package to power your application with asynchronous, non-blocking filesystem access. Asynchronous access is enabled by various adapters described below.
 
 Adapters
 ------------
@@ -70,7 +70,7 @@ Which is a convenience method for:
 
 ```php
 $filesystem->file('test.txt')->open('r')->then(function($stream) {
-    return React\Stream\BufferedSink::createPromise($stream);
+    return \React\Stream\BufferedSink::createPromise($stream);
 })->then(function($contents) {
     // ...
 });

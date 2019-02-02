@@ -8,7 +8,7 @@ class StreamFactory
 {
     /**
      * @param string $path
-     * @param resource $fileDescriptor
+     * @param mixed $fileDescriptor
      * @param int $flags
      * @param AdapterInterface $filesystem
      * @return DuplexStream|ReadableStream|WritableStream

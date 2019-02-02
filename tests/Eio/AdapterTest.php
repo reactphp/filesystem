@@ -35,6 +35,38 @@ class AdapterTest extends TestCase
         $this->assertSame($loop, $filesystem->getLoop());
     }
 
+    public function testGetSetFilesystem()
+    {
+        $loop = $this->getMock('React\EventLoop\LoopInterface');
+        $filesystem = new Adapter($loop, [
+            'pool' => [
+                'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
+            ],
+        ]);
+        
+        $this->assertNull($filesystem->getFilesystem());
+        $fs = \React\Filesystem\Filesystem::createFromAdapter($this->mockAdapter());
+        $filesystem->setFilesystem($fs);
+
+        $this->assertSame($fs, $filesystem->getFilesystem());
+    }
+
+    public function testGetSetInvoker()
+    {
+        $loop = $this->getMock('React\EventLoop\LoopInterface');
+        $filesystem = new Adapter($loop, [
+            'pool' => [
+                'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
+            ],
+        ]);
+
+        $invoker = new \React\Filesystem\InstantInvoker($filesystem);
+        $this->assertNotSame($invoker, $filesystem->getInvoker());
+
+        $filesystem->setInvoker($invoker);
+        $this->assertSame($invoker, $filesystem->getInvoker());
+    }
+
     public function testCallFilesystemCallsProvider()
     {
         $pathName = 'foo.bar';

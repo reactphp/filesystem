@@ -52,6 +52,12 @@ interface FilesystemInterface
     public function link($path, Node\NodeInterface $destination);
 
     /**
+     * @param string $path
+     * @return \React\Promise\PromiseInterface
+     */
+    public function constructLink($path);
+
+    /**
      * @param string $filename
      * @return \React\Promise\PromiseInterface
      */

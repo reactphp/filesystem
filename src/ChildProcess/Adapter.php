@@ -135,6 +135,14 @@ class Adapter implements AdapterInterface
     /**
      * {@inheritDoc}
      */
+    public function getFilesystem()
+    {
+        return $this->filesystem;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function setFilesystem(FilesystemInterface $filesystem)
     {
         $this->filesystem = $filesystem;
@@ -143,6 +151,14 @@ class Adapter implements AdapterInterface
             MappedTypeDetector::createDefault($this->filesystem),
             new ModeTypeDetector($this->filesystem),
         ];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getInvoker()
+    {
+        return $this->invoker;
     }
 
     /**
