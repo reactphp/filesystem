@@ -115,7 +115,7 @@ class Adapter implements AdapterInterface
      */
     public static function isSupported()
     {
-        return substr(strtolower(PHP_OS), 0, 3) !== 'win' && function_exists('proc_open');
+        return function_exists('proc_open');
     }
 
     /**
