@@ -85,15 +85,6 @@ abstract class AbstractAdaptersTest extends TestCase
         ];
     }
 
-    protected function getPthreadsProvider(callable $loopFactory)
-    {
-        $loop = $loopFactory();
-        return [
-            $loop,
-            new Pthreads\Adapter($loop),
-        ];
-    }
-
     protected function getFacoryProvider(callable $loopFactory)
     {
         $loop = $loopFactory();

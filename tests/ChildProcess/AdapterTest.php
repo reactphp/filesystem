@@ -416,4 +416,50 @@ class AdapterTest extends TestCase
         ]);
         $this->await($adapter->touch('foo.bar'), $loop, 1);
     }
+
+    public function testGetContents()
+    {
+        $loop = \React\EventLoop\Factory::create();
+        $adapter = new Adapter($loop);
+
+        $contents = $this->await($adapter->getContents(__FILE__), $loop);
+        $this->assertSame(file_get_contents(__FILE__), $contents);
+    }
+
+    public function testGetContentsMinMax()
+    {
+        $loop = \React\EventLoop\Factory::create();
+        $adapter = new Adapter($loop);
+
+        $contents = $this->await($adapter->getContents(__FILE__, 5, 10), $loop);
+        $this->assertSame(file_get_contents(__FILE__, false, null, 5, 10), $contents);
+    }
+
+    public function testPutContents()
+    {
+        $loop = \React\EventLoop\Factory::create();
+        $adapter = new Adapter($loop);
+
+        $tempFile = $this->tmpDir . uniqid('', true);
+        $contents = sha1_file(__FILE__);
+
+        $this->await($adapter->putContents($tempFile, $contents), $loop);
+        $this->assertSame($contents, file_get_contents($tempFile));
+    }
+
+    public function testAppendContents()
+    {
+        $loop = \React\EventLoop\Factory::create();
+        $adapter = new Adapter($loop);
+
+        $tempFile = $this->tmpDir . uniqid('', true);
+        $contents = sha1_file(__FILE__);
+
+        file_put_contents($tempFile, $contents);
+        $time = sha1(time());
+        $contents .= $time;
+
+        $this->await($adapter->appendContents($tempFile, $time, FILE_APPEND), $loop);
+        $this->assertSame($contents, file_get_contents($tempFile));
+    }
 }

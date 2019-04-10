@@ -4,6 +4,7 @@ namespace React\Filesystem\ChildProcess;
 
 use DateTime;
 use Exception;
+use Throwable;
 use React\EventLoop\LoopInterface;
 use React\Filesystem\ObjectStream;
 use React\Filesystem\ObjectStreamSink;
@@ -181,6 +182,10 @@ class Adapter implements AdapterInterface
         return $this->pool->rpc(Factory::rpc($function, $args))->then(function (Payload $payload) {
             return \React\Promise\resolve($payload->getPayload());
         }, function ($payload) {
+            if ($payload instanceof Throwable) {
+                return \React\Promise\reject($payload);
+            }
+
             return \React\Promise\reject(new Exception($payload['error']['message']));
         });
     }
@@ -280,7 +285,76 @@ class Adapter implements AdapterInterface
             return $fileDescriptor->softTerminate();
         });
     }
-    
+
+    /**
+     * Reads the entire file.
+     *
+     * This is an optimization for adapters which can optimize
+     * the open -> (seek ->) read -> close sequence into one call.
+     *
+     * @param string $path
+     * @param int $offset
+     * @param int|null $length
+     * @return PromiseInterface
+     */
+    public function getContents($path, $offset = 0, $length = null)
+    {
+        return $this->invoker->invokeCall('getContents', [
+            'path' => $path,
+            'offset' => $offset,
+            'maxlen' => $length,
+        ])->then(function ($payload) {
+            return \React\Promise\resolve(base64_decode($payload['chunk']));
+        });
+    }
+
+    /**
+     * Writes the given content to the specified file.
+     * If the file exists, the file is truncated.
+     * If the file does not exist, the file will be created.
+     *
+     * This is an optimization for adapters which can optimize
+     * the open -> write -> close sequence into one call.
+     *
+     * @param string $path
+     * @param string $content
+     * @return PromiseInterface
+     * @see AdapterInterface::appendContents()
+     */
+    public function putContents($path, $content)
+    {
+        return $this->invoker->invokeCall('putContents', [
+            'path' => $path,
+            'chunk' => base64_encode($content),
+            'flags' => 0,
+        ])->then(function ($payload) {
+            return \React\Promise\resolve($payload['written']);
+        });
+    }
+
+    /**
+     * Appends the given content to the specified file.
+     * If the file does not exist, the file will be created.
+     *
+     * This is an optimization for adapters which can optimize
+     * the open -> write -> close sequence into one call.
+     *
+     * @param string $path
+     * @param string $content
+     * @return PromiseInterface
+     * @see AdapterInterface::putContents()
+     */
+    public function appendContents($path, $content)
+    {
+        return $this->invoker->invokeCall('putContents', [
+            'path' => $path,
+            'chunk' => base64_encode($content),
+            'flags' => FILE_APPEND,
+        ])->then(function ($payload) {
+            return \React\Promise\resolve($payload['written']);
+        });
+    }
+
     /**
      * @param string $path
      * @return PromiseInterface
