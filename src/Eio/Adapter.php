@@ -310,6 +310,75 @@ class Adapter implements AdapterInterface
     }
 
     /**
+     * Reads the entire file.
+     *
+     * This is an optimization for adapters which can optimize
+     * the open -> (seek ->) read -> close sequence into one call.
+     *
+     * @param string $path
+     * @param int $offset
+     * @param int|null $length
+     * @return PromiseInterface
+     */
+    public function getContents($path, $offset = 0, $length = null)
+    {
+        if ($length === null) {
+            return $this->stat($path)->then(function ($stat) use ($path, $offset) {
+                return $this->getContents($path, $offset, $stat['size']);
+            });
+        }
+
+        return $this->open($path, 'r')->then(function ($fd) use ($offset, $length) {
+            return $this->read($fd, $length, $offset)->always(function () use ($fd) {
+                return $this->close($fd);
+            });
+        });
+    }
+
+    /**
+     * Writes the given content to the specified file.
+     * If the file exists, the file is truncated.
+     * If the file does not exist, the file will be created.
+     *
+     * This is an optimization for adapters which can optimize
+     * the open -> write -> close sequence into one call.
+     *
+     * @param string $path
+     * @param string $content
+     * @return PromiseInterface
+     * @see AdapterInterface::appendContents()
+     */
+    public function putContents($path, $content)
+    {
+        return $this->open($path, 'cw')->then(function ($fd) use ($content) {
+            return $this->write($fd, $content, strlen($content), 0)->always(function () use ($fd) {
+                return $this->close($fd);
+            });
+        });
+    }
+
+    /**
+     * Appends the given content to the specified file.
+     * If the file does not exist, the file will be created.
+     *
+     * This is an optimization for adapters which can optimize
+     * the open -> write -> close sequence into one call.
+     *
+     * @param string $path
+     * @param string $content
+     * @return PromiseInterface
+     * @see AdapterInterface::putContents()
+     */
+    public function appendContents($path, $content)
+    {
+        return $this->open($path, 'cwa')->then(function ($fd) use ($content) {
+            return $this->write($fd, $content, strlen($content), 0)->always(function () use ($fd) {
+                return $this->close($fd);
+            });
+        });
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function touch($path, $mode = self::CREATION_MODE, $time = null)

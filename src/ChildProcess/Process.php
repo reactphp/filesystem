@@ -39,6 +39,8 @@ class Process implements ChildInterface
             'read',
             'write',
             'close',
+            'getContents',
+            'putContents',
             'rename',
             'readlink',
             'symlink',
@@ -244,6 +246,34 @@ class Process implements ChildInterface
         $this->fd = null;
         return \React\Promise\resolve([
             $closed,
+        ]);
+    }
+
+    /**
+     * @param array $payload
+     * @return PromiseInterface
+     */
+    public function getContents(array $payload)
+    {
+        if ($payload['maxlen'] > 0) {
+            $chunk = file_get_contents($payload['path'], false, null, $payload['offset'], $payload['maxlen']);
+        } else {
+            $chunk = file_get_contents($payload['path'], false, null, $payload['offset']);
+        }
+
+        return \React\Promise\resolve([
+            'chunk' => base64_encode($chunk),
+        ]);
+    }
+
+    /**
+     * @param array $payload
+     * @return PromiseInterface
+     */
+    public function putContents(array $payload)
+    {
+        return \React\Promise\resolve([
+            'written' => file_put_contents($payload['path'], base64_decode($payload['chunk']), $payload['flags']),
         ]);
     }
 

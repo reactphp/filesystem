@@ -185,6 +185,48 @@ interface AdapterInterface
     public function close($fd);
 
     /**
+     * Reads the entire file.
+     *
+     * This is an optimization for adapters which can optimize
+     * the open -> (seek ->) read -> close sequence into one call.
+     *
+     * @param string $path
+     * @param int $offset
+     * @param int|null $length
+     * @return PromiseInterface
+     */
+    public function getContents($path, $offset = 0, $length = null);
+
+    /**
+     * Writes the given content to the specified file.
+     * If the file exists, the file is truncated.
+     * If the file does not exist, the file will be created.
+     *
+     * This is an optimization for adapters which can optimize
+     * the open -> write -> close sequence into one call.
+     *
+     * @param string $path
+     * @param string $content
+     * @return PromiseInterface
+     * @see AdapterInterface::appendContents()
+     */
+    public function putContents($path, $content);
+
+    /**
+     * Appends the given content to the specified file.
+     * If the file does not exist, the file will be created.
+     *
+     * This is an optimization for adapters which can optimize
+     * the open -> write -> close sequence into one call.
+     *
+     * @param string $path
+     * @param string $content
+     * @return PromiseInterface
+     * @see AdapterInterface::putContents()
+     */
+    public function appendContents($path, $content);
+
+    /**
      * Rename a node.
      *
      * @param string $fromPath

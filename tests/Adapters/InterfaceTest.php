@@ -4,9 +4,6 @@ namespace React\Tests\Filesystem\Adapters;
 
 use React\EventLoop\LoopInterface;
 use React\Filesystem\AdapterInterface;
-use React\Filesystem\ChildProcess;
-use React\Filesystem\Eio;
-use React\Filesystem\Pthreads;
 
 class InterfaceTest extends AbstractAdaptersTest
 {
