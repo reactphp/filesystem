@@ -29,7 +29,7 @@ class Filesystem implements FilesystemInterface
                 continue;
             }
 
-            $adapter = "\\React\\Filesystem\\".$adapters[$i]."\\Adapter";
+            $adapter = "\\React\\Filesystem\\".$adapter."\\Adapter";
             return static::setFilesystemOnAdapter(static::createFromAdapter(new $adapter($loop, $options)));
         }
 
