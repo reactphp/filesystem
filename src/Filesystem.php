@@ -4,6 +4,7 @@ namespace React\Filesystem;
 
 use RuntimeException;
 use React\EventLoop\LoopInterface;
+use React\EventLoop\ExtUvLoop;
 use React\Filesystem\Node;
 
 class Filesystem implements FilesystemInterface
@@ -23,8 +24,12 @@ class Filesystem implements FilesystemInterface
     {
         $adapters = static::getSupportedAdapters();
 
-        if (!empty($adapters)) {
-            $adapter = "\\React\\Filesystem\\".$adapters[0]."\\Adapter";
+        foreach($adapters as $adapter) {
+            if($adapter === 'Uv' && !$loop instanceof ExtUvLoop) {
+                continue;
+            }
+
+            $adapter = "\\React\\Filesystem\\".$adapters[$i]."\\Adapter";
             return static::setFilesystemOnAdapter(static::createFromAdapter(new $adapter($loop, $options)));
         }
 
