@@ -57,6 +57,10 @@ class Filesystem implements FilesystemInterface
     {
         $adapters = [];
 
+        if (Uv\Adapter::isSupported()) {
+            $adapters[] = 'Uv';
+        }
+
         if (Eio\Adapter::isSupported()) {
             $adapters[] = 'Eio';
         }

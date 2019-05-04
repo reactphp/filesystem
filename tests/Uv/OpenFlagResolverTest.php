@@ -1,12 +1,12 @@
 <?php
 
-namespace React\Tests\Filesystem\Eio;
+namespace React\Tests\Filesystem\Uv;
 
-use React\Filesystem\Eio\OpenFlagResolver;
+use React\Filesystem\Uv\OpenFlagResolver;
 use React\Tests\Filesystem\AbstractFlagResolverTest;
 
 /**
- * @requires extension eio
+ * @requires extension uv
  */
 class OpenFlagResolverTest extends AbstractFlagResolverTest
 {
@@ -26,7 +26,6 @@ class OpenFlagResolverTest extends AbstractFlagResolverTest
         unset($this->resolver);
         parent::tearDown();
     }
-
 
     public function testDefaultFlags()
     {

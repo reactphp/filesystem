@@ -36,6 +36,10 @@ class ModeTypeDetector implements TypeDetectorInterface
      */
     public function detect(array $node)
     {
+        if (isset($node['mode'])) {
+            return $this->walkMapping($node);
+        }
+
         return $this->filesystem->getAdapter()->stat($node['path'])->then(function ($stat) {
             return $this->walkMapping($stat);
         });
