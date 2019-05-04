@@ -352,7 +352,7 @@ class AdapterTest extends TestCase
 
         $nodes = $this->await($promise, $loop);
 
-        $this->assertEquals(new File('foo.bar/bar.foo', $fs), reset($nodes));
+        $this->assertEquals(new File($this->concatPath('foo.bar', 'bar.foo'), $fs), reset($nodes));
     }
 
     public function testLsStream()
@@ -391,7 +391,7 @@ class AdapterTest extends TestCase
         $calledOnData = false;
         $stream->on('data', function (NodeInterface $file) use (&$calledOnData) {
             $this->assertInstanceOf('React\Filesystem\Node\File', $file);
-            $this->assertSame('foo.bar' . DIRECTORY_SEPARATOR . 'bar.foo', $file->getPath());
+            $this->assertSame($this->concatPath('foo.bar', 'bar.foo'), $file->getPath());
             $calledOnData = true;
         });
 

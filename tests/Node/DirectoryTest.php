@@ -22,7 +22,7 @@ class DirectoryTest extends TestCase
         return [
             [
                 'foo.bar',
-                'foo.bar/',
+                'foo.bar' . \DIRECTORY_SEPARATOR,
             ],
         ];
     }
@@ -313,21 +313,21 @@ class DirectoryTest extends TestCase
         $adapter
             ->expects($this->at(0))
             ->method('stat')
-            ->with('bar.foo/foo.bar/')
+            ->with($this->concatPath('bar.foo', 'foo.bar', ''))
             ->will($this->returnValue(new RejectedPromise()))
         ;
 
         $adapter
             ->expects($this->at(1))
             ->method('stat')
-            ->with('bar.foo/')
+            ->with('bar.foo' . \DIRECTORY_SEPARATOR)
             ->will($this->returnValue(new FulfilledPromise()))
         ;
 
         $adapter
             ->expects($this->at(3))
             ->method('stat')
-            ->with('bar.foo/foo.bar/')
+            ->with($this->concatPath('bar.foo', 'foo.bar', ''))
             ->will($this->returnValue(new FulfilledPromise()))
         ;
 

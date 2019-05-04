@@ -21,13 +21,6 @@ abstract class AbstractAdaptersTest extends TestCase
     {
         $adapters = [];
 
-        if (function_exists('uv_loop_new'))
-        {
-            $this->adapterFactory($adapters, 'libuv', function () {
-                return new EventLoop\ExtUvLoop();
-            });
-        }
-
         if (function_exists('event_base_new'))
         {
             $this->adapterFactory($adapters, 'libevent', function () {
@@ -39,6 +32,13 @@ abstract class AbstractAdaptersTest extends TestCase
         {
             $this->adapterFactory($adapters, 'libev', function () {
                 return new EventLoop\LibEvLoop;
+            });
+        }
+
+        if (function_exists('uv_loop_new'))
+        {
+            $this->adapterFactory($adapters, 'extuv', function () {
+                return new EventLoop\ExtUvLoop();
             });
         }
 

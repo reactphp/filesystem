@@ -108,7 +108,7 @@ abstract class AdapterTestAbstract extends TestCase
      */
     public function testChown()
     {
-        if(DIRECTORY_SEPARATOR === '\\') {
+        if(\DIRECTORY_SEPARATOR === '\\') {
             return $this->markTestSkipped('Unsupported on Windows');
         }
 
@@ -125,10 +125,6 @@ abstract class AdapterTestAbstract extends TestCase
 
     public function testStat()
     {
-        if(DIRECTORY_SEPARATOR === '\\') {
-            return $this->markTestSkipped('Unsupported on Windows (different dev, rdev and ino)');
-        }
-
         $path = $this->tmpDir . \uniqid('', true);
         $this->assertTrue(\touch($path, \time(), \time()));
 

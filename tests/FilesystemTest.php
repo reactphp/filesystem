@@ -2,6 +2,7 @@
 
 namespace React\Tests\Filesystem;
 
+use React\EventLoop\Factory;
 use React\Filesystem\Filesystem;
 use React\Filesystem\InstantInvoker;
 use React\Promise\FulfilledPromise;
@@ -13,7 +14,7 @@ class FilesystemTest extends TestCase
     {
         $this->assertInstanceOf(
             'React\Filesystem\Filesystem',
-            Filesystem::create($this->getMock('React\EventLoop\LoopInterface'), [
+            Filesystem::create(Factory::create(), [
                 'pool' => [
                     'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
                 ],
@@ -45,7 +46,7 @@ class FilesystemTest extends TestCase
 
     public function testFile()
     {
-        $file = Filesystem::create($this->getMock('React\EventLoop\LoopInterface'), [
+        $file = Filesystem::create(Factory::create(), [
             'pool' => [
                 'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
             ],
@@ -56,7 +57,7 @@ class FilesystemTest extends TestCase
 
     public function testDir()
     {
-        $directory = Filesystem::create($this->getMock('React\EventLoop\LoopInterface'), [
+        $directory = Filesystem::create(Factory::create(), [
             'pool' => [
                 'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
             ],

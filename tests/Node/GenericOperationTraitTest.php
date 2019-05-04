@@ -112,36 +112,37 @@ class GenericOperationTraitTest extends TestCase
 
     public function testCreateNameNParentFromFilename()
     {
-        $node = new File('/foo/bar/baz/rabbit/kitten/index.php', Filesystem::createFromAdapter($this->mockAdapter()));
+        $path = $this->concatPath('', 'foo', 'bar', 'baz', 'rabbit', 'kitten', 'index.php');
+        $node = new File($path, Filesystem::createFromAdapter($this->mockAdapter()));
 
         foreach ([
             [
                 'index.php',
-                '/foo/bar/baz/rabbit/kitten/index.php',
+                $path,
             ],
             [
                 'kitten',
-                '/foo/bar/baz/rabbit/kitten/',
+                $this->concatPath('', 'foo', 'bar', 'baz', 'rabbit', 'kitten', ''),
             ],
             [
                 'rabbit',
-                '/foo/bar/baz/rabbit/',
+                $this->concatPath('', 'foo', 'bar', 'baz', 'rabbit', ''),
             ],
             [
                 'baz',
-                '/foo/bar/baz/',
+                $this->concatPath('', 'foo', 'bar', 'baz', ''),
             ],
             [
                 'bar',
-                '/foo/bar/',
+                $this->concatPath('', 'foo', 'bar', ''),
             ],
             [
                 'foo',
-                '/foo/',
+                $this->concatPath('', 'foo', ''),
             ],
             [
                 '',
-                '/',
+                \DIRECTORY_SEPARATOR,
             ],
         ] as $names) {
             $this->assertSame($names[0], $node->getName());

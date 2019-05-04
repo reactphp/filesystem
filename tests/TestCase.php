@@ -118,4 +118,15 @@ class TestCase extends PHPUnitTestCase
         $loop->run(); // Ensure we let the loop run it's course to clean up
         return $result;
     }
+
+    protected function concatPath(string ...$parts)
+    {
+        $path = '';
+
+        foreach ($parts as $part) {
+            $path .= $part . \DIRECTORY_SEPARATOR;
+        }
+
+        return \substr($path, 0, -1);
+    }
 }

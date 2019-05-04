@@ -19,4 +19,13 @@ class AdapterTest extends AdapterTestAbstract
     {
         return (new Adapter($this->loop));
     }
+
+    public function testStat()
+    {
+        if (\DIRECTORY_SEPARATOR === '\\') {
+            return $this->markTestSkipped('Unsupported on Windows (different dev, rdev and ino)');
+        }
+
+        parent::testStat();
+    }
 }
