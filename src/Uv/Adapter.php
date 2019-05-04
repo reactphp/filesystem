@@ -151,11 +151,15 @@ class Adapter implements AdapterInterface
         $args[] = function (...$args) use ($deferred, $callable) {
             $this->unregister();
 
-            try {
-                $deferred->resolve(\call_user_func_array($callable, $args));
-            } catch (\Throwable $e) {
-                $deferred->reject($e);
-            }
+            // Without a future tick it's very likely that the underlying
+            // uv loop handle we try to use got garbage collected
+            $this->loop->futureTick(function () use ($args, $deferred, $callable) {
+                try {
+                    $deferred->resolve(\call_user_func_array($callable, $args));
+                } catch (\Throwable $e) {
+                    $deferred->reject($e);
+                }
+            });
         };
 
         try {
@@ -297,7 +301,7 @@ class Adapter implements AdapterInterface
             if ($bool !== true) {
                 throw new Exception('Unable to list the directory');
             }
-    
+
             $this->processLsContents($path, $result, $stream);
         });
 

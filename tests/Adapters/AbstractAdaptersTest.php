@@ -2,6 +2,7 @@
 
 namespace React\Tests\Filesystem\Adapters;
 
+use RuntimeException;
 use React\EventLoop;
 use React\Filesystem\ChildProcess;
 use React\Filesystem\Eio;
@@ -62,7 +63,15 @@ abstract class AbstractAdaptersTest extends TestCase
 
     protected function adapterFactory(&$adapters, $loopSlug, callable $loopFactory)
     {
-        $adapters[$loopSlug . '-factory'] = $this->getFactoryProvider($loopFactory);
+        try {
+            $adapters[$loopSlug . '-factory'] = $this->getFactoryProvider($loopFactory);
+        } catch (RuntimeException $e) {
+            /*
+             * Ignore exception. This would happen if we use
+             * a non-uv loop and no compatible adapters were found.
+             */
+        }
+
         $adapters[$loopSlug . '-child-process'] = $this->getChildProcessProvider($loopFactory);
 
         if (extension_loaded('uv') && $loopFactory() instanceof EventLoop\ExtUvLoop) {
