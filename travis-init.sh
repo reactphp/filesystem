@@ -13,18 +13,11 @@ fi
 #set -e
 #set -o pipefail
 
-# install libuv + ext-uv on PHP7
 if [[ "$TRAVIS_PHP_VERSION" != "hhvm" &&
-      "$TRAVIS_PHP_VERSION" != "hhvm-nightly" &&
-      "$TRAVIS_PHP_VERSION" != "5.4" &&
-      "$TRAVIS_PHP_VERSION" != "5.5" &&
-      "$TRAVIS_PHP_VERSION" != "5.6" ]]; then
-   sudo apt-get install -y libuv1 libuv1-dev
-   yes | pecl install uv-beta
-fi
-
-#if [[ "$TRAVIS_PHP_VERSION" != "hhvm" &&
-#      "$TRAVIS_PHP_VERSION" != "hhvm-nightly" ]]; then
+      "$TRAVIS_PHP_VERSION" != "hhvm-nightly" ]]; then
+    # install libuv + ext-uv
+    sudo apt-get install -y libuv1 libuv1-dev
+    yes | pecl install uv-beta
 
     # install "libevent" (used by 'event' and 'libevent' PHP extensions)
 #    sudo apt-get install -y libevent-dev
@@ -56,4 +49,4 @@ fi
 #        echo "extension=libev.so" >> "$(php -r 'echo php_ini_loaded_file();')"
 #    fi
 
-#fi
+fi
