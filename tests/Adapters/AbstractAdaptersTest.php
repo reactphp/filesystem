@@ -6,7 +6,7 @@ use React\EventLoop;
 use React\Filesystem\ChildProcess;
 use React\Filesystem\Eio;
 use React\Filesystem\Filesystem;
-use React\Filesystem\Pthreads;
+use React\Filesystem\Uv;
 use React\Tests\Filesystem\TestCase;
 use WyriHaximus\React\ChildProcess\Pool\Options;
 
@@ -20,6 +20,13 @@ abstract class AbstractAdaptersTest extends TestCase
     public function adapterProvider()
     {
         $adapters = [];
+
+        if (function_exists('uv_loop_new'))
+        {
+            $this->adapterFactory($adapters, 'libuv', function () {
+                return new EventLoop\ExtUvLoop();
+            });
+        }
 
         if (function_exists('event_base_new'))
         {
@@ -55,15 +62,15 @@ abstract class AbstractAdaptersTest extends TestCase
 
     protected function adapterFactory(&$adapters, $loopSlug, callable $loopFactory)
     {
-        $adapters[$loopSlug . '-factory'] = $this->getFacoryProvider($loopFactory);
+        $adapters[$loopSlug . '-factory'] = $this->getFactoryProvider($loopFactory);
         $adapters[$loopSlug . '-child-process'] = $this->getChildProcessProvider($loopFactory);
+
+        if (extension_loaded('uv')) {
+            $adapters[$loopSlug . '-uv'] = $this->getUvProvider($loopFactory);
+        }
 
         if (extension_loaded('eio')) {
             $adapters[$loopSlug . '-eio'] = $this->getEioProvider($loopFactory);
-        }
-
-        if (extension_loaded('pthreads')) {
-            $adapters[$loopSlug . '-pthreads'] = $this->getPthreadsProvider($loopFactory);
         }
     }
 
@@ -85,7 +92,16 @@ abstract class AbstractAdaptersTest extends TestCase
         ];
     }
 
-    protected function getFacoryProvider(callable $loopFactory)
+    protected function getUvProvider(callable $loopFactory)
+    {
+        $loop = $loopFactory();
+        return [
+            $loop,
+            new Uv\Adapter($loop),
+        ];
+    }
+
+    protected function getFactoryProvider(callable $loopFactory)
     {
         $loop = $loopFactory();
         return [

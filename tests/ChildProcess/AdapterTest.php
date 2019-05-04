@@ -391,7 +391,7 @@ class AdapterTest extends TestCase
         $calledOnData = false;
         $stream->on('data', function (NodeInterface $file) use (&$calledOnData) {
             $this->assertInstanceOf('React\Filesystem\Node\File', $file);
-            $this->assertSame('foo.bar/bar.foo', $file->getPath());
+            $this->assertSame('foo.bar' . DIRECTORY_SEPARATOR . 'bar.foo', $file->getPath());
             $calledOnData = true;
         });
 
