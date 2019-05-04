@@ -65,7 +65,7 @@ abstract class AbstractAdaptersTest extends TestCase
         $adapters[$loopSlug . '-factory'] = $this->getFactoryProvider($loopFactory);
         $adapters[$loopSlug . '-child-process'] = $this->getChildProcessProvider($loopFactory);
 
-        if (extension_loaded('uv')) {
+        if (extension_loaded('uv') && $loopFactory() instanceof EventLoop\ExtUvLoop) {
             $adapters[$loopSlug . '-uv'] = $this->getUvProvider($loopFactory);
         }
 
