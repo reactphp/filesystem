@@ -13,6 +13,16 @@ fi
 #set -e
 #set -o pipefail
 
+# install libuv + ext-uv on PHP7
+if [[ "$TRAVIS_PHP_VERSION" != "hhvm" &&
+      "$TRAVIS_PHP_VERSION" != "hhvm-nightly" &&
+      "$TRAVIS_PHP_VERSION" != "5.4" &&
+      "$TRAVIS_PHP_VERSION" != "5.5" &&
+      "$TRAVIS_PHP_VERSION" != "5.6" ]]; then
+   sudo apt-get install -y libuv1 libuv1-dev
+   yes | pecl install uv-beta
+fi
+
 #if [[ "$TRAVIS_PHP_VERSION" != "hhvm" &&
 #      "$TRAVIS_PHP_VERSION" != "hhvm-nightly" ]]; then
 
