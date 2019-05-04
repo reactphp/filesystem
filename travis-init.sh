@@ -15,8 +15,10 @@ fi
 
 if [[ "$TRAVIS_PHP_VERSION" != "hhvm" &&
       "$TRAVIS_PHP_VERSION" != "hhvm-nightly" ]]; then
-    # install libuv + ext-uv
-    sudo apt-get install -y libuv1 libuv1-dev
+    # travis does not seem to have libuv1 ?
+    git clone https://github.com/libuv/libuv && cd libuv && git checkout tags/v1.28.0 && sh autogen.sh && ./configure && make && sudo make install && cd ..
+
+    # install ext-uv
     yes | pecl install uv-beta
 
     # install "libevent" (used by 'event' and 'libevent' PHP extensions)
