@@ -9,7 +9,6 @@ use React\EventLoop\LoopInterface;
 use React\Filesystem\ObjectStream;
 use React\Filesystem\ObjectStreamSink;
 use React\Filesystem\AdapterInterface;
-use React\Filesystem\CallInvokerInterface;
 use React\Filesystem\FilesystemInterface;
 use React\Filesystem\MappedTypeDetector;
 use React\Filesystem\ModeTypeDetector;
@@ -66,11 +65,6 @@ class Adapter implements AdapterInterface
     protected $permissionFlagResolver;
 
     /**
-     * @var CallInvokerInterface
-     */
-    protected $invoker;
-
-    /**
      * @var array
      */
     protected $options = [
@@ -86,7 +80,6 @@ class Adapter implements AdapterInterface
     {
         $this->loop = $loop;
 
-        $this->invoker = \React\Filesystem\getInvoker($this, $options, 'invoker', 'React\Filesystem\InstantInvoker');
         $this->openFileLimiter = new OpenFileLimiter(\React\Filesystem\getOpenFileLimit($options));
         $this->permissionFlagResolver = new PermissionFlagResolver();
 
@@ -155,23 +148,6 @@ class Adapter implements AdapterInterface
     }
 
     /**
-     * {@inheritDoc}
-     */
-    public function getInvoker()
-    {
-        return $this->invoker;
-    }
-
-    /**
-     * @param CallInvokerInterface $invoker
-     * @return void
-     */
-    public function setInvoker(CallInvokerInterface $invoker)
-    {
-        $this->invoker = $invoker;
-    }
-
-    /**
      * @param string $function
      * @param array $args
      * @param int $errorResultCode
@@ -197,7 +173,7 @@ class Adapter implements AdapterInterface
      */
     public function chmod($path, $mode)
     {
-        return $this->invoker->invokeCall('chmod', [
+        return $this->callFilesystem('chmod', [
             'path' => $path,
             'mode' => decoct($mode),
         ]);
@@ -210,7 +186,7 @@ class Adapter implements AdapterInterface
      */
     public function mkdir($path, $mode = self::CREATION_MODE)
     {
-        return $this->invoker->invokeCall('mkdir', [
+        return $this->callFilesystem('mkdir', [
             'path' => $path,
             'mode' => decoct($this->permissionFlagResolver->resolve($mode)),
         ]);
@@ -299,7 +275,7 @@ class Adapter implements AdapterInterface
      */
     public function getContents($path, $offset = 0, $length = null)
     {
-        return $this->invoker->invokeCall('getContents', [
+        return $this->callFilesystem('getContents', [
             'path' => $path,
             'offset' => $offset,
             'maxlen' => $length,
@@ -323,7 +299,7 @@ class Adapter implements AdapterInterface
      */
     public function putContents($path, $content)
     {
-        return $this->invoker->invokeCall('putContents', [
+        return $this->callFilesystem('putContents', [
             'path' => $path,
             'chunk' => base64_encode($content),
             'flags' => 0,
@@ -346,7 +322,7 @@ class Adapter implements AdapterInterface
      */
     public function appendContents($path, $content)
     {
-        return $this->invoker->invokeCall('putContents', [
+        return $this->callFilesystem('putContents', [
             'path' => $path,
             'chunk' => base64_encode($content),
             'flags' => FILE_APPEND,
@@ -361,7 +337,7 @@ class Adapter implements AdapterInterface
      */
     public function rmdir($path)
     {
-        return $this->invoker->invokeCall('rmdir', [
+        return $this->callFilesystem('rmdir', [
             'path' => $path,
         ]);
     }
@@ -372,7 +348,7 @@ class Adapter implements AdapterInterface
      */
     public function unlink($path)
     {
-        return $this->invoker->invokeCall('unlink', [
+        return $this->callFilesystem('unlink', [
             'path' => $path,
         ]);
     }
@@ -385,7 +361,7 @@ class Adapter implements AdapterInterface
      */
     public function chown($path, $uid, $gid)
     {
-        return $this->invoker->invokeCall('chown', [
+        return $this->callFilesystem('chown', [
             'path' => $path,
             'uid' => $uid,
             'gid' => $gid,
@@ -398,7 +374,7 @@ class Adapter implements AdapterInterface
      */
     public function stat($filename)
     {
-        return $this->invoker->invokeCall('stat', [
+        return $this->callFilesystem('stat', [
             'path' => $filename,
         ])->then(function ($stat) {
             $stat['atime'] = new DateTime('@' . $stat['atime']);
@@ -425,7 +401,7 @@ class Adapter implements AdapterInterface
     {
         $stream = new ObjectStream();
 
-        $this->invoker->invokeCall('readdir', [
+        $this->callFilesystem('readdir', [
             'path' => $path,
             'flags' => $this->options['lsFlags'],
         ])->then(function ($result) use ($path, $stream) {
@@ -462,7 +438,7 @@ class Adapter implements AdapterInterface
      */
     public function touch($path, $mode = self::CREATION_MODE)
     {
-        return $this->invoker->invokeCall('touch', [
+        return $this->callFilesystem('touch', [
             'path' => $path,
             'mode' => decoct($this->permissionFlagResolver->resolve($mode)),
         ]);
@@ -475,7 +451,7 @@ class Adapter implements AdapterInterface
      */
     public function rename($fromPath, $toPath)
     {
-        return $this->invoker->invokeCall('rename', [
+        return $this->callFilesystem('rename', [
             'from' => $fromPath,
             'to' => $toPath,
         ]);
@@ -487,7 +463,7 @@ class Adapter implements AdapterInterface
      */
     public function readlink($path)
     {
-        return $this->invoker->invokeCall('readlink', [
+        return $this->callFilesystem('readlink', [
             'path' => $path,
         ])->then(function ($result) {
             return \React\Promise\resolve($result['path']);
@@ -501,7 +477,7 @@ class Adapter implements AdapterInterface
      */
     public function symlink($fromPath, $toPath)
     {
-        return $this->invoker->invokeCall('symlink', [
+        return $this->callFilesystem('symlink', [
             'from' => $fromPath,
             'to' => $toPath,
         ])->then(function ($result) {

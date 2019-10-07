@@ -5,7 +5,6 @@ namespace React\Filesystem\Eio;
 use DateTime;
 use React\EventLoop\LoopInterface;
 use React\Filesystem\AdapterInterface;
-use React\Filesystem\CallInvokerInterface;
 use React\Filesystem\FilesystemInterface;
 use React\Filesystem\ModeTypeDetector;
 use React\Filesystem\Node\NodeInterface;
@@ -14,7 +13,7 @@ use React\Filesystem\ObjectStreamSink;
 use React\Filesystem\OpenFileLimiter;
 use React\Filesystem\PermissionFlagResolver;
 use React\Filesystem\TypeDetectorInterface;
-use React\Promise\Deferred;
+use React\Promise\Promise;
 use React\Promise\PromiseInterface;
 
 class Adapter implements AdapterInterface
@@ -43,16 +42,6 @@ class Adapter implements AdapterInterface
      * @var PermissionFlagResolver
      */
     protected $permissionFlagResolver;
-
-    /**
-     * @var CallInvokerInterface
-     */
-    protected $invoker;
-
-    /**
-     * @var CallInvokerInterface
-     */
-    protected $readDirInvoker;
 
     /**
      * @var FilesystemInterface
@@ -96,8 +85,6 @@ class Adapter implements AdapterInterface
      */
     protected function applyConfiguration(array $options)
     {
-        $this->invoker = \React\Filesystem\getInvoker($this, $options, 'invoker', 'React\Filesystem\InstantInvoker');
-        $this->readDirInvoker = \React\Filesystem\getInvoker($this, $options, 'read_dir_invoker', 'React\Filesystem\InstantInvoker');
         $this->openFileLimiter = new OpenFileLimiter(\React\Filesystem\getOpenFileLimit($options));
         $this->options = array_merge_recursive($this->options, $options);
     }
@@ -121,30 +108,6 @@ class Adapter implements AdapterInterface
     /**
      * {@inheritDoc}
      */
-    public function getInvoker()
-    {
-        return $this->invoker;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setInvoker(CallInvokerInterface $invoker)
-    {
-        $this->invoker = $invoker;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getFilesystem()
-    {
-        return $this->filesystem;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function setFilesystem(FilesystemInterface $filesystem)
     {
         $this->filesystem = $filesystem;
@@ -158,9 +121,9 @@ class Adapter implements AdapterInterface
     /**
      * {@inheritDoc}
      */
-    public function setReadDirInvoker(CallInvokerInterface $invoker)
+    public function getFilesystem()
     {
-        $this->readDirInvoker = $invoker;
+        return $this->filesystem;
     }
 
     /**
@@ -168,7 +131,7 @@ class Adapter implements AdapterInterface
      */
     public function stat($filename)
     {
-        return $this->invoker->invokeCall('eio_lstat', [$filename])->then(function ($stat) {
+        return $this->callFilesystem('eio_lstat', [$filename])->then(function ($stat) {
             $stat['atime'] = new DateTime('@' .$stat['atime']);
             $stat['mtime'] = new DateTime('@' .$stat['mtime']);
             $stat['ctime'] = new DateTime('@' .$stat['ctime']);
@@ -181,7 +144,7 @@ class Adapter implements AdapterInterface
      */
     public function unlink($filename)
     {
-        return $this->invoker->invokeCall('eio_unlink', [$filename]);
+        return $this->callFilesystem('eio_unlink', [$filename]);
     }
 
     /**
@@ -189,7 +152,7 @@ class Adapter implements AdapterInterface
      */
     public function rename($fromFilename, $toFilename)
     {
-        return $this->invoker->invokeCall('eio_rename', [$fromFilename, $toFilename]);
+        return $this->callFilesystem('eio_rename', [$fromFilename, $toFilename]);
     }
 
     /**
@@ -197,7 +160,7 @@ class Adapter implements AdapterInterface
      */
     public function chmod($path, $mode)
     {
-        return $this->invoker->invokeCall('eio_chmod', [$path, $mode]);
+        return $this->callFilesystem('eio_chmod', [$path, $mode]);
     }
 
     /**
@@ -205,7 +168,7 @@ class Adapter implements AdapterInterface
      */
     public function chown($path, $uid, $gid)
     {
-        return $this->invoker->invokeCall('eio_chown', [$path, $uid, $gid]);
+        return $this->callFilesystem('eio_chown', [$path, $uid, $gid]);
     }
 
     /**
@@ -224,8 +187,11 @@ class Adapter implements AdapterInterface
     {
         $stream = new ObjectStream();
 
-        $this->readDirInvoker->invokeCall('eio_readdir', [$path, $this->options['lsFlags']], false)->then(function ($result) use ($path, $stream) {
+        $this->callFilesystem('eio_readdir', [$path, $this->options['lsFlags']], false)->then(function ($result) use ($path, $stream) {
             $this->processLsContents($path, $result, $stream);
+        }, function ($error) use ($stream) {
+            $stream->emit('error', [$error]);
+            $stream->close();
         });
 
         return $stream;
@@ -253,10 +219,16 @@ class Adapter implements AdapterInterface
             ];
             $promises[] = \React\Filesystem\detectType($this->typeDetectors, $node)->then(function (NodeInterface $node) use ($stream) {
                 $stream->write($node);
+
+                return \React\Promise\resolve(true);
+            }, function ($error) {
+                return \React\Promise\resolve(true);
             });
         }
 
         \React\Promise\all($promises)->then(function () use ($stream) {
+            $stream->close();
+        }, function ($error) use ($stream) {
             $stream->close();
         });
     }
@@ -266,7 +238,7 @@ class Adapter implements AdapterInterface
      */
     public function mkdir($path, $mode = self::CREATION_MODE)
     {
-        return $this->invoker->invokeCall('eio_mkdir', [
+        return $this->callFilesystem('eio_mkdir', [
             $path,
             $this->permissionFlagResolver->resolve($mode),
         ]);
@@ -277,7 +249,7 @@ class Adapter implements AdapterInterface
      */
     public function rmdir($path)
     {
-        return $this->invoker->invokeCall('eio_rmdir', [$path]);
+        return $this->callFilesystem('eio_rmdir', [$path]);
     }
 
     /**
@@ -288,7 +260,7 @@ class Adapter implements AdapterInterface
         $eioFlags = $this->openFlagResolver->resolve($flags);
         $mode = $this->permissionFlagResolver->resolve($mode);
         return $this->openFileLimiter->open()->then(function () use ($path, $eioFlags, $mode) {
-            return $this->invoker->invokeCall('eio_open', [
+            return $this->callFilesystem('eio_open', [
                 $path,
                 $eioFlags,
                 $mode,
@@ -304,7 +276,7 @@ class Adapter implements AdapterInterface
      */
     public function close($fd)
     {
-        return $this->invoker->invokeCall('eio_close', [$fd])->always(function () {
+        return $this->callFilesystem('eio_close', [$fd])->always(function () {
             $this->openFileLimiter->close();
         });
     }
@@ -387,14 +359,14 @@ class Adapter implements AdapterInterface
             if ($time === null) {
                 $time = microtime(true);
             }
-            return $this->invoker->invokeCall('eio_utime', [
+            return $this->callFilesystem('eio_utime', [
                 $path,
                 $time,
                 $time,
             ]);
         }, function () use ($path, $mode) {
             return $this->openFileLimiter->open()->then(function () use ($path, $mode) {
-                return $this->invoker->invokeCall('eio_open', [
+                return $this->callFilesystem('eio_open', [
                     $path,
                     EIO_O_CREAT,
                     $this->permissionFlagResolver->resolve($mode),
@@ -410,7 +382,7 @@ class Adapter implements AdapterInterface
      */
     public function read($fileDescriptor, $length, $offset)
     {
-        return $this->invoker->invokeCall('eio_read', [
+        return $this->callFilesystem('eio_read', [
             $fileDescriptor,
             $length,
             $offset,
@@ -422,7 +394,7 @@ class Adapter implements AdapterInterface
      */
     public function write($fileDescriptor, $data, $length, $offset)
     {
-        return $this->invoker->invokeCall('eio_write', [
+        return $this->callFilesystem('eio_write', [
             $fileDescriptor,
             $data,
             $length,
@@ -435,7 +407,7 @@ class Adapter implements AdapterInterface
      */
     public function readlink($path)
     {
-        return $this->invoker->invokeCall('eio_readlink', [
+        return $this->callFilesystem('eio_readlink', [
             $path,
         ]);
     }
@@ -445,7 +417,7 @@ class Adapter implements AdapterInterface
      */
     public function symlink($fromPath, $toPath)
     {
-        return $this->invoker->invokeCall('eio_symlink', [
+        return $this->callFilesystem('eio_symlink', [
             $fromPath,
             $toPath,
         ]);
@@ -469,46 +441,60 @@ class Adapter implements AdapterInterface
      */
     public function callFilesystem($function, $args, $errorResultCode = -1)
     {
-        $deferred = new Deferred();
+        return new Promise(function ($resolve, $reject) use ($function, $args, $errorResultCode) {
+            if ($this->loopRunning) {
+                try {
+                    $resolve($this->executeDelayedCall($function, $args, $errorResultCode));
+                } catch (\Exception $exception) {
+                    $reject($exception);
+                } catch (\Throwable $exception) {
+                    $reject($exception);
+                }
 
-        if ($this->loopRunning) {
-            $this->executeDelayedCall($function, $args, $errorResultCode, $deferred);
-            return $deferred->promise();
-        }
-
-        // Run this in a future tick to make sure all EIO calls are run within the loop
-        $this->loop->futureTick(function () use ($function, $args, $errorResultCode, $deferred) {
-            $this->loopRunning = true;
-            $this->executeDelayedCall($function, $args, $errorResultCode, $deferred);
-        });
-
-        return $deferred->promise();
-    }
-
-    protected function executeDelayedCall($function, $args, $errorResultCode, Deferred $deferred)
-    {
-        $this->register();
-        $args[] = EIO_PRI_DEFAULT;
-        $args[] = function ($data, $result, $req) use ($deferred, $errorResultCode, $function, $args) {
-            if ($result == $errorResultCode) {
-                $exception = new UnexpectedValueException(@eio_get_last_error($req));
-                $exception->setArgs($args);
-                $deferred->reject($exception);
                 return;
             }
 
-            $deferred->resolve($result);
-        };
 
-        if (!call_user_func_array($function, $args)) {
-            $name = $function;
-            if (!is_string($function)) {
-                $name = get_class($function);
-            }
-            $exception = new RuntimeException('Unknown error calling "' . $name . '"');
-            $exception->setArgs($args);
-            $deferred->reject($exception);
-        };
+            // Run this in a future tick to make sure all EIO calls are run within the loop
+            $this->loop->futureTick(function () use ($function, $args, $errorResultCode, $resolve, $reject) {
+                try {
+                    $resolve($this->executeDelayedCall($function, $args, $errorResultCode));
+                } catch (\Exception $exception) {
+                    $reject($exception);
+                } catch (\Throwable $exception) {
+                    $reject($exception);
+                }
+            });
+
+        });
+    }
+
+    protected function executeDelayedCall($function, $args, $errorResultCode)
+    {
+        $this->register();
+        return new Promise(function ($resolve, $reject) use ($function, $args, $errorResultCode) {
+            $args[] = EIO_PRI_DEFAULT;
+            $args[] = function ($data, $result, $req) use ($resolve, $reject, $errorResultCode, $function, $args) {
+                if ($result == $errorResultCode) {
+                    $exception = new UnexpectedValueException(@eio_get_last_error($req));
+                    $exception->setArgs($args);
+                    $reject($exception);
+                    return;
+                }
+
+                $resolve($result);
+            };
+
+            if (!call_user_func_array($function, $args)) {
+                $name = $function;
+                if (!is_string($function)) {
+                    $name = get_class($function);
+                }
+                $exception = new RuntimeException('Unknown error calling "' . $name . '"');
+                $exception->setArgs($args);
+                $reject($exception);
+            };
+        });
     }
 
     protected function register()
