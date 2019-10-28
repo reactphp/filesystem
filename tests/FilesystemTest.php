@@ -3,7 +3,6 @@
 namespace React\Tests\Filesystem;
 
 use React\Filesystem\Filesystem;
-use React\Filesystem\InstantInvoker;
 use React\Promise\FulfilledPromise;
 use React\Promise\RejectedPromise;
 
@@ -82,22 +81,5 @@ class FilesystemTest extends TestCase
             'React\Promise\PromiseInterface',
             Filesystem::createFromAdapter($adapter)->getContents('foo.bar')
         );
-    }
-
-    public function testSetFilesystemAndInvoker()
-    {
-        $adapter = $this->mockAdapter();
-        $invoker = new InstantInvoker($adapter);
-        $adapter
-            ->expects($this->at(0))
-            ->method('setFilesystem')
-            ->with($this->isInstanceOf('React\Filesystem\Filesystem'))
-        ;
-        $adapter
-            ->expects($this->at(1))
-            ->method('setInvoker')
-            ->with($invoker)
-        ;
-        Filesystem::createFromAdapter($adapter)->setInvoker($invoker);
     }
 }

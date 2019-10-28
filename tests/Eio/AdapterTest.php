@@ -7,7 +7,6 @@ use React\Filesystem\PermissionFlagResolver;
 use React\Filesystem\Eio\Adapter;
 use React\Promise\FulfilledPromise;
 use React\Promise\RejectedPromise;
-use React\Tests\Filesystem\CallInvokerProvider;
 use React\Tests\Filesystem\TestCase;
 
 /**
@@ -43,28 +42,12 @@ class AdapterTest extends TestCase
                 'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
             ],
         ]);
-        
+
         $this->assertNull($filesystem->getFilesystem());
         $fs = \React\Filesystem\Filesystem::createFromAdapter($this->mockAdapter());
         $filesystem->setFilesystem($fs);
 
         $this->assertSame($fs, $filesystem->getFilesystem());
-    }
-
-    public function testGetSetInvoker()
-    {
-        $loop = $this->getMock('React\EventLoop\LoopInterface');
-        $filesystem = new Adapter($loop, [
-            'pool' => [
-                'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
-            ],
-        ]);
-
-        $invoker = new \React\Filesystem\InstantInvoker($filesystem);
-        $this->assertNotSame($invoker, $filesystem->getInvoker());
-
-        $filesystem->setInvoker($invoker);
-        $this->assertSame($invoker, $filesystem->getInvoker());
     }
 
     public function testCallFilesystemCallsProvider()
@@ -279,198 +262,6 @@ class AdapterTest extends TestCase
         $filesystem->handleEvent();
     }
 
-    public function callInvokerProvider()
-    {
-        if (!extension_loaded('eio')) {
-            return null;
-        }
-        $loop = Factory::create();
-        $adapter = $this->getMock('React\Filesystem\Eio\Adapter', [
-            'getLoop',
-        ], [
-            $loop,
-        ]);
-
-        $adapter
-            ->expects($this->any())
-            ->method('getLoop')
-            ->will($this->returnValue($loop))
-        ;
-
-        return (new CallInvokerProvider())->callInvokerProvider($loop, $adapter);
-    }
-
-    /**
-     * @dataProvider callInvokerProvider
-     */
-    public function testTouchExists($loop, $adapter, $invoker)
-    {
-        $filename = 'foo.bar';
-        $fd = '01010100100010011110101';
-
-        $promise = $this->getMock('React\Promise\PromiseInterface', [
-            'then',
-        ]);
-
-        $promise
-            ->expects($this->any())
-            ->method('then')
-            ->with($this->isType('callable'))
-            ->will($this->returnCallback(function ($resolveCb) use ($fd) {
-                return $resolveCb($fd);
-            }))
-        ;
-
-        $adapter
-            ->expects($this->at(0))
-            ->method('callFilesystem')
-            ->with('eio_lstat', [
-                $filename,
-            ])
-            ->will($this->returnValue($promise))
-        ;
-
-        $time = microtime(true);
-
-        $adapter
-            ->expects($this->at(1))
-            ->method('callFilesystem')
-            ->with('eio_utime', [
-                $filename,
-                $time,
-                $time,
-            ])
-            ->will($this->returnValue($promise))
-        ;
-
-        $this->assertInstanceOf('React\Promise\PromiseInterface', $adapter->touch($filename, Adapter::CREATION_MODE, $time));
-
-        $loop->run();
-    }
-
-    /**
-     * @dataProvider callInvokerProvider
-     */
-    public function testTouchExistsNoTime($loop, $adapter, $invoker)
-    {
-        $filename = 'foo.bar';
-        $fd = '01010100100010011110101';
-
-        $promise = $this->getMock('React\Promise\PromiseInterface', [
-            'then',
-        ]);
-
-        $promise
-            ->expects($this->any())
-            ->method('then')
-            ->with($this->isType('callable'))
-            ->will($this->returnCallback(function ($resolveCb) use ($fd) {
-                return $resolveCb($fd);
-            }, function ($resolveCb) use ($fd) {
-                return $resolveCb($fd);
-            }))
-        ;
-
-        $adapter
-            ->expects($this->at(0))
-            ->method('stat')
-            ->with($filename)
-            ->will($this->returnValue($promise))
-        ;
-
-        $adapter
-            ->expects($this->at(1))
-            ->method('callFilesystem')
-            ->with('eio_utime', $this->callback(function ($array) use ($filename) {
-                return $array[0] === $filename && is_float($array[1]) && is_float($array[2]);
-            }))
-            ->will($this->returnValue($promise))
-        ;
-
-        $this->assertInstanceOf('React\Promise\PromiseInterface', $adapter->touch($filename));
-
-        $loop->run();
-    }
-
-    /**
-     * @dataProvider callInvokerProvider
-     */
-    public function testTouchCreate($loop, $adapter, $invoker)
-    {
-        $filename = 'foo.bar';
-        $fd = '01010100100010011110101';
-
-        $adapter
-            ->expects($this->at(1))
-            ->method('stat')
-            ->with($filename)
-            ->will($this->returnValue(new RejectedPromise($fd)))
-        ;
-
-        $time = microtime(true);
-
-        $adapter
-            ->expects($this->at(2))
-            ->method('callFilesystem')
-            ->with('eio_open', [
-                $filename,
-                EIO_O_CREAT,
-                (new PermissionFlagResolver())->resolve(Adapter::CREATION_MODE),
-            ])
-            ->will($this->returnValue(new FulfilledPromise($fd)))
-        ;
-
-        $adapter
-            ->expects($this->at(2))
-            ->method('close')
-            ->with($fd)
-            ->will($this->returnValue(new FulfilledPromise()))
-        ;
-
-        $this->assertInstanceOf('React\Promise\PromiseInterface', $adapter->touch($filename, Adapter::CREATION_MODE, $time));
-
-        $loop->run();
-    }
-
-    /**
-     * @dataProvider callInvokerProvider
-     */
-    public function _testOpen($loop, $adapter, $invoker)
-    {
-        $filename = 'foo.bar';
-        $fd = '01010100100010011110101';
-
-        $promise = $this->getMock('React\Promise\PromiseInterface', [
-            'then',
-        ]);
-
-        $promise
-            ->expects($this->once())
-            ->method('then')
-            ->with($this->isType('callable'))
-            ->will($this->returnCallback(function ($resolveCb) use ($fd) {
-                return new FulfilledPromise($resolveCb($fd));
-            }))
-        ;
-
-        $adapter
-            ->expects($this->at(0))
-            ->method('callFilesystem')
-            ->with('eio_open', [
-                $filename,
-                2,
-                (new PermissionFlagResolver())->resolve(Adapter::CREATION_MODE),
-            ])
-            ->will($this->returnValue($promise))
-        ;
-
-        $adapter->open($filename, '+')->then(function ($stream) {
-            $this->assertInstanceOf('React\Filesystem\Eio\DuplexStream', $stream);
-        });
-
-        $loop->run();
-    }
-
     public function testExecuteDelayedCall()
     {
         $loop = $this->getMock('React\EventLoop\LoopInterface', [
@@ -495,7 +286,7 @@ class AdapterTest extends TestCase
         $filesystem = new Adapter($loop);
 
         $loop
-            ->expects($this->exactly(1))
+            ->expects($this->exactly(2))
             ->method('futureTick')
             ->with($this->isType('callable'))
             ->will($this->returnCallback(function ($resolveCb) {
@@ -698,8 +489,8 @@ class AdapterTest extends TestCase
             ->expects($this->once())
             ->method('removeReadStream')
             ->with($this->isType('resource'), [
-            $filesystem,
-            'handleEvent',
+                $filesystem,
+                'handleEvent',
             ])
             ->will($this->returnValue(1))
         ;

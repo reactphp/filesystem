@@ -137,12 +137,4 @@ class Filesystem implements FilesystemInterface
             return $file->getContents();
         });
     }
-
-    /**
-     * @param CallInvokerInterface $invoker
-     */
-    public function setInvoker(CallInvokerInterface $invoker)
-    {
-        $this->adapter->setInvoker($invoker);
-    }
 }

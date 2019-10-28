@@ -33,13 +33,6 @@ interface AdapterInterface
     public function getFilesystem();
 
     /**
-     * Get the call invoker for this adapter.
-     *
-     * @return CallInvokerInterface
-     */
-    public function getInvoker();
-
-    /**
      * Set the relevant filesystem for this adapter.
      *
      * @internal
@@ -47,14 +40,6 @@ interface AdapterInterface
      * @return void
      */
     public function setFilesystem(FilesystemInterface $filesystem);
-
-    /**
-     * Set the call invoker for this adapter.
-     *
-     * @param CallInvokerInterface $invoker
-     * @return void
-     */
-    public function setInvoker(CallInvokerInterface $invoker);
 
     /**
      * Call the underlying filesystem.

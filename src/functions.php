@@ -5,22 +5,6 @@ namespace React\Filesystem;
 use Exception;
 
 /**
- * @param AdapterInterface $adapter
- * @param array $options
- * @param string $key
- * @param string $fallback
- * @return CallInvokerInterface
- */
-function getInvoker(AdapterInterface $adapter, array $options, $key, $fallback)
-{
-    if (isset($options[$key]) && $options[$key] instanceof CallInvokerInterface) {
-        return $options[$key];
-    }
-
-    return new $fallback($adapter);
-}
-
-/**
  * @param array $options
  * @return int
  */

@@ -26,8 +26,6 @@ class TestCase extends PHPUnitTestCase
             'getLoop',
             'getFilesystem',
             'setFilesystem',
-            'getInvoker',
-            'setInvoker',
             'callFilesystem',
             'isSupported',
             'mkdir',

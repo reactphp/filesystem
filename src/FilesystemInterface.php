@@ -62,9 +62,4 @@ interface FilesystemInterface
      * @return \React\Promise\PromiseInterface
      */
     public function getContents($filename);
-
-    /**
-     * @param CallInvokerInterface $invoker
-     */
-    public function setInvoker(CallInvokerInterface $invoker);
 }

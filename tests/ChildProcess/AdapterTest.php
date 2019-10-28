@@ -8,11 +8,16 @@ use React\Filesystem\Filesystem;
 use React\Filesystem\Node\File;
 use React\Filesystem\Node\NodeInterface;
 use React\Promise\Deferred;
-use React\Promise\FulfilledPromise;
 use React\Tests\Filesystem\TestCase;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 
 class AdapterTest extends TestCase
 {
+    public function tearDown()
+    {
+        SingletonPoolStub::reset();
+    }
+
     public function testInterface()
     {
         $this->assertInstanceOf(
@@ -52,22 +57,6 @@ class AdapterTest extends TestCase
         $this->assertSame($fs, $filesystem->getFilesystem());
     }
 
-    public function testGetSetInvoker()
-    {
-        $loop = $this->getMock('React\EventLoop\LoopInterface');
-        $filesystem = new Adapter($loop, [
-            'pool' => [
-                'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
-            ],
-        ]);
-
-        $invoker = new \React\Filesystem\InstantInvoker($filesystem);
-        $this->assertNotSame($invoker, $filesystem->getInvoker());
-
-        $filesystem->setInvoker($invoker);
-        $this->assertSame($invoker, $filesystem->getInvoker());
-    }
-
     public function callFilesystemProvider()
     {
         return [
@@ -80,7 +69,7 @@ class AdapterTest extends TestCase
                     'mkdir',
                     [
                         'path' => 'foo.bar',
-                        'mode' => 760,
+                        'mode' => '760',
                     ],
                 ],
             ],
@@ -94,7 +83,7 @@ class AdapterTest extends TestCase
                     'mkdir',
                     [
                         'path' => 'foo.bar',
-                        'mode' => 777,
+                        'mode' => '777',
                     ],
                 ],
             ],
@@ -131,7 +120,7 @@ class AdapterTest extends TestCase
                     'touch',
                     [
                         'path' => 'foo.bar',
-                        'mode' => 760,
+                        'mode' => '760',
                     ],
                 ],
             ],
@@ -175,7 +164,45 @@ class AdapterTest extends TestCase
                     'chmod',
                     [
                         'path' => 'foo.bar',
-                        'mode' => 123,
+                        'mode' => '123',
+                    ],
+                ],
+            ],
+            [
+                'readlink',
+                [
+                    'foo.bar',
+                ],
+                [
+                    'readlink',
+                    [
+                        'path' => 'foo.bar',
+                    ],
+                ],
+            ],
+            [
+                'stat',
+                [
+                    'foo.bar',
+                ],
+                [
+                    'stat',
+                    [
+                        'path' => 'foo.bar',
+                    ],
+                ],
+            ],
+            [
+                'symlink',
+                [
+                    'foo.bar',
+                    'bar.foo',
+                ],
+                [
+                    'symlink',
+                    [
+                        'from' => 'foo.bar',
+                        'to' => 'bar.foo',
                     ],
                 ],
             ],
@@ -190,124 +217,18 @@ class AdapterTest extends TestCase
         $loop = $this->getMock('React\EventLoop\LoopInterface');
         $filesystem = new Adapter($loop, [
             'pool' => [
-                'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
+                'class' => 'React\Tests\Filesystem\ChildProcess\SingletonPoolStub',
             ],
         ]);
-        $invoker = $this->getMock('React\Filesystem\CallInvokerInterface', [
-            '__construct',
-            'invokeCall',
-            'isEmpty',
-        ]);
-        $filesystem->setInvoker($invoker);
 
-        $promise = new FulfilledPromise();
+        call_user_func_array([$filesystem, $method], $arguments);
 
-        call_user_func_array([
-            $invoker
-                ->expects($this->once())
-                ->method('invokeCall')
-            ,
-            'with',
-        ], $mockArguments)->will($this->returnValue($promise));
-
-        $this->assertSame($promise, call_user_func_array([$filesystem, $method], $arguments));
-    }
-
-    public function testReadlink()
-    {
-        $loop = $this->getMock('React\EventLoop\LoopInterface');
-        $filesystem = new Adapter($loop, [
-            'pool' => [
-                'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
-            ],
-        ]);
-        $invoker = $this->getMock('React\Filesystem\CallInvokerInterface', [
-            '__construct',
-            'invokeCall',
-            'isEmpty',
-        ]);
-        $filesystem->setInvoker($invoker);
-
-        $invoker
-            ->expects($this->once())
-            ->method('invokeCall')
-            ->with(
-                'readlink',
-                [
-                    'path' => 'foo.bar',
-                ]
-            )->will($this->returnValue(new FulfilledPromise([
-                'path' => 'bar.foo',
-            ])))
-        ;
-
-        $filesystem->readlink('foo.bar');
-    }
-
-    public function testStat()
-    {
-        $loop = $this->getMock('React\EventLoop\LoopInterface');
-        $filesystem = new Adapter($loop, [
-            'pool' => [
-                'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
-            ],
-        ]);
-        $invoker = $this->getMock('React\Filesystem\CallInvokerInterface', [
-            '__construct',
-            'invokeCall',
-            'isEmpty',
-        ]);
-        $filesystem->setInvoker($invoker);
-
-        $time = time();
-        $invoker
-            ->expects($this->once())
-            ->method('invokeCall')
-            ->with(
-                'stat',
-                [
-                    'path' => 'foo.bar',
-                ]
-            )->will($this->returnValue(new FulfilledPromise([
-                'atime' => $time,
-                'mtime' => $time,
-                'ctime' => $time,
-            ])))
-        ;
-
-        $filesystem->stat('foo.bar');
-    }
-
-    public function testSymlink()
-    {
-        $loop = $this->getMock('React\EventLoop\LoopInterface');
-        $filesystem = new Adapter($loop, [
-            'pool' => [
-                'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
-            ],
-        ]);
-        $invoker = $this->getMock('React\Filesystem\CallInvokerInterface', [
-            '__construct',
-            'invokeCall',
-            'isEmpty',
-        ]);
-        $filesystem->setInvoker($invoker);
-
-        $invoker
-            ->expects($this->once())
-            ->method('invokeCall')
-            ->with(
-                'symlink',
-                [
-                    'from' => 'foo.bar',
-                    'to' => 'bar.foo',
-                ]
-            )->will($this->returnValue(new FulfilledPromise([
-                'result' => true,
-            ])))
-        ;
-
-        $filesystem->symlink('foo.bar', 'bar.foo');
+        $calls = SingletonPoolStub::getCalls();
+        self::assertCount(1, $calls);
+        /** @var array $call */
+        $call = $calls[0][1][0]->jsonSerialize();
+        self::assertSame($mockArguments[0], $call['target']);
+        self::assertSame($mockArguments[1], $call['payload']->getPayload());
     }
 
     public function testLs()
@@ -315,42 +236,35 @@ class AdapterTest extends TestCase
         $loop = \React\EventLoop\Factory::create();
         $adapter = new Adapter($loop, [
             'pool' => [
-                'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
+                'class' => 'React\Tests\Filesystem\ChildProcess\SingletonPoolStub',
             ],
         ]);
-        $invoker = $this->getMock('React\Filesystem\CallInvokerInterface', [
-            '__construct',
-            'invokeCall',
-            'isEmpty',
-        ]);
-        $adapter->setInvoker($invoker);
-        $fs = Filesystem::createFromAdapter($adapter);
 
         $deferred = new Deferred();
+        SingletonPoolStub::setRpcResponse($deferred->promise());
 
-        $invoker
-            ->expects($this->once())
-            ->method('invokeCall')
-            ->with(
-                'readdir',
-                [
-                    'path' => 'foo.bar',
-                    'flags' => 2,
-                ]
-            )->will($this->returnValue($deferred->promise()))
-        ;
+        $fs = Filesystem::createFromAdapter($adapter);
 
         $promise = $adapter->ls('foo.bar');
         $this->assertInstanceOf('React\Promise\PromiseInterface', $promise);
-
-        $deferred->resolve([
+        $deferred->resolve(new Payload([
             [
                 'type' => 'file',
                 'name' => 'bar.foo',
             ],
-        ]);
+        ]));
 
         $nodes = $this->await($promise, $loop);
+
+        $calls = SingletonPoolStub::getCalls();
+        self::assertCount(1, $calls);
+        /** @var array $call */
+        $call = $calls[0][1][0]->jsonSerialize();
+        self::assertSame('readdir', $call['target']);
+        self::assertSame([
+            'path' => 'foo.bar',
+            'flags' => 2,
+        ], $call['payload']->getPayload());
 
         $this->assertEquals(new File('foo.bar/bar.foo', $fs), reset($nodes));
     }
@@ -360,30 +274,14 @@ class AdapterTest extends TestCase
         $loop = $this->getMock('React\EventLoop\LoopInterface');
         $adapter = new Adapter($loop, [
             'pool' => [
-                'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
+                'class' => 'React\Tests\Filesystem\ChildProcess\SingletonPoolStub',
             ],
         ]);
-        $invoker = $this->getMock('React\Filesystem\CallInvokerInterface', [
-            '__construct',
-            'invokeCall',
-            'isEmpty',
-        ]);
-        $adapter->setInvoker($invoker);
-        Filesystem::createFromAdapter($adapter);
 
         $deferred = new Deferred();
+        SingletonPoolStub::setRpcResponse($deferred->promise());
 
-        $invoker
-            ->expects($this->once())
-            ->method('invokeCall')
-            ->with(
-                'readdir',
-                [
-                    'path' => 'foo.bar',
-                    'flags' => 2,
-                ]
-            )->will($this->returnValue($deferred->promise()))
-        ;
+        Filesystem::createFromAdapter($adapter);
 
         $stream = $adapter->lsStream('foo.bar');
         $this->assertInstanceOf('React\Filesystem\ObjectStream', $stream);
@@ -395,12 +293,23 @@ class AdapterTest extends TestCase
             $calledOnData = true;
         });
 
-        $deferred->resolve([
+        $deferred->resolve(new Payload([
             [
                 'type' => 'file',
                 'name' => 'bar.foo',
             ],
-        ]);
+        ]));
+
+        $calls = SingletonPoolStub::getCalls();
+        self::assertCount(1, $calls);
+        /** @var array $call */
+        $call = $calls[0][1][0]->jsonSerialize();
+        self::assertSame('readdir', $call['target']);
+        self::assertSame([
+            'path' => 'foo.bar',
+            'flags' => 2,
+        ], $call['payload']->getPayload());
+
         $this->assertTrue($calledOnData);
     }
 
