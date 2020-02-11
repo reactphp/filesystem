@@ -29,7 +29,6 @@ Adapters
 ------------
 
 * ChildProcessAdapter - Adapter using child processes to perform IO actions (default adapter if no extensions are installed)
-* EioAdapter - Adapter using `ext-eio`
 
 Examples
 --------

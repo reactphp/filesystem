@@ -57,10 +57,6 @@ class Filesystem implements FilesystemInterface
     {
         $adapters = [];
 
-        if (Eio\Adapter::isSupported()) {
-            $adapters[] = 'Eio';
-        }
-
         if (ChildProcess\Adapter::isSupported()) {
             $adapters[] = 'ChildProcess';
         }
