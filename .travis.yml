@@ -26,6 +26,7 @@ matrix:
 
 install:
   - ./travis-init.sh
+  - composer config platform.php $(php -r 'echo PHP_VERSION;')
   - composer install -n
 
 script:
