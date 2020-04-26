@@ -4,7 +4,6 @@ namespace React\Tests\Filesystem\Adapters;
 
 use React\EventLoop;
 use React\Filesystem\ChildProcess;
-use React\Filesystem\Eio;
 use React\Filesystem\Filesystem;
 use React\Filesystem\Pthreads;
 use React\Tests\Filesystem\TestCase;
@@ -58,10 +57,6 @@ abstract class AbstractAdaptersTest extends TestCase
         $adapters[$loopSlug . '-factory'] = $this->getFacoryProvider($loopFactory);
         $adapters[$loopSlug . '-child-process'] = $this->getChildProcessProvider($loopFactory);
 
-        if (extension_loaded('eio')) {
-            $adapters[$loopSlug . '-eio'] = $this->getEioProvider($loopFactory);
-        }
-
         if (extension_loaded('pthreads')) {
             $adapters[$loopSlug . '-pthreads'] = $this->getPthreadsProvider($loopFactory);
         }
@@ -73,15 +68,6 @@ abstract class AbstractAdaptersTest extends TestCase
         return [
             $loop,
             new ChildProcess\Adapter($loop, [Options::TTL => 0.01,]),
-        ];
-    }
-
-    protected function getEioProvider(callable $loopFactory)
-    {
-        $loop = $loopFactory();
-        return [
-            $loop,
-            new Eio\Adapter($loop),
         ];
     }
 
