@@ -42,7 +42,7 @@ class ReadableStreamTest extends TestCase
             ])))
         ;
 
-        $mock = $this->getMock($className, [
+        $mock = $this->createMock($className, [
             'readChunk',
         ], [
             $path,
@@ -74,7 +74,7 @@ class ReadableStreamTest extends TestCase
             ])))
         ;
 
-        $mock = $this->getMock($className, [
+        $mock = $this->createMock($className, [
             'readChunk',
         ], [
             $path,
@@ -106,7 +106,7 @@ class ReadableStreamTest extends TestCase
             ;
         }
 
-        $promise = $this->getMock('React\Promise\PromiseInterface', [
+        $promise = $this->createMock('React\Promise\PromiseInterface', [
             'then',
         ]);
 
@@ -126,7 +126,7 @@ class ReadableStreamTest extends TestCase
             ->will($this->returnValue($promise))
         ;
 
-        $stream = $this->getMock($className, [
+        $stream = $this->createMock($className, [
             'emit',
             'removeAllListeners',
         ], [
@@ -214,7 +214,7 @@ class ReadableStreamTest extends TestCase
         $path = 'foo.bar';
         $fileDescriptor = '0123456789abcdef';
 
-        $readPromise = $this->getMock('React\Promise\PromiseInterface', [
+        $readPromise = $this->createMock('React\Promise\PromiseInterface', [
             'then',
         ]);
 
@@ -259,7 +259,7 @@ class ReadableStreamTest extends TestCase
             ->will($this->returnValue(new FulfilledPromise()))
         ;
 
-        $mock = $this->getMock($className, [
+        $mock = $this->createMock($className, [
             'isReadable',
             'emit',
         ], [

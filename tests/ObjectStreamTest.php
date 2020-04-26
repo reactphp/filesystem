@@ -9,7 +9,7 @@ class ObjectStreamTest extends TestCase
 {
     public function testObjectStream()
     {
-        $node = $this->getMock('React\Filesystem\Node\NodeInterface');
+        $node = $this->createMock('React\Filesystem\Node\NodeInterface');
         $stream = new ObjectStream();
 
         $this->assertTrue($stream->isWritable());

@@ -14,7 +14,7 @@ class RecursiveInvokerTest extends TestCase
     {
         $filesystem = $this->mockAdapter();
 
-        $node = $this->getMock('React\Filesystem\Node\Directory', [
+        $node = $this->createMock('React\Filesystem\Node\Directory', [
             'ls',
             'chmod',
         ], [
@@ -22,7 +22,7 @@ class RecursiveInvokerTest extends TestCase
             Filesystem::createFromAdapter($filesystem),
         ]);
 
-        $promise = $this->getMock('React\Promise\PromiseInterface');
+        $promise = $this->createMock('React\Promise\PromiseInterface');
 
         $node
             ->expects($this->once())
@@ -31,7 +31,7 @@ class RecursiveInvokerTest extends TestCase
             ->will($this->returnValue($promise))
         ;
 
-        $fileDent = $this->getMock('React\Filesystem\Node\File', [
+        $fileDent = $this->createMock('React\Filesystem\Node\File', [
             'chmod',
         ], [
             'foo',
@@ -45,7 +45,7 @@ class RecursiveInvokerTest extends TestCase
             ->will($this->returnValue(new FulfilledPromise()))
         ;
 
-        $directoryDent = $this->getMock('React\Filesystem\Node\Directory', [
+        $directoryDent = $this->createMock('React\Filesystem\Node\Directory', [
             'chmodRecursive',
         ], [
             'foo',
@@ -59,7 +59,7 @@ class RecursiveInvokerTest extends TestCase
             ->will($this->returnValue(new FulfilledPromise()))
         ;
 
-        $finalPromise = $this->getMock('React\Promise\PromiseInterface');
+        $finalPromise = $this->createMock('React\Promise\PromiseInterface');
 
         $node
             ->expects($this->once())

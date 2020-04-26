@@ -41,7 +41,7 @@ class DirectoryTest extends TestCase
     public function testLs()
     {
         $path = '/home/foo/bar';
-        $loop = $this->getMock('React\EventLoop\LoopInterface');
+        $loop = $this->createMock('React\EventLoop\LoopInterface');
 
         $filesystem = $this->mockAdapter($loop);
 
@@ -62,11 +62,11 @@ class DirectoryTest extends TestCase
     public function testLsStream()
     {
         $path = '/home/foo/bar';
-        $loop = $this->getMock('React\EventLoop\LoopInterface');
+        $loop = $this->createMock('React\EventLoop\LoopInterface');
 
         $filesystem = $this->mockAdapter($loop);
 
-        $lsStream = $this->getMock('React\Filesystem\ObjectStream');
+        $lsStream = $this->createMock('React\Filesystem\ObjectStream');
 
         $filesystem
             ->expects($this->once())
@@ -125,7 +125,7 @@ class DirectoryTest extends TestCase
     {
         $path = 'foo.bar';
         $filesystem = $this->mockAdapter();
-        $promise = $this->getMock('React\Promise\PromiseInterface');
+        $promise = $this->createMock('React\Promise\PromiseInterface');
 
         $filesystem
             ->expects($this->once())
@@ -139,11 +139,11 @@ class DirectoryTest extends TestCase
     public function testSize()
     {
         $path = '/home/foo/bar';
-        $loop = $this->getMock('React\EventLoop\LoopInterface');
+        $loop = $this->createMock('React\EventLoop\LoopInterface');
 
         $filesystem = $this->mockAdapter($loop);
 
-        $lsPromise = $this->getMock('React\Promise\PromiseInterface', [
+        $lsPromise = $this->createMock('React\Promise\PromiseInterface', [
             'then',
         ]);
 
@@ -156,7 +156,7 @@ class DirectoryTest extends TestCase
             }))
         ;
 
-        $directory = $this->getMock('React\Filesystem\Node\Directory', [
+        $directory = $this->createMock('React\Filesystem\Node\Directory', [
             'ls',
             'processSizeContents',
         ], [
@@ -175,7 +175,7 @@ class DirectoryTest extends TestCase
             ->expects($this->once())
             ->method('processSizeContents')
             ->with('foo.bar', $this->isType('boolean'))
-            ->will($this->returnValue($this->getMock('React\Promise\PromiseInterface')))
+            ->will($this->returnValue($this->createMock('React\Promise\PromiseInterface')))
         ;
 
         $this->assertInstanceOf('React\Promise\PromiseInterface', $directory->size());
@@ -185,16 +185,16 @@ class DirectoryTest extends TestCase
     {
         $filesystem = $this->mockAdapter();
 
-        $recursiveInvoker = $this->getMock('React\Filesystem\Node\RecursiveInvoker', [
+        $recursiveInvoker = $this->createMock('React\Filesystem\Node\RecursiveInvoker', [
             'execute',
         ], [
-            $this->getMock('React\Filesystem\Node\DirectoryInterface', [], [
+            $this->createMock('React\Filesystem\Node\DirectoryInterface', [], [
                 'foo/bar/',
                 Filesystem::createFromAdapter($filesystem),
             ]),
         ]);
 
-        $promise = $this->getMock('React\Promise\PromiseInterface');
+        $promise = $this->createMock('React\Promise\PromiseInterface');
 
         $recursiveInvoker
             ->expects($this->once())
@@ -210,16 +210,16 @@ class DirectoryTest extends TestCase
     {
         $filesystem = $this->mockAdapter();
 
-        $recursiveInvoker = $this->getMock('React\Filesystem\Node\RecursiveInvoker', [
+        $recursiveInvoker = $this->createMock('React\Filesystem\Node\RecursiveInvoker', [
             'execute',
         ], [
-            $this->getMock('React\Filesystem\Node\DirectoryInterface', [], [
+            $this->createMock('React\Filesystem\Node\DirectoryInterface', [], [
                 'foo/bar/',
                 Filesystem::createFromAdapter($filesystem),
             ]),
         ]);
 
-        $promise = $this->getMock('React\Promise\PromiseInterface');
+        $promise = $this->createMock('React\Promise\PromiseInterface');
 
         $recursiveInvoker
             ->expects($this->once())
@@ -235,16 +235,16 @@ class DirectoryTest extends TestCase
     {
         $filesystem = $this->mockAdapter();
 
-        $recursiveInvoker = $this->getMock('React\Filesystem\Node\RecursiveInvoker', [
+        $recursiveInvoker = $this->createMock('React\Filesystem\Node\RecursiveInvoker', [
             'execute',
         ], [
-            $this->getMock('React\Filesystem\Node\DirectoryInterface', [], [
+            $this->createMock('React\Filesystem\Node\DirectoryInterface', [], [
                 'foo/bar/',
                 Filesystem::createFromAdapter($filesystem),
             ]),
         ]);
 
-        $promise = $this->getMock('React\Promise\PromiseInterface');
+        $promise = $this->createMock('React\Promise\PromiseInterface');
 
         $recursiveInvoker
             ->expects($this->once())
@@ -260,7 +260,7 @@ class DirectoryTest extends TestCase
     {
         $filesystem = $this->mockAdapter();
 
-        $directoryFrom = $this->getMock('React\Filesystem\Node\Directory', [
+        $directoryFrom = $this->createMock('React\Filesystem\Node\Directory', [
             'copyStreaming',
         ], [
             'foo.bar',
@@ -338,7 +338,7 @@ class DirectoryTest extends TestCase
             ->will($this->returnValue(new FulfilledPromise()))
         ;
 
-        $directoryFrom = $this->getMock('React\Filesystem\Node\Directory', [
+        $directoryFrom = $this->createMock('React\Filesystem\Node\Directory', [
             'lsStreaming',
         ], [
             'foo.bar',
@@ -358,7 +358,7 @@ class DirectoryTest extends TestCase
         $returnedStream = $directoryFrom->copyStreaming($directoryTo);
         $this->assertInstanceOf('React\Filesystem\ObjectStream', $returnedStream);
 
-        $file = $this->getMock('React\Filesystem\Node\File', [
+        $file = $this->createMock('React\Filesystem\Node\File', [
             'copyStreaming',
         ], [
             'foo.bar',
@@ -378,7 +378,7 @@ class DirectoryTest extends TestCase
             $file,
         ]);
 
-        $directory = $this->getMock('React\Filesystem\Node\Directory', [
+        $directory = $this->createMock('React\Filesystem\Node\Directory', [
             'copyStreaming',
         ], [
             'foo.bar',
