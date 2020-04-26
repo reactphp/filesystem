@@ -145,9 +145,7 @@ class File implements FileInterface
      */
     public function getContents()
     {
-        return $this->open('r')->then(function ($stream) {
-            return Stream\buffer($stream);
-        });
+        return $this->adapter->getContents($this->path);
     }
 
     /**
@@ -155,10 +153,7 @@ class File implements FileInterface
      */
     public function putContents($contents)
     {
-        return $this->open('cw')->then(function (WritableStreamInterface $stream) use ($contents) {
-            $stream->write($contents);
-            return $this->close();
-        });
+        return $this->adapter->putContents($this->path, $contents);
     }
 
     /**

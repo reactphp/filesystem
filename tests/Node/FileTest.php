@@ -281,33 +281,10 @@ class FileTest extends TestCase
         $filesystem = $this->mockAdapter();
 
         $filesystem
-            ->expects($this->any())
-            ->method('stat')
+            ->expects($this->once())
+            ->method('getContents')
             ->with($path)
-            ->will($this->returnValue(new FulfilledPromise([
-                'size' => 1,
-            ])))
-        ;
-
-        $filesystem
-            ->expects($this->once())
-            ->method('open')
-            ->with($path, 'r')
-            ->will($this->returnValue(new FulfilledPromise($fd)))
-        ;
-
-        $filesystem
-            ->expects($this->once())
-            ->method('read')
-            ->with($fd, 1, 0)
             ->will($this->returnValue(new FulfilledPromise('a')))
-        ;
-
-        $filesystem
-            ->expects($this->once())
-            ->method('close')
-            ->with($fd)
-            ->will($this->returnValue(new FulfilledPromise()))
         ;
 
         $getContentsPromise = (new File($path, Filesystem::createFromAdapter($filesystem)))->getContents();
