@@ -12,14 +12,10 @@ $filesystem->getContents($path)->then(function ($content) use ($loop, $filesyste
     echo $content;
 
     $lastSize = strlen($content);
+    $adapter = $filesystem->getAdapter();
 
-    $file = $filesystem->file($path);
-
-    $file->open('r')->then(function (\React\Stream\ReadableStreamInterface $stream) use ($filesystem, $loop, $file, &$lastSize) {
-        /** @var \React\Filesystem\Stream\GenericStreamInterface $stream */
-        $fileDescriptor = $stream->getFiledescriptor();
-
-        $adapter = $filesystem->getAdapter();
+    $adapter->open($path, 'r')->then(function ($fileDescriptor) use ($adapter, $filesystem, $loop, $path, &$lastSize) {
+        $file = $filesystem->file($path);
 
         $loop->addPeriodicTimer(1, function () use ($adapter, $fileDescriptor, $file, &$lastSize) {
             $file->size()->then(function ($size) use ($adapter, $fileDescriptor, &$lastSize) {
