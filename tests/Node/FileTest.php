@@ -43,7 +43,7 @@ class FileTest extends TestCase
     {
         $path = 'foo.bar';
         $filesystem = $this->mockAdapter();
-        $promise = $this->getMock('React\Promise\PromiseInterface');
+        $promise = $this->createMock('React\Promise\PromiseInterface');
 
         $filesystem
             ->expects($this->once())
@@ -78,7 +78,7 @@ class FileTest extends TestCase
         $path = 'foo.bar';
         $filesystem = $this->mockAdapter();
 
-        $file = $this->getMock('React\Filesystem\Node\File', [
+        $file = $this->createMock('React\Filesystem\Node\File', [
             'stat',
         ], [
             $path,
@@ -102,7 +102,7 @@ class FileTest extends TestCase
         $path = 'foo.bar';
         $filesystem = $this->mockAdapter();
 
-        $file = $this->getMock('React\Filesystem\Node\File', [
+        $file = $this->createMock('React\Filesystem\Node\File', [
             'stat',
         ], [
             $path,
@@ -348,7 +348,7 @@ class FileTest extends TestCase
             ->expects($this->once())
             ->method('touch')
             ->with($path)
-            ->will($this->returnValue($this->getMock('React\Promise\PromiseInterface')))
+            ->will($this->returnValue($this->createMock('React\Promise\PromiseInterface')))
         ;
 
         $this->assertInstanceOf('React\Promise\PromiseInterface', (new File($path, Filesystem::createFromAdapter($filesystem)))->touch());
@@ -358,7 +358,7 @@ class FileTest extends TestCase
     {
         $filesystem = $this->mockAdapter();
 
-        $fileFrom = $this->getMock('React\Filesystem\Node\File', [
+        $fileFrom = $this->createMock('React\Filesystem\Node\File', [
             'copyStreaming',
         ], [
             'foo.bar',
@@ -392,7 +392,7 @@ class FileTest extends TestCase
     {
         $filesystem = $this->mockAdapter();
 
-        $file = $this->getMock('React\Filesystem\Node\File', [
+        $file = $this->createMock('React\Filesystem\Node\File', [
             'copyToFile',
         ], [
             'foo.bar',

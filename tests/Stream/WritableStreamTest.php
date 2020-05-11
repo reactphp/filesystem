@@ -98,7 +98,7 @@ class WritableStreamTest extends TestCase
     public function testEnd($className)
     {
         $data = 'iahbfeq';
-        $stream = $this->getMock($className, [
+        $stream = $this->createMock($className, [
             'write',
             'close',
         ], [
@@ -127,7 +127,7 @@ class WritableStreamTest extends TestCase
      */
     public function testEndNoWrite($className)
     {
-        $stream = $this->getMock($className, [
+        $stream = $this->createMock($className, [
             'write',
             'close',
         ], [
@@ -162,7 +162,7 @@ class WritableStreamTest extends TestCase
         $filesystem = $this->mockAdapter();
 
 
-        $promise = $this->getMock('React\Promise\PromiseInterface', [
+        $promise = $this->createMock('React\Promise\PromiseInterface', [
             'then',
         ]);
 
@@ -182,7 +182,7 @@ class WritableStreamTest extends TestCase
             ->will($this->returnValue($promise))
         ;
 
-        $stream = $this->getMock($className, [
+        $stream = $this->createMock($className, [
             'emit',
             'removeAllListeners',
         ], [

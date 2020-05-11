@@ -7,7 +7,7 @@ class FlagResolverTest extends TestCase
 
     public function testResolve()
     {
-        $resolver = $this->getMock('React\Filesystem\FlagResolver', [
+        $resolver = $this->createMock('React\Filesystem\FlagResolver', [
             'defaultFlags',
             'flagMapping',
         ]);

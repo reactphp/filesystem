@@ -22,7 +22,7 @@ class AdapterTest extends TestCase
     {
         $this->assertInstanceOf(
             'React\Filesystem\AdapterInterface',
-            new Adapter($this->getMock('React\EventLoop\LoopInterface'), [
+            new Adapter($this->createMock('React\EventLoop\LoopInterface'), [
                 'pool' => [
                     'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
                 ],
@@ -32,7 +32,7 @@ class AdapterTest extends TestCase
 
     public function testGetLoop()
     {
-        $loop = $this->getMock('React\EventLoop\LoopInterface');
+        $loop = $this->createMock('React\EventLoop\LoopInterface');
         $filesystem = new Adapter($loop, [
             'pool' => [
                 'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
@@ -43,7 +43,7 @@ class AdapterTest extends TestCase
 
     public function testGetSetFilesystem()
     {
-        $loop = $this->getMock('React\EventLoop\LoopInterface');
+        $loop = $this->createMock('React\EventLoop\LoopInterface');
         $filesystem = new Adapter($loop, [
             'pool' => [
                 'class' => 'WyriHaximus\React\ChildProcess\Pool\Pool\Dummy',
@@ -214,7 +214,7 @@ class AdapterTest extends TestCase
      */
     public function testCallFilesystem($method, $arguments, $mockArguments)
     {
-        $loop = $this->getMock('React\EventLoop\LoopInterface');
+        $loop = $this->createMock('React\EventLoop\LoopInterface');
         $filesystem = new Adapter($loop, [
             'pool' => [
                 'class' => 'React\Tests\Filesystem\ChildProcess\SingletonPoolStub',
@@ -271,7 +271,7 @@ class AdapterTest extends TestCase
 
     public function testLsStream()
     {
-        $loop = $this->getMock('React\EventLoop\LoopInterface');
+        $loop = $this->createMock('React\EventLoop\LoopInterface');
         $adapter = new Adapter($loop, [
             'pool' => [
                 'class' => 'React\Tests\Filesystem\ChildProcess\SingletonPoolStub',

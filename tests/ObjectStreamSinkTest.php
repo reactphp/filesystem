@@ -9,7 +9,7 @@ class ObjectStreamSinkTest extends TestCase
 {
     public function testSink()
     {
-        $node = $this->getMock('React\Filesystem\Node\NodeInterface');
+        $node = $this->createMock('React\Filesystem\Node\NodeInterface');
         $stream = new ObjectStream();
         $sink = ObjectStreamSink::promise($stream);
         $this->assertInstanceOf('React\Promise\PromiseInterface', $sink);
