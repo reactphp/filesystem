@@ -14,10 +14,22 @@ php:
   - nightly
 
 matrix:
+  include:
+    - name: "Windows"
+      os: windows
+      language: shell # no built-in php support
+      before_install:
+        - choco install php
+        - choco install composer
+        - export PATH="$(powershell -Command '("Process", "Machine" | % { [Environment]::GetEnvironmentVariable("PATH", $_) -Split ";" -Replace "\\$", "" } | Select -Unique | % { cygpath $_ }) -Join ":"')"
+      install:
+        - composer install -n
+
   allow_failures:
     - php: 5.4
     - php: 7.1
     - php: nightly
+    - os: windows
 
 install:
   - ./travis-init.sh
