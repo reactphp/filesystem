@@ -2,55 +2,38 @@
 
 namespace React\Filesystem\Node;
 
-use React\Filesystem\ObjectStream;
+use React\Filesystem\Stat;
 use React\Promise\PromiseInterface;
 
-interface NodeInterface extends GenericOperationInterface
+interface NodeInterface
 {
     const DS = DIRECTORY_SEPARATOR;
 
     /**
-     * Alias for getPath()
+     * Return the full path, for example: /path/to/
      *
      * @return string
      */
-    public function __toString();
-
-    /**
-     * Return the parent node, or null if this is already the top node.
-     *
-     * @return NodeInterface|null
-     */
-    public function getParent();
-
-    /**
-     * Return the full path, for example: /path/to/file.ext
-     *
-     * @return string
-     */
-    public function getPath();
+    public function path();
 
     /**
      * Return the node name, for example: file.ext
      *
      * @return string
      */
-    public function getName();
+    public function name();
 
     /**
-     * Copy this node to the given node, returning the all results when done.
+     * Return the node name, for example: file.ext
      *
-     * @param NodeInterface $node
-     * @return PromiseInterface
+     * @return PromiseInterface<?Stat>
      */
-    public function copy(NodeInterface $node);
+    public function stat(): PromiseInterface;
 
     /**
-     * Copy this node to the given node streaming. The returned object is a stream,
-     * that emits events for each copy node during this operation.
+     * Remove the node from the filesystem, errors on non-empty directories
      *
-     * @param NodeInterface $node
-     * @return ObjectStream
+     * @return PromiseInterface<bool>
      */
-    public function copyStreaming(NodeInterface $node);
+    public function unlink(): PromiseInterface;
 }
