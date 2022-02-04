@@ -15,6 +15,7 @@ class Process implements ChildInterface
     /**
      * @inheritDoc
      */
+    #[\ReturnTypeWillChange]
     public static function create(Messenger $messenger, LoopInterface $loop)
     {
         return new self($messenger);
