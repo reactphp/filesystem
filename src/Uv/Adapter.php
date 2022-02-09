@@ -1,29 +1,40 @@
 <?php
 
-namespace React\Filesystem\ChildProcess;
+namespace React\Filesystem\Uv;
 
 use React\EventLoop\ExtUvLoop;
+use React\EventLoop\Loop;
 use React\Filesystem\AdapterInterface;
 use React\Filesystem\ModeTypeDetector;
 use React\Filesystem\PollInterface;
 use React\Filesystem\Stat;
 use React\Promise\PromiseInterface;
-use RuntimeException;
-use React\EventLoop\LoopInterface;
 use React\Filesystem\Node;
 
-/**
- * @internal
- */
 final class Adapter implements AdapterInterface
 {
     use StatTrait;
+
+    private ExtUvLoop $loop;
+    private $uvLoop;
+    private PollInterface $poll;
+
+    public function __construct()
+    {
+        $loop = Loop::get();
+        if (!($loop instanceof ExtUvLoop)) {
+            throw new \InvalidArgumentException('Event loop is expected to be ext-uv based, which it is not');
+        }
+        $this->loop = $loop;
+        $this->poll = new Poll($this->loop);
+        $this->uvLoop = $loop->getUvLoop();
+    }
 
     public function detect(string $path): PromiseInterface
     {
         return $this->internalStat($path)->then(function (?Stat $stat) use ($path) {
             if ($stat === null) {
-                return new NotExist($this, dirname($path) . DIRECTORY_SEPARATOR, basename($path));
+                return new NotExist($this->poll, $this, $this->loop, dirname($path) . DIRECTORY_SEPARATOR, basename($path));
             }
 
             switch (ModeTypeDetector::detect($stat->mode())) {
@@ -42,11 +53,27 @@ final class Adapter implements AdapterInterface
 
     public function directory(string $path): Node\DirectoryInterface
     {
-        return new Directory($this,dirname($path) . DIRECTORY_SEPARATOR, basename($path));
+        return new Directory($this->poll, $this, $this->loop, dirname($path) . DIRECTORY_SEPARATOR, basename($path));
     }
 
     public function file(string $path): Node\FileInterface
     {
-        return new File(dirname($path) . DIRECTORY_SEPARATOR, basename($path));
+        return new File($this->poll, $this->loop, dirname($path) . DIRECTORY_SEPARATOR, basename($path));
+    }
+
+
+    protected function uvLoop()
+    {
+        return $this->uvLoop;
+    }
+
+    protected function activate(): void
+    {
+        $this->poll->activate();
+    }
+
+    protected function deactivate(): void
+    {
+        $this->poll->deactivate();
     }
 }

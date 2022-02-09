@@ -1,20 +1,13 @@
 <?php
 
-namespace React\Filesystem\ChildProcess;
+namespace React\Filesystem\Fallback;
 
-use React\EventLoop\ExtUvLoop;
 use React\Filesystem\AdapterInterface;
 use React\Filesystem\ModeTypeDetector;
-use React\Filesystem\PollInterface;
 use React\Filesystem\Stat;
 use React\Promise\PromiseInterface;
-use RuntimeException;
-use React\EventLoop\LoopInterface;
 use React\Filesystem\Node;
 
-/**
- * @internal
- */
 final class Adapter implements AdapterInterface
 {
     use StatTrait;
@@ -42,11 +35,13 @@ final class Adapter implements AdapterInterface
 
     public function directory(string $path): Node\DirectoryInterface
     {
-        return new Directory($this,dirname($path) . DIRECTORY_SEPARATOR, basename($path));
+        return new Directory($this, dirname($path) . DIRECTORY_SEPARATOR, basename($path));
     }
 
     public function file(string $path): Node\FileInterface
     {
         return new File(dirname($path) . DIRECTORY_SEPARATOR, basename($path));
     }
+
+
 }

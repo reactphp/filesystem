@@ -2,65 +2,28 @@
 
 namespace React\Filesystem;
 
-use Exception;
-use React\Filesystem\FilesystemInterface;
-use React\Filesystem\TypeDetectorInterface;
+use React\EventLoop\ExtUvLoop;
+use React\EventLoop\LoopInterface;
+use React\Filesystem\Node\DirectoryInterface;
+use React\Filesystem\Node\FileInterface;
+use React\Filesystem\Node\Unknown;
 
-class ModeTypeDetector implements TypeDetectorInterface
+final class ModeTypeDetector
 {
-    /**
-     * @var array
-     */
-    protected $mapping = [
-        0xa000 => 'constructLink',
-        0x4000 => 'dir',
-        0x8000 => 'file',
-    ];
+    private const FILE = 0x8000;
+    private const DIRECTORY = 0x4000;
+    private const LINK = 0xa000;
 
-    /**
-     * @var FilesystemInterface
-     */
-    protected $filesystem;
-
-    /**
-     * @param FilesystemInterface $filesystem
-     */
-    public function __construct(FilesystemInterface $filesystem)
+    public static function detect(int $mode): string
     {
-        $this->filesystem = $filesystem;
-    }
-
-    /**
-     * @param array $node
-     * @return \React\Promise\PromiseInterface
-     */
-    public function detect(array $node)
-    {
-        return $this->filesystem->getAdapter()->stat($node['path'])->then(function ($stat) {
-            return $this->walkMapping($stat);
-        });
-    }
-
-    protected function walkMapping($stat)
-    {
-        $promiseChain = \React\Promise\reject(new Exception('Unknown type'));
-        foreach ($this->mapping as $mappingMode => $method) {
-            $promiseChain = $promiseChain->otherwise(function () use ($stat, $mappingMode, $method) {
-                return $this->matchMapping($stat['mode'], $mappingMode, $method);
-            });
-        }
-        return $promiseChain;
-    }
-
-    protected function matchMapping($mode, $mappingMode, $method)
-    {
-        if (($mode & $mappingMode) == $mappingMode) {
-            return \React\Promise\resolve([
-                $this->filesystem,
-                $method,
-            ]);
+        if (($mode & self::FILE) == self::FILE) {
+            return FileInterface::class;
         }
 
-        return \React\Promise\reject(new Exception('Unknown filesystem method for type'));
+        if (($mode & self::DIRECTORY) == self::DIRECTORY) {
+            return DirectoryInterface::class;
+        }
+
+        return Unknown::class;
     }
 }

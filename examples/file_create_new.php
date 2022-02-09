@@ -2,11 +2,15 @@
 
 use React\Filesystem\Factory;
 use React\Filesystem\Node\FileInterface;
+use React\Filesystem\Node\NotExistInterface;
 use React\Filesystem\Stat;
+use React\Promise\PromiseInterface;
 
 require 'vendor/autoload.php';
 
-Factory::create()->detect(__FILE__)->then(function (FileInterface $file) {
+Factory::create()->detect(sys_get_temp_dir() . __FILE__ . time() . time() . time() . time() . time() . time())->then(static function (NotExistInterface $node): PromiseInterface {
+    return $node->createFile();
+})->then(static function (FileInterface $file): PromiseInterface {
     return $file->stat();
 })->then(static function (Stat $stat): void {
     echo $stat->path(), ': ', get_class($stat), PHP_EOL;

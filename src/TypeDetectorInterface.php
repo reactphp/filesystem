@@ -5,9 +5,9 @@ namespace React\Filesystem;
 interface TypeDetectorInterface
 {
     /**
-     * @param FilesystemInterface $filesystem
+     * @param AdapterInterface $filesystem
      */
-    public function __construct(FilesystemInterface $filesystem);
+    public function __construct(AdapterInterface $filesystem);
 
     /**
      * @param array $node
