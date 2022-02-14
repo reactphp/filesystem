@@ -4,6 +4,11 @@
 
 [ReactPHP](https://reactphp.org/)'s filesystem component that enables non-blocking filesystem operations.
 
+> **Development version:** This branch contains the code for the upcoming 0.2
+> release which will be the way forward for this package.
+>
+> See [installation instructions](#install) for more details.
+
 **Table of Contents**
 
 * [Quickstart example](#quickstart-example)
@@ -258,12 +263,18 @@ use React\Filesystem\Node\FileInterface;$filesystem->file(
 The recommended way to install this library is [through Composer](https://getcomposer.org).
 [New to Composer?](https://getcomposer.org/doc/00-intro.md)
 
-This project follows [SemVer](https://semver.org/).
-This will install the latest supported version:
+Once released, this project will follow [SemVer](https://semver.org/).
+At the moment, this will install the latest development version:
 
 ```bash
-$ composer require react/filesystem:^0.2
+$ composer require react/filesystem:^0.2@dev
 ```
+
+See also the [CHANGELOG](CHANGELOG.md) for details about version upgrades.
+
+This project aims to run on any platform and thus does not require any PHP 
+extensions and supports running on PHP 7.4 through current PHP 8+.
+It's *highly recommended to use the latest supported PHP version* for this project.
 
 Installing any of the event loop extensions is suggested, but entirely optional.
 See also [event loop implementations](#loop-implementations) for more details.
