@@ -267,7 +267,7 @@ Once released, this project will follow [SemVer](https://semver.org/).
 At the moment, this will install the latest development version:
 
 ```bash
-$ composer require react/filesystem:^0.2@dev
+composer require react/filesystem:^0.2@dev
 ```
 
 See also the [CHANGELOG](CHANGELOG.md) for details about version upgrades.
@@ -285,13 +285,13 @@ To run the test suite, you first need to clone this repo and then install all
 dependencies [through Composer](https://getcomposer.org):
 
 ```bash
-$ composer install
+composer install
 ```
 
 To run the test suite, go to the project root and run:
 
 ```bash
-$ php vendor/bin/phpunit
+vendor/bin/phpunit
 ```
 
 ## License
