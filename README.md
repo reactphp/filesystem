@@ -251,7 +251,9 @@ $filesystem->directory(
 The following will create `with-a-file.txt` in `lets/make/a/nested/directory` and write `This is amazing!` into that file.
 
 ```php
-use React\Filesystem\Node\FileInterface;$filesystem->file(
+use React\Filesystem\Node\FileInterface;
+
+$filesystem->file(
     __DIR__ . 'lets' . DIRECTORY_SEPARATOR . 'make' . DIRECTORY_SEPARATOR . 'a' . DIRECTORY_SEPARATOR . 'nested' . DIRECTORY_SEPARATOR . 'directory' . DIRECTORY_SEPARATOR . 'with-a-file.txt'
 )->createFile()->then(function (FileInterface $file) {
     return $file->putContents('This is amazing!')
