@@ -16,7 +16,6 @@
   * [Factory](#factory)
     * [create()](#create)
   * [Filesystem implementations](#filesystem-implementations)
-    * [ChildProcess](#childprocess)
     * [Uv](#uv)
   * [AdapterInterface](#adapterinterface)
     * [detect()](#detect)
@@ -102,25 +101,14 @@ an implementation detail.
 You should use the [`Factory`](#factory) to automatically create a new instance.
 
 The factory will determine the most performant filesystem for your environment. Any extension based filesystem are 
-preferred before falling back to less performant filesystems. When no extensions are detected it will fall back to 
-the [`ChildProcess`](#childprocess) on Linux/Mac machines, and to an internal fallback filesystem for windows that 
-uses blocking system calls. This blocking filesystem isn't documented and will be removed once 
-the [`ChildProcess`](#childprocess) filesystem works on Windows. It's merely mentioned here for reference until then.
+preferred before falling back to less performant filesystems. When no extensions are detected it will fall back to an 
+internal fallback filesystem that uses blocking system calls. As such it is highly recommended to install one of the 
+extensions that unlocks more performant filesystem operations.
 
 Advanced! If you explicitly need a certain filesystem implementation, you can
 manually instantiate one of the following classes.
 Note that you may have to install the required PHP extensions for the respective
 event loop implementation first or they will throw a `BadMethodCallException` on creation.
-
-#### ChildProcess
-
-A [`child process`](https://reactphp.org/child-process/) based filesystem.
-
-This uses the blocking calls like the [`file_get_contents()`](https://www.php.net/manual/en/function.file-get-contents.php)
-function to do filesystem calls and is the only implementation which works out of the box with PHP.
-
-Due to using child processes to handle filesystem calls, this filesystem the least performant is only used when no 
-extensions are found to create a more performant filesystem.
 
 #### Uv
 

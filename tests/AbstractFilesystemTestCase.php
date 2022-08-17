@@ -3,7 +3,6 @@
 namespace React\Tests\Filesystem;
 
 use React\EventLoop;
-use React\Filesystem\ChildProcess;
 use React\Filesystem\Fallback;
 use React\Filesystem\Uv;
 use PHPUnit\Framework\TestCase;
@@ -24,10 +23,6 @@ abstract class AbstractFilesystemTestCase extends TestCase
         $loop = EventLoop\Loop::get();
 
         yield 'fallback' => [new Fallback\Adapter()];
-
-        if (DIRECTORY_SEPARATOR !== '\\') {
-            yield 'childprocess' => [new ChildProcess\Adapter()];
-        }
 
         if (\function_exists('uv_loop_new') && $loop instanceof ExtUvLoop) {
             yield 'uv' => [new Uv\Adapter()];
