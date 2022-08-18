@@ -16,6 +16,7 @@
   * [Factory](#factory)
     * [create()](#create)
   * [Filesystem implementations](#filesystem-implementations)
+    * [Eio](#eio)
     * [Uv](#uv)
   * [AdapterInterface](#adapterinterface)
     * [detect()](#detect)
@@ -109,6 +110,15 @@ Advanced! If you explicitly need a certain filesystem implementation, you can
 manually instantiate one of the following classes.
 Note that you may have to install the required PHP extensions for the respective
 event loop implementation first or they will throw a `BadMethodCallException` on creation.
+
+#### Eio
+
+An `ext-eio` based filesystem.
+
+This filesystem uses the [`eio` PECL extension](https://pecl.php.net/package/eio), that
+provides an interface to `libeio` library.
+
+This filesystem is known to work with PHP 7+.
 
 #### Uv
 

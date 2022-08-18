@@ -34,6 +34,7 @@
         }
     },
     "suggest": {
+        "ext-eio": "* for great I/O performance",
         "ext-uv": "* for better I/O performance"
     },
     "config": {
