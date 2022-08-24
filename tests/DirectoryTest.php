@@ -8,7 +8,7 @@ use React\Filesystem\Node\DirectoryInterface;
 use React\Filesystem\Node\FileInterface;
 use React\Filesystem\Stat;
 use React\Promise\PromiseInterface;
-use function Clue\React\Block\await;
+use function React\Async\await;
 
 final class DirectoryTest extends AbstractFilesystemTestCase
 {
@@ -19,7 +19,7 @@ final class DirectoryTest extends AbstractFilesystemTestCase
      */
     public function stat(AdapterInterface $filesystem): void
     {
-        $stat = $this->await($filesystem->detect(__DIR__)->then(static function (DirectoryInterface $directory): PromiseInterface {
+        $stat = await($filesystem->detect(__DIR__)->then(static function (DirectoryInterface $directory): PromiseInterface {
             return $directory->stat();
         }));
 
@@ -48,7 +48,7 @@ final class DirectoryTest extends AbstractFilesystemTestCase
 
         ksort($expectedListing);
 
-        $directoryListing = $this->await($filesystem->detect(__DIR__)->then(static function (DirectoryInterface $directory): PromiseInterface {
+        $directoryListing = await($filesystem->detect(__DIR__)->then(static function (DirectoryInterface $directory): PromiseInterface {
             return $directory->ls();
         }));
 

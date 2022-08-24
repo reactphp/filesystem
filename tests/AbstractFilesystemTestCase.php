@@ -11,8 +11,6 @@ use React\EventLoop\ExtUvLoop;
 use React\EventLoop\LoopInterface;
 use React\Filesystem\Factory;
 use React\Filesystem\AdapterInterface;
-use React\Promise\PromiseInterface;
-use function Clue\React\Block\await;
 
 abstract class AbstractFilesystemTestCase extends TestCase
 {
@@ -34,10 +32,5 @@ abstract class AbstractFilesystemTestCase extends TestCase
         }
 
         yield 'factory' => [Factory::create()];
-    }
-
-    public function await(PromiseInterface $promise)
-    {
-        return await($promise, EventLoop\Loop::get(), 30);
     }
 }

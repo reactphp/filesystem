@@ -2,12 +2,11 @@
 
 namespace React\Tests\Filesystem;
 
-use React\EventLoop\LoopInterface;
 use React\Filesystem\AdapterInterface;
 use React\Filesystem\Node\DirectoryInterface;
 use React\Filesystem\Node\FileInterface;
 use React\Filesystem\Node\NotExistInterface;
-use function Clue\React\Block\await;
+use function React\Async\await;
 
 final class FilesystemTest extends AbstractFilesystemTestCase
 {
@@ -18,7 +17,7 @@ final class FilesystemTest extends AbstractFilesystemTestCase
      */
     public function file(AdapterInterface $filesystem): void
     {
-        $node = $this->await($filesystem->detect(__FILE__));
+        $node = await($filesystem->detect(__FILE__));
 
         self::assertInstanceOf(FileInterface::class, $node);
     }
@@ -30,7 +29,7 @@ final class FilesystemTest extends AbstractFilesystemTestCase
      */
     public function directory(AdapterInterface $filesystem): void
     {
-        $node = $this->await($filesystem->detect(__DIR__));
+        $node = await($filesystem->detect(__DIR__));
 
         self::assertInstanceOf(DirectoryInterface::class, $node);
     }
@@ -42,7 +41,7 @@ final class FilesystemTest extends AbstractFilesystemTestCase
      */
     public function notExists(AdapterInterface $filesystem): void
     {
-        $node = $this->await($filesystem->detect(bin2hex(random_bytes(13))));
+        $node = await($filesystem->detect(bin2hex(random_bytes(13))));
 
         self::assertInstanceOf(NotExistInterface::class, $node);
     }
