@@ -21,8 +21,8 @@
         "wyrihaximus/react-child-process-promise-closure": "^1.0"
     },
     "require-dev": {
-        "clue/block-react": "^1.4",
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^9.5",
+        "react/async": "^4 || ^3"
     },
     "autoload": {
         "psr-4": {

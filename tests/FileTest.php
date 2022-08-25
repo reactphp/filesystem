@@ -2,14 +2,13 @@
 
 namespace React\Tests\Filesystem;
 
-use React\EventLoop\LoopInterface;
 use React\Filesystem\AdapterInterface;
 use React\Filesystem\Node\FileInterface;
 use React\Filesystem\Node\NotExistInterface;
 use React\Filesystem\Stat;
 use React\Promise\Promise;
 use React\Promise\PromiseInterface;
-use function Clue\React\Block\await;
+use function React\Async\await;
 use function React\Promise\all;
 
 final class FileTest extends AbstractFilesystemTestCase
@@ -21,7 +20,7 @@ final class FileTest extends AbstractFilesystemTestCase
      */
     public function stat(AdapterInterface $filesystem): void
     {
-        $stat = $this->await($filesystem->detect(__FILE__)->then(static function (FileInterface $file): PromiseInterface {
+        $stat = await($filesystem->detect(__FILE__)->then(static function (FileInterface $file): PromiseInterface {
             return $file->stat();
         }));
 
@@ -36,7 +35,7 @@ final class FileTest extends AbstractFilesystemTestCase
      */
     public function getContents(AdapterInterface $filesystem): void
     {
-        $fileContents = $this->await($filesystem->detect(__FILE__)->then(static function (FileInterface $file): PromiseInterface {
+        $fileContents = await($filesystem->detect(__FILE__)->then(static function (FileInterface $file): PromiseInterface {
             return $file->getContents();
         }));
 
@@ -54,7 +53,7 @@ final class FileTest extends AbstractFilesystemTestCase
         $fileName = $directoryName . bin2hex(random_bytes(13));
         mkdir($directoryName);
         \file_put_contents($fileName, 'abcdefghijklmnopqrstuvwxyz');
-        $fileContents = $this->await($filesystem->detect($fileName)->then(static function (FileInterface $file): PromiseInterface {
+        $fileContents = await($filesystem->detect($fileName)->then(static function (FileInterface $file): PromiseInterface {
             return $file->getContents(3, 3);
         }));
 
@@ -71,7 +70,7 @@ final class FileTest extends AbstractFilesystemTestCase
         $fileName = sys_get_temp_dir() . DIRECTORY_SEPARATOR . bin2hex(random_bytes(13)) . DIRECTORY_SEPARATOR . bin2hex(random_bytes(9));
         $fileContents = bin2hex(random_bytes(128));
 
-        $writtenLength = $this->await($filesystem->detect($fileName)->then(static fn (NotExistInterface $notExist): PromiseInterface => $notExist->createFile())->then(function (FileInterface $file) use ($fileContents): PromiseInterface {
+        $writtenLength = await($filesystem->detect($fileName)->then(static fn (NotExistInterface $notExist): PromiseInterface => $notExist->createFile())->then(function (FileInterface $file) use ($fileContents): PromiseInterface {
             return $file->putContents($fileContents);
         }));
 
@@ -89,7 +88,7 @@ final class FileTest extends AbstractFilesystemTestCase
     public function putContentsMultipleBigFiles(AdapterInterface $filesystem): void
     {
         $directoryName = sys_get_temp_dir() . DIRECTORY_SEPARATOR . bin2hex(random_bytes(13)) . DIRECTORY_SEPARATOR;
-        $this->await($filesystem->detect($directoryName)->then(static fn(NotExistInterface $notExist): PromiseInterface => $notExist->createDirectory()));
+        await($filesystem->detect($directoryName)->then(static fn(NotExistInterface $notExist): PromiseInterface => $notExist->createDirectory()));
         $fileNames = [];
         $fileContents = [];
         for ($i = 0; $i < 25; $i++) {
@@ -107,7 +106,7 @@ final class FileTest extends AbstractFilesystemTestCase
             });
         }
 
-        $writtenLengths = $this->await(all($promises));
+        $writtenLengths = await(all($promises));
 
         foreach ($writtenLengths as $fileName => $writtenLength) {
             self::assertSame($writtenLength, strlen(file_get_contents($fileName)));
@@ -126,14 +125,14 @@ final class FileTest extends AbstractFilesystemTestCase
         $fileName = sys_get_temp_dir() . DIRECTORY_SEPARATOR . bin2hex(random_bytes(13)) . DIRECTORY_SEPARATOR . bin2hex(random_bytes(9));
         $fileContentsFirst = bin2hex(random_bytes(128));
         $fileContentsSecond = bin2hex(random_bytes(128));
-        $writtenLengthFirst = $this->await($filesystem->detect($fileName)->then(static fn (NotExistInterface $notExist): PromiseInterface => $notExist->createFile())->then(static function (FileInterface $file) use ($fileContentsFirst): PromiseInterface {
+        $writtenLengthFirst = await($filesystem->detect($fileName)->then(static fn (NotExistInterface $notExist): PromiseInterface => $notExist->createFile())->then(static function (FileInterface $file) use ($fileContentsFirst): PromiseInterface {
             return $file->putContents($fileContentsFirst);
         }));
 
         self::assertSame($writtenLengthFirst, strlen(file_get_contents($fileName)));
         self::assertSame($fileContentsFirst, file_get_contents($fileName));
 
-        $writtenLengthSecond = $this->await($filesystem->detect($fileName)->then(static function (FileInterface $file) use ($fileContentsSecond): PromiseInterface {
+        $writtenLengthSecond = await($filesystem->detect($fileName)->then(static function (FileInterface $file) use ($fileContentsSecond): PromiseInterface {
             return $file->putContents($fileContentsSecond, \FILE_APPEND);
         }));
 
@@ -151,7 +150,7 @@ final class FileTest extends AbstractFilesystemTestCase
     public function putContentsAppendBigFile(AdapterInterface $filesystem): void
     {
         $fileName = sys_get_temp_dir() . DIRECTORY_SEPARATOR . bin2hex(random_bytes(13)) . DIRECTORY_SEPARATOR . bin2hex(random_bytes(9));
-        $this->await($filesystem->detect($fileName)->then(static fn(NotExistInterface $notExist): PromiseInterface => $notExist->createFile()));
+        await($filesystem->detect($fileName)->then(static fn(NotExistInterface $notExist): PromiseInterface => $notExist->createFile()));
 
         $fileContents = [];
         $writtenLength = 0;
@@ -160,7 +159,7 @@ final class FileTest extends AbstractFilesystemTestCase
         }
 
         foreach ($fileContents as $fileContent) {
-            $writtenLength += $this->await($filesystem->detect($fileName)->then(static function (FileInterface $file) use ($fileContent): PromiseInterface {
+            $writtenLength += await($filesystem->detect($fileName)->then(static function (FileInterface $file) use ($fileContent): PromiseInterface {
                 return $file->putContents($fileContent, \FILE_APPEND);
             }));
         }
@@ -246,7 +245,7 @@ final class FileTest extends AbstractFilesystemTestCase
             });
         }
 
-        $writtenLengths = $this->await(all($promises));
+        $writtenLengths = await(all($promises));
 
         foreach ($writtenLengths as $fileName => $writtenLength) {
             self::assertSame($writtenLength, strlen(file_get_contents($fileName)));
@@ -266,7 +265,7 @@ final class FileTest extends AbstractFilesystemTestCase
         $fileContents = bin2hex(random_bytes(2048));
         file_put_contents($fileName, $fileContents);
         self::assertFileExists($fileName);
-        $this->await($filesystem->detect($fileName)->then(static function (FileInterface $file): PromiseInterface {
+        await($filesystem->detect($fileName)->then(static function (FileInterface $file): PromiseInterface {
             return $file->unlink();
         }));
 
