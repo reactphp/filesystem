@@ -17,10 +17,6 @@ final class Factory
             return new Uv\Adapter();
         }
 
-        if (DIRECTORY_SEPARATOR !== '\\') {
-            return new ChildProcess\Adapter();
-        }
-
         return new Fallback\Adapter();
     }
 }
