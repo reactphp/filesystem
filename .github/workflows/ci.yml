@@ -34,6 +34,7 @@ jobs:
           extensions: ${{ matrix.extensions }}
       - run: composer install
       - run: vendor/bin/phpunit --coverage-text --debug
+  
   PHPUnit-Docker:
     name: PHPUnit (PHP ${{ matrix.php }} on Docker)
     runs-on: ubuntu-latest
@@ -50,3 +51,23 @@ jobs:
       - uses: actions/checkout@v2
       - run: composer install
       - run: vendor/bin/phpunit --coverage-text
+
+  PHPStan:
+    name: PHPStan
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        php: [ 8.1 ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: phpstan
+      - name: Install Composer dependencies
+        run: composer install
+      - name: Run static analysis
+        run: phpstan analyse

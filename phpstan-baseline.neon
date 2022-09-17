@@ -1,0 +1,446 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Call to an undefined method React\\\\Promise\\\\PromiseInterface\\:\\:done\\(\\)\\.$#"
+			count: 1
+			path: examples/file_create_new.php
+
+		-
+			message: "#^Cannot call method format\\(\\) on DateTimeImmutable\\|null\\.$#"
+			count: 3
+			path: examples/file_create_new.php
+
+		-
+			message: "#^Call to an undefined method React\\\\Promise\\\\PromiseInterface\\:\\:done\\(\\)\\.$#"
+			count: 1
+			path: examples/file_read.php
+
+		-
+			message: "#^Call to an undefined method React\\\\Promise\\\\PromiseInterface\\:\\:done\\(\\)\\.$#"
+			count: 1
+			path: examples/file_stat.php
+
+		-
+			message: "#^Cannot call method format\\(\\) on DateTimeImmutable\\|null\\.$#"
+			count: 3
+			path: examples/file_stat.php
+
+		-
+			message: "#^Call to an undefined method React\\\\Promise\\\\PromiseInterface\\:\\:done\\(\\)\\.$#"
+			count: 1
+			path: examples/file_tail.php
+
+		-
+			message: "#^Parameter \\#1 \\$offset of method React\\\\Filesystem\\\\Node\\\\FileInterface\\:\\:getContents\\(\\) expects int, int\\<0, max\\>\\|null given\\.$#"
+			count: 1
+			path: examples/file_tail.php
+
+		-
+			message: "#^Parameter \\#1 \\$path of method React\\\\Filesystem\\\\AdapterInterface\\:\\:detect\\(\\) expects string, string\\|false given\\.$#"
+			count: 1
+			path: examples/file_tail.php
+
+		-
+			message: "#^Anonymous function has an unused use \\$filename\\.$#"
+			count: 1
+			path: examples/file_unlink.php
+
+		-
+			message: "#^Call to an undefined method React\\\\Promise\\\\PromiseInterface\\:\\:done\\(\\)\\.$#"
+			count: 1
+			path: examples/file_unlink.php
+
+		-
+			message: "#^Parameter \\#1 \\$file of function file_put_contents expects string, string\\|false given\\.$#"
+			count: 1
+			path: examples/file_unlink.php
+
+		-
+			message: "#^Parameter \\#1 \\$path of method React\\\\Filesystem\\\\AdapterInterface\\:\\:detect\\(\\) expects string, string\\|false given\\.$#"
+			count: 1
+			path: examples/file_unlink.php
+
+		-
+			message: "#^Call to an undefined method React\\\\Promise\\\\PromiseInterface\\:\\:done\\(\\)\\.$#"
+			count: 1
+			path: examples/file_write.php
+
+		-
+			message: "#^Parameter \\#1 \\$contents of method React\\\\Filesystem\\\\Node\\\\FileInterface\\:\\:putContents\\(\\) expects string, string\\|false given\\.$#"
+			count: 1
+			path: examples/file_write.php
+
+		-
+			message: "#^Call to an undefined method React\\\\Promise\\\\PromiseInterface\\:\\:done\\(\\)\\.$#"
+			count: 1
+			path: examples/node_doesnt_exist.php
+
+		-
+			message: "#^PHPDoc tag @return contains generic type React\\\\Promise\\\\PromiseInterface\\<React\\\\Filesystem\\\\Node\\\\NodeInterface\\> but interface React\\\\Promise\\\\PromiseInterface is not generic\\.$#"
+			count: 1
+			path: src/AdapterInterface.php
+
+		-
+			message: "#^Instantiated class React\\\\Filesystem\\\\Node\\\\Unknown not found\\.$#"
+			count: 1
+			path: src/Fallback/Adapter.php
+
+		-
+			message: "#^Parameter \\#1 \\$mode of static method React\\\\Filesystem\\\\ModeTypeDetector\\:\\:detect\\(\\) expects int, int\\|null given\\.$#"
+			count: 1
+			path: src/Fallback/Adapter.php
+
+		-
+			message: "#^Parameter \\#2 \\$data of class React\\\\Filesystem\\\\Stat constructor expects array, array\\<int\\|string, int\\>\\|false given\\.$#"
+			count: 1
+			path: src/Fallback/Adapter.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 3
+			path: src/Fallback/Adapter.php
+
+		-
+			message: "#^Argument of an invalid type array\\<int, string\\>\\|false supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: src/Fallback/Directory.php
+
+		-
+			message: "#^Parameter \\#1 \\$var of function count expects array\\|Countable, array\\<int, string\\>\\|false given\\.$#"
+			count: 1
+			path: src/Fallback/Directory.php
+
+		-
+			message: "#^Parameter \\#2 \\$data of class React\\\\Filesystem\\\\Stat constructor expects array, array\\<int\\|string, int\\>\\|false given\\.$#"
+			count: 1
+			path: src/Fallback/Directory.php
+
+		-
+			message: "#^Used function WyriHaximus\\\\React\\\\FallbackPromiseClosure not found\\.$#"
+			count: 1
+			path: src/Fallback/Directory.php
+
+		-
+			message: "#^Cannot access offset 'size' on array\\{0\\: int, 1\\: int, 2\\: int, 3\\: int, 4\\: int, 5\\: int, 6\\: int, 7\\: int, \\.\\.\\.\\}\\|false\\.$#"
+			count: 1
+			path: src/Fallback/File.php
+
+		-
+			message: "#^Parameter \\#2 \\$data of class React\\\\Filesystem\\\\Stat constructor expects array, array\\<int\\|string, int\\>\\|false given\\.$#"
+			count: 1
+			path: src/Fallback/File.php
+
+		-
+			message: "#^Parameter \\#5 \\$maxlen of function file_get_contents expects int\\<0, max\\>, int given\\.$#"
+			count: 1
+			path: src/Fallback/File.php
+
+		-
+			message: "#^Used function WyriHaximus\\\\React\\\\FallbackPromiseClosure not found\\.$#"
+			count: 1
+			path: src/Fallback/File.php
+
+		-
+			message: "#^Parameter \\#2 \\$data of class React\\\\Filesystem\\\\Stat constructor expects array, array\\<int\\|string, int\\>\\|false given\\.$#"
+			count: 1
+			path: src/Fallback/NotExist.php
+
+		-
+			message: "#^Used function WyriHaximus\\\\React\\\\FallbackPromiseClosure not found\\.$#"
+			count: 1
+			path: src/Fallback/NotExist.php
+
+		-
+			message: "#^Used function WyriHaximus\\\\React\\\\FallbackPromiseClosure not found\\.$#"
+			count: 1
+			path: src/Fallback/StatTrait.php
+
+		-
+			message: "#^Call to an undefined method React\\\\Filesystem\\\\FlagResolver\\:\\:defaultFlags\\(\\)\\.$#"
+			count: 1
+			path: src/FlagResolver.php
+
+		-
+			message: "#^Call to an undefined method React\\\\Filesystem\\\\FlagResolver\\:\\:flagMapping\\(\\)\\.$#"
+			count: 1
+			path: src/FlagResolver.php
+
+		-
+			message: "#^Method React\\\\Filesystem\\\\FlagResolver\\:\\:resolve\\(\\) has parameter \\$mapping with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/FlagResolver.php
+
+		-
+			message: "#^Method React\\\\Filesystem\\\\FlagResolverInterface\\:\\:flagMapping\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/FlagResolverInterface.php
+
+		-
+			message: "#^Class React\\\\Filesystem\\\\Node\\\\Unknown not found\\.$#"
+			count: 1
+			path: src/ModeTypeDetector.php
+
+		-
+			message: "#^Constant React\\\\Filesystem\\\\ModeTypeDetector\\:\\:LINK is unused\\.$#"
+			count: 1
+			path: src/ModeTypeDetector.php
+
+		-
+			message: "#^PHPDoc tag @return contains generic type React\\\\Promise\\\\PromiseInterface\\<array\\<React\\\\Filesystem\\\\Node\\\\NodeInterface\\>\\> but interface React\\\\Promise\\\\PromiseInterface is not generic\\.$#"
+			count: 1
+			path: src/Node/DirectoryInterface.php
+
+		-
+			message: "#^PHPDoc tag @return contains generic type React\\\\Promise\\\\PromiseInterface\\<int\\> but interface React\\\\Promise\\\\PromiseInterface is not generic\\.$#"
+			count: 1
+			path: src/Node/FileInterface.php
+
+		-
+			message: "#^PHPDoc tag @return contains generic type React\\\\Promise\\\\PromiseInterface\\<string\\> but interface React\\\\Promise\\\\PromiseInterface is not generic\\.$#"
+			count: 1
+			path: src/Node/FileInterface.php
+
+		-
+			message: "#^PHPDoc tag @return contains generic type React\\\\Promise\\\\PromiseInterface\\<React\\\\Filesystem\\\\Stat\\|null\\> but interface React\\\\Promise\\\\PromiseInterface is not generic\\.$#"
+			count: 1
+			path: src/Node/NodeInterface.php
+
+		-
+			message: "#^PHPDoc tag @return contains generic type React\\\\Promise\\\\PromiseInterface\\<bool\\> but interface React\\\\Promise\\\\PromiseInterface is not generic\\.$#"
+			count: 1
+			path: src/Node/NodeInterface.php
+
+		-
+			message: "#^PHPDoc tag @return contains generic type React\\\\Promise\\\\PromiseInterface\\<React\\\\Filesystem\\\\Node\\\\DirectoryInterface\\> but interface React\\\\Promise\\\\PromiseInterface is not generic\\.$#"
+			count: 1
+			path: src/Node/NotExistInterface.php
+
+		-
+			message: "#^PHPDoc tag @return contains generic type React\\\\Promise\\\\PromiseInterface\\<React\\\\Filesystem\\\\Node\\\\FileInterface\\> but interface React\\\\Promise\\\\PromiseInterface is not generic\\.$#"
+			count: 1
+			path: src/Node/NotExistInterface.php
+
+		-
+			message: "#^Method React\\\\Filesystem\\\\Stat\\:\\:__construct\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Stat.php
+
+		-
+			message: "#^Method React\\\\Filesystem\\\\Stat\\:\\:gid\\(\\) should return int\\|null but returns mixed\\.$#"
+			count: 1
+			path: src/Stat.php
+
+		-
+			message: "#^Method React\\\\Filesystem\\\\Stat\\:\\:mode\\(\\) should return int\\|null but returns mixed\\.$#"
+			count: 1
+			path: src/Stat.php
+
+		-
+			message: "#^Method React\\\\Filesystem\\\\Stat\\:\\:size\\(\\) should return int\\|null but returns mixed\\.$#"
+			count: 1
+			path: src/Stat.php
+
+		-
+			message: "#^Method React\\\\Filesystem\\\\Stat\\:\\:uid\\(\\) should return int\\|null but returns mixed\\.$#"
+			count: 1
+			path: src/Stat.php
+
+		-
+			message: "#^Method React\\\\Filesystem\\\\TypeDetectorInterface\\:\\:detect\\(\\) has invalid return type React\\\\Filesystem\\\\React\\\\Promise\\\\PromiseInterface\\.$#"
+			count: 1
+			path: src/TypeDetectorInterface.php
+
+		-
+			message: "#^Method React\\\\Filesystem\\\\TypeDetectorInterface\\:\\:detect\\(\\) has parameter \\$node with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/TypeDetectorInterface.php
+
+		-
+			message: "#^Anonymous function has an unused use \\$reject\\.$#"
+			count: 1
+			path: src/Uv/Adapter.php
+
+		-
+			message: "#^Instantiated class React\\\\Filesystem\\\\Node\\\\Unknown not found\\.$#"
+			count: 1
+			path: src/Uv/Adapter.php
+
+		-
+			message: "#^Method React\\\\Filesystem\\\\Uv\\\\Adapter\\:\\:uvLoop\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Uv/Adapter.php
+
+		-
+			message: "#^Parameter \\#1 \\$mode of static method React\\\\Filesystem\\\\ModeTypeDetector\\:\\:detect\\(\\) expects int, int\\|null given\\.$#"
+			count: 1
+			path: src/Uv/Adapter.php
+
+		-
+			message: "#^Property React\\\\Filesystem\\\\Uv\\\\Adapter\\:\\:\\$uvLoop has no type specified\\.$#"
+			count: 1
+			path: src/Uv/Adapter.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 3
+			path: src/Uv/Adapter.php
+
+		-
+			message: "#^Anonymous function has an unused use \\$reject\\.$#"
+			count: 1
+			path: src/Uv/Directory.php
+
+		-
+			message: "#^Function uv_fs_scandir not found\\.$#"
+			count: 2
+			path: src/Uv/Directory.php
+
+		-
+			message: "#^Method React\\\\Filesystem\\\\Uv\\\\Directory\\:\\:uvLoop\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Uv/Directory.php
+
+		-
+			message: "#^Property React\\\\Filesystem\\\\Uv\\\\Directory\\:\\:\\$loop is never read, only written\\.$#"
+			count: 1
+			path: src/Uv/Directory.php
+
+		-
+			message: "#^Property React\\\\Filesystem\\\\Uv\\\\Directory\\:\\:\\$uvLoop has no type specified\\.$#"
+			count: 1
+			path: src/Uv/Directory.php
+
+		-
+			message: "#^Anonymous function has an unused use \\$flags\\.$#"
+			count: 1
+			path: src/Uv/File.php
+
+		-
+			message: "#^Anonymous function has an unused use \\$reject\\.$#"
+			count: 1
+			path: src/Uv/File.php
+
+		-
+			message: "#^Method React\\\\Filesystem\\\\Uv\\\\File\\:\\:uvLoop\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Uv/File.php
+
+		-
+			message: "#^Property React\\\\Filesystem\\\\Uv\\\\File\\:\\:\\$loop is never read, only written\\.$#"
+			count: 1
+			path: src/Uv/File.php
+
+		-
+			message: "#^Property React\\\\Filesystem\\\\Uv\\\\File\\:\\:\\$uvLoop has no type specified\\.$#"
+			count: 1
+			path: src/Uv/File.php
+
+		-
+			message: "#^Anonymous function has an unused use \\$reject\\.$#"
+			count: 1
+			path: src/Uv/NotExist.php
+
+		-
+			message: "#^Method React\\\\Filesystem\\\\Uv\\\\NotExist\\:\\:uvLoop\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Uv/NotExist.php
+
+		-
+			message: "#^Property React\\\\Filesystem\\\\Uv\\\\NotExist\\:\\:\\$uvLoop has no type specified\\.$#"
+			count: 1
+			path: src/Uv/NotExist.php
+
+		-
+			message: "#^Parameter \\#1 \\$timer of method React\\\\EventLoop\\\\LoopInterface\\:\\:cancelTimer\\(\\) expects React\\\\EventLoop\\\\TimerInterface, React\\\\EventLoop\\\\TimerInterface\\|null given\\.$#"
+			count: 1
+			path: src/Uv/Poll.php
+
+		-
+			message: "#^Generator expects value type array\\<React\\\\EventLoop\\\\LoopInterface\\>, array\\{React\\\\Filesystem\\\\AdapterInterface\\} given\\.$#"
+			count: 1
+			path: tests/AbstractFilesystemTestCase.php
+
+		-
+			message: "#^Generator expects value type array\\<React\\\\EventLoop\\\\LoopInterface\\>, array\\{React\\\\Filesystem\\\\Fallback\\\\Adapter\\} given\\.$#"
+			count: 1
+			path: tests/AbstractFilesystemTestCase.php
+
+		-
+			message: "#^Generator expects value type array\\<React\\\\EventLoop\\\\LoopInterface\\>, array\\{React\\\\Filesystem\\\\Uv\\\\Adapter\\} given\\.$#"
+			count: 1
+			path: tests/AbstractFilesystemTestCase.php
+
+		-
+			message: "#^PHPDoc tag @return contains unresolvable type\\.$#"
+			count: 1
+			path: tests/AbstractFilesystemTestCase.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: tests/DirectoryTest.php
+
+		-
+			message: "#^Cannot access offset 'size' on array\\{0\\: int, 1\\: int, 2\\: int, 3\\: int, 4\\: int, 5\\: int, 6\\: int, 7\\: int, \\.\\.\\.\\}\\|false\\.$#"
+			count: 1
+			path: tests/DirectoryTest.php
+
+		-
+			message: "#^Cannot call method close\\(\\) on Directory\\|false\\.$#"
+			count: 1
+			path: tests/DirectoryTest.php
+
+		-
+			message: "#^Cannot call method name\\(\\) on mixed\\.$#"
+			count: 1
+			path: tests/DirectoryTest.php
+
+		-
+			message: "#^Cannot call method path\\(\\) on mixed\\.$#"
+			count: 1
+			path: tests/DirectoryTest.php
+
+		-
+			message: "#^Cannot call method read\\(\\) on Directory\\|false\\.$#"
+			count: 1
+			path: tests/DirectoryTest.php
+
+		-
+			message: "#^Cannot call method size\\(\\) on mixed\\.$#"
+			count: 1
+			path: tests/DirectoryTest.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 2
+			path: tests/FileTest.php
+
+		-
+			message: "#^Cannot call method size\\(\\) on mixed\\.$#"
+			count: 1
+			path: tests/FileTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$contents of method React\\\\Filesystem\\\\Node\\\\FileInterface\\:\\:putContents\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: tests/FileTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$filename of function file_get_contents expects string, mixed given\\.$#"
+			count: 4
+			path: tests/FileTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$filename of function unlink expects string, mixed given\\.$#"
+			count: 2
+			path: tests/FileTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$length of function random_bytes expects int\\<1, max\\>, int given\\.$#"
+			count: 1
+			path: tests/FileTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function strlen expects string, string\\|false given\\.$#"
+			count: 6
+			path: tests/FileTest.php
