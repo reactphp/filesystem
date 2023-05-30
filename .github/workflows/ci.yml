@@ -22,11 +22,16 @@ jobs:
         extensions:
           - ""
           - "uv-amphp/ext-uv@master"
+          - "uv-amphp/ext-uv@master, eio"
+          - "eio"
     steps:
       - uses: actions/checkout@v2
       - name: Install libuv
         if: matrix.os == 'ubuntu-latest'
         run: sudo apt-get install libuv1-dev
+      - name: Install ext-eio
+        if: matrix.os == 'ubuntu-latest' && (matrix.extensions == 'eio' || matrix.extensions == 'uv-amphp/ext-uv@master, eio')
+        run: sudo pecl install eio || sudo pecl install eio-beta
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
