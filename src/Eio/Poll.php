@@ -2,20 +2,21 @@
 
 namespace React\Filesystem\Eio;
 
-use React\EventLoop\LoopInterface;
+use React\EventLoop\Loop;
 use React\Filesystem\PollInterface;
 
+/**
+ * @internal
+ */
 final class Poll implements PollInterface
 {
-    private LoopInterface $loop;
     private $fd;
     private \Closure $handleEvent;
     private int $workInProgress = 0;
 
-    public function __construct(LoopInterface $loop)
+    public function __construct()
     {
         $this->fd = EventStream::get();
-        $this->loop = $loop;
         $this->handleEvent = function () {
             $this->handleEvent();
         };
@@ -24,7 +25,7 @@ final class Poll implements PollInterface
     public function activate(): void
     {
         if ($this->workInProgress++ === 0) {
-            $this->loop->addReadStream($this->fd, $this->handleEvent);
+            Loop::addReadStream($this->fd, $this->handleEvent);
         }
     }
 
@@ -38,7 +39,7 @@ final class Poll implements PollInterface
     public function deactivate(): void
     {
         if (--$this->workInProgress <= 0) {
-            $this->loop->removeReadStream($this->fd);
+            Loop::removeReadStream($this->fd);
         }
     }
 }

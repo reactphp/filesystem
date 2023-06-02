@@ -2,7 +2,6 @@
 
 namespace React\Tests\Filesystem;
 
-use React\EventLoop\LoopInterface;
 use React\Filesystem\AdapterInterface;
 use React\Filesystem\Node\DirectoryInterface;
 use React\Filesystem\Node\FileInterface;

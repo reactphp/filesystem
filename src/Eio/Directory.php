@@ -34,10 +34,15 @@ final class Directory implements Node\DirectoryInterface
     public function ls(): PromiseInterface
     {
         $this->activate();
-        return new Promise(function (callable $resolve): void {
-            \eio_readdir($this->path . $this->name . DIRECTORY_SEPARATOR, \EIO_READDIR_STAT_ORDER | \EIO_READDIR_DIRS_FIRST, \EIO_PRI_DEFAULT, function ($_, $contents) use ($resolve): void {
+        return new Promise(function (callable $resolve, callable $reject): void {
+            \eio_readdir($this->path . $this->name . DIRECTORY_SEPARATOR, \EIO_READDIR_STAT_ORDER | \EIO_READDIR_DIRS_FIRST, \EIO_PRI_DEFAULT, function ($_, $contents, $resource) use ($resolve, $reject): void {
                 $this->deactivate();
                 $list = [];
+                if ($contents === -1) {
+                    $reject(new \RuntimeException('Error reading from directory "' . $this->path . $this->name . DIRECTORY_SEPARATOR . '": ' . \eio_get_last_error($resource)));
+                    return;
+                }
+
                 foreach ($contents['dents'] as $node) {
                     $fullPath = $this->path . $this->name . DIRECTORY_SEPARATOR . $node['name'];
                     switch ($node['type'] ?? null) {
