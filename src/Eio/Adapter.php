@@ -21,7 +21,7 @@ final class Adapter implements AdapterInterface
     public function __construct()
     {
         $this->loop = Loop::get();
-        $this->poll = new Poll($this->loop);
+        $this->poll = new Poll();
     }
 
     public function detect(string $path): PromiseInterface
