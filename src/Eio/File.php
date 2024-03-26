@@ -107,7 +107,7 @@ final class File implements FileInterface
             try {
                 \eio_close($fileDescriptor, \EIO_PRI_DEFAULT, function () use ($resolve): void {
                     $this->deactivate();
-                    $resolve();
+                    $resolve(true);
                 });
             } catch (\Throwable $error) {
                 $this->deactivate();
