@@ -35,8 +35,25 @@ final class FileTest extends AbstractFilesystemTestCase
      */
     public function getContents(AdapterInterface $filesystem): void
     {
+        $blockingReadFileContents = file_get_contents(__FILE__);
         $fileContents = await($filesystem->detect(__FILE__)->then(static function (FileInterface $file): PromiseInterface {
             return $file->getContents();
+        }));
+        file_put_contents(__FILE__ . '.overflow', $fileContents);
+
+//        self::assertSame(strlen($blockingReadFileContents), strlen($fileContents));
+        self::assertSame($blockingReadFileContents, $fileContents);
+    }
+
+    /**
+     * @test
+     *
+     * @dataProvider provideFilesystems
+     */
+    public function getContentsWithFilesize(AdapterInterface $filesystem): void
+    {
+        $fileContents = await($filesystem->detect(__FILE__)->then(static function (FileInterface $file): PromiseInterface {
+            return $file->getContents(0, filesize(__FILE__));
         }));
 
         self::assertSame(file_get_contents(__FILE__), $fileContents);
@@ -95,7 +112,7 @@ final class FileTest extends AbstractFilesystemTestCase
             $fileNames[] = $directoryName . bin2hex(random_bytes(13));
         }
         foreach ($fileNames as $fileName) {
-            $fileContents[$fileName] = bin2hex(random_bytes(4096));
+            $fileContents[$fileName] = bin2hex(random_bytes(4194304));
             touch($fileName);
         }
 
@@ -155,7 +172,7 @@ final class FileTest extends AbstractFilesystemTestCase
         $fileContents = [];
         $writtenLength = 0;
         for ($i = 0; $i < 13; $i++) {
-            $fileContents[] = bin2hex(random_bytes(4096));
+            $fileContents[] = bin2hex(random_bytes(4194304));
         }
 
         foreach ($fileContents as $fileContent) {
@@ -177,7 +194,7 @@ final class FileTest extends AbstractFilesystemTestCase
      */
     public function putContentsAppendMultipleBigFiles(AdapterInterface $filesystem): void
     {
-        $this->runMultipleFilesTests($filesystem, 8, 4096, 4);
+        $this->runMultipleFilesTests($filesystem, 8, 4194304, 4);
     }
 
     /**
@@ -187,7 +204,7 @@ final class FileTest extends AbstractFilesystemTestCase
      */
     public function putContentsAppendLotsOfSmallFiles(AdapterInterface $filesystem): void
     {
-        $this->runMultipleFilesTests($filesystem, 16, 16, 4);
+        $this->runMultipleFilesTests($filesystem, 16, 16384, 4);
     }
 
     /**
@@ -197,7 +214,7 @@ final class FileTest extends AbstractFilesystemTestCase
      */
     public function putContentsAppendLoadsOfSmallFiles(AdapterInterface $filesystem): void
     {
-        $this->runMultipleFilesTests($filesystem, 32, 8, 8);
+        $this->runMultipleFilesTests($filesystem, 32, 8192, 8);
     }
 
     public function runMultipleFilesTests(AdapterInterface $filesystem, int $fileCount, int $fileSize, int $chunkCount): void

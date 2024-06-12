@@ -10,6 +10,9 @@ use function React\Promise\resolve;
 
 final class File implements FileInterface
 {
+    private const READ_CHUNK_FIZE = 65536;
+//    private const READ_CHUNK_FIZE = 1;
+
     use StatTrait;
 
     private PollInterface $poll;
@@ -37,22 +40,37 @@ final class File implements FileInterface
             0,
         )->then(
             function ($fileDescriptor) use ($offset, $maxlen): PromiseInterface {
-                if ($maxlen === null) {
-                    $sizePromise = $this->statFileDescriptor($fileDescriptor)->then(static function ($stat): int {
-                        return (int)$stat['size'];
+                $buffer = '';
+                $bufferLength = 0;
+                $read = function (bool $finalAttempt, int $offset) use ($fileDescriptor, $maxlen, &$read, &$buffer, &$bufferLength): PromiseInterface {
+                    return new Promise (function (callable $resolve) use ($fileDescriptor, $offset, $maxlen, $finalAttempt, &$read, &$buffer, &$bufferLength): void {
+                        \eio_read($fileDescriptor, $maxlen ?? self::READ_CHUNK_FIZE, $offset, \PHP_INT_MAX, function ($fileDescriptor, string $contents) use ($resolve, $maxlen, $finalAttempt, &$read, &$buffer, &$bufferLength): void {
+                            $contentLength = strlen($contents);
+                            $buffer .= $contents;
+                            $bufferLength += $contentLength;
+
+                            if (
+                                ($maxlen === null && $finalAttempt) ||
+                                ($maxlen !== null && $bufferLength >= $maxlen)
+                            ) {
+                                if ($maxlen !== null && $bufferLength > $maxlen) {
+                                    $buffer = substr($buffer, 0, $maxlen);
+                                }
+
+                                $resolve($this->closeOpenFile($fileDescriptor)->then(function () use ($buffer): string {
+                                    $this->deactivate();
+                                    return $buffer;
+                                }));
+                            } else if ($maxlen === null && !$finalAttempt && $contentLength === 0) {
+                                $resolve($read(true, $bufferLength));
+                            } else {
+                                $resolve($read(false, $bufferLength));
+                            }
+                        });
                     });
-                } else {
-                    $sizePromise = resolve($maxlen);
-                }
-                return $sizePromise->then(function ($length) use ($fileDescriptor, $offset): PromiseInterface {
-                    return new Promise (function (callable $resolve) use ($fileDescriptor, $offset, $length): void {
-                        \eio_read($fileDescriptor, $length, $offset, \EIO_PRI_DEFAULT, function ($fileDescriptor, string $buffer) use ($resolve): void {
-                            $resolve($this->closeOpenFile($fileDescriptor)->then(function () use ($buffer): string {
-                                return $buffer;
-                            }));
-                        }, $fileDescriptor);
-                    });
-                });
+                };
+
+                return $read(false, $offset);
             }
         );
     }
@@ -61,9 +79,9 @@ final class File implements FileInterface
     {
         $this->activate();
         return $this->openFile(
-                $this->path . DIRECTORY_SEPARATOR . $this->name,
-                (($flags & \FILE_APPEND) == \FILE_APPEND) ? \EIO_O_RDWR | \EIO_O_APPEND : \EIO_O_RDWR | \EIO_O_CREAT,
-                0644
+            $this->path . DIRECTORY_SEPARATOR . $this->name,
+            (($flags & \FILE_APPEND) == \FILE_APPEND) ? \EIO_O_RDWR | \EIO_O_APPEND : \EIO_O_RDWR | \EIO_O_CREAT,
+            0644
         )->then(
             function ($fileDescriptor) use ($contents, $flags): PromiseInterface {
                 return new Promise (function (callable $resolve) use ($contents, $fileDescriptor): void {
@@ -75,15 +93,6 @@ final class File implements FileInterface
                 });
             }
         );
-    }
-
-    private function statFileDescriptor($fileDescriptor): PromiseInterface
-    {
-        return new Promise(function (callable $resolve, callable $reject) use ($fileDescriptor) {
-            \eio_fstat($fileDescriptor, \EIO_PRI_DEFAULT, function ($_, $stat) use ($resolve): void {
-                $resolve($stat);
-            }, $fileDescriptor);
-        });
     }
 
     private function openFile(string $path, int $flags, int $mode): PromiseInterface

@@ -29,7 +29,7 @@ final class File implements FileInterface
     public function getContents(int $offset = 0 , ?int $maxlen = null): PromiseInterface
     {
         $path = $this->path . $this->name;
-        return resolve(file_get_contents($path, false, null, $offset, $maxlen ?? (int)stat($path)['size']));
+        return resolve(file_get_contents($path, false, null, $offset, $maxlen));
     }
 
     public function putContents(string $contents, int $flags = 0): PromiseInterface

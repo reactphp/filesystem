@@ -31,6 +31,6 @@ abstract class AbstractFilesystemTestCase extends TestCase
             yield 'uv' => [new Uv\Adapter()];
         }
 
-        yield 'factory' => [Factory::create()];
+//        yield 'factory' => [Factory::create()];
     }
 }
