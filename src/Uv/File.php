@@ -57,7 +57,7 @@ final class File implements FileInterface
             uv_fs_open(
                 $this->uvLoop,
                 $this->path . DIRECTORY_SEPARATOR . $this->name,
-                (($flags & \FILE_APPEND) == \FILE_APPEND) ? UV::O_RDWR | UV::O_CREAT | UV::O_APPEND : UV::O_RDWR | UV::O_CREAT,
+                (($flags & \FILE_APPEND) == \FILE_APPEND) ? UV::O_RDWR | UV::O_CREAT | UV::O_APPEND : UV::O_RDWR | UV::O_CREAT | UV::O_TRUNC,
                 0644,
                 function ($fileDescriptor) use ($resolve, $contents, $flags): void {
                     uv_fs_write($this->uvLoop, $fileDescriptor, $contents, 0, function ($fileDescriptor, int $bytesWritten) use ($resolve): void {
