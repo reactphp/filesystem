@@ -1,25 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit backupGlobals="false"
-         backupStaticAttributes="false"
-         colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         processIsolation="false"
-         stopOnFailure="false"
-         syntaxCheck="false"
+<!-- PHPUnit configuration file with new format for PHPUnit 9.6+ -->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.6/phpunit.xsd"
          bootstrap="vendor/autoload.php"
-        >
+         cacheResult="false"
+         colors="true"
+         convertDeprecationsToExceptions="true">
     <testsuites>
-        <testsuite name="React Test Suite">
+        <testsuite name="Filesystem Test Suite">
             <directory>./tests/</directory>
         </testsuite>
     </testsuites>
-
-    <filter>
-        <whitelist>
+    <coverage>
+        <include>
             <directory>./src/</directory>
-        </whitelist>
-    </filter>
+        </include>
+    </coverage>
+    <php>
+        <ini name="error_reporting" value="-1" />
+        <!-- Evaluate assertions, requires running with "php -d zend.assertions=1 vendor/bin/phpunit" -->
+        <!-- <ini name="zend.assertions" value="1" /> -->
+        <ini name="assert.active" value="1" />
+        <ini name="assert.exception" value="1" />
+        <ini name="assert.bail" value="0" />
+    </php>
 </phpunit>
